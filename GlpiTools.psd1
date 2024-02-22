@@ -12,7 +12,7 @@
 # RootModule = ''
 
 # Version number of this module.
-ModuleVersion = '1.7.1'
+ModuleVersion = '1.8.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -21,7 +21,7 @@ ModuleVersion = '1.7.1'
 GUID = 'e1889130-cc90-4122-bd1c-c41a68c5a2ab'
 
 # Author of this module
-Author = 'Wojciech Pietrzak'
+Author = 'Wojciech Pietrzak and Andre Proto'
 
 # Company or vendor of this module
 CompanyName = 'Unknown'
@@ -72,6 +72,8 @@ NestedModules = @('GlpiTools')
 FunctionsToExport = @(
     'Set-GlpiToolsConfig',
     'Get-GlpiToolsConfig',
+	'Set-GlpiToolsSessionToken',
+    'Get-GlpiToolsSessionToken',
     'Set-GlpiToolsInitSession',
     'Set-GlpiToolsKillSession',
     'Get-GlpiToolsComputers',
@@ -88,7 +90,9 @@ FunctionsToExport = @(
     'Set-GlpiToolsResetPasswordRequest',
     'Set-GlpiToolsPasswordReset',
     'Get-GlpiToolsMyProfiles',
+	'Get-GlpiToolsMyEntities',
     'Get-GlpiToolsActiveProfile',
+	'Get-GlpiToolsActiveEntities',
     'Get-GlpiToolsPlugins',
     'Get-GlpiToolsSoftware',
     'Get-GlpiToolsDropdownsSoftwareCategory',

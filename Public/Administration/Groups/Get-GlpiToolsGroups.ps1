@@ -78,7 +78,7 @@ function Get-GlpiToolsGroups {
 
         $AppToken = Get-GlpiToolsConfig | Select-Object -ExpandProperty AppToken
         $PathToGlpi = Get-GlpiToolsConfig | Select-Object -ExpandProperty PathToGlpi
-        $SessionToken = Set-GlpiToolsInitSession | Select-Object -ExpandProperty SessionToken
+        $SessionToken = Get-GlpiToolsSessionToken | Select-Object -ExpandProperty SessionToken
 
         $ChoosenParam = ($PSCmdlet.MyInvocation.BoundParameters).Keys
 
@@ -170,6 +170,6 @@ function Get-GlpiToolsGroups {
     }
     
     end {
-        Set-GlpiToolsKillSession -SessionToken $SessionToken
+        
     }
 }

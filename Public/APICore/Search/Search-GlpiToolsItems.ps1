@@ -91,7 +91,7 @@ function Search-GlpiToolsItems {
 
         $AppToken = Get-GlpiToolsConfig | Select-Object -ExpandProperty AppToken
         $PathToGlpi = Get-GlpiToolsConfig | Select-Object -ExpandProperty PathToGlpi
-        $SessionToken = Set-GlpiToolsInitSession | Select-Object -ExpandProperty SessionToken
+        $SessionToken = Get-GlpiToolsSessionToken | Select-Object -ExpandProperty SessionToken
 
         if ($SearchInTrash -eq "Yes") {
             $Trash = 1
@@ -160,7 +160,7 @@ function Search-GlpiToolsItems {
     }
     
     end {
-        Set-GlpiToolsKillSession -SessionToken $SessionToken
+        
     }
 }
 

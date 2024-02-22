@@ -105,7 +105,7 @@ function New-GlpiToolsTicket {
             ValueFromPipelineByPropertyName = $true,
             HelpMessage = "Ticket urgency value"
         )]
-        [ValidateSet("Very low", "Low", "Medium", "High", "Very High")]
+        [ValidateSet("Very low", "Low", "Medium", "High", "Very High", "1","2","3","4","5")]
         [string]$urgency = "Low",
         
         [parameter(
@@ -113,7 +113,7 @@ function New-GlpiToolsTicket {
             ValueFromPipelineByPropertyName = $true,
             HelpMessage = "Ticket impact value"
         )]
-        [ValidateSet("Very low", "Low", "Medium", "High", "Very High")]
+        [ValidateSet("Very low", "Low", "Medium", "High", "Very High", "1","2","3","4","5")]
         [string]$impact = "Low",
         
         [parameter(
@@ -121,7 +121,7 @@ function New-GlpiToolsTicket {
             ValueFromPipelineByPropertyName = $true,
             HelpMessage = "Ticket priority value"
         )]
-        [ValidateSet("Very low", "Low", "Medium", "High", "Very High")]
+        [ValidateSet("Very low", "Low", "Medium", "High", "Very High", "1","2","3","4","5")]
         [string]$priority = "Low",
         
         # [parameter(Mandatory = $false,
@@ -134,7 +134,7 @@ function New-GlpiToolsTicket {
             ValueFromPipelineByPropertyName = $true,
             HelpMessage = "Ticket type"
         )]
-        [ValidateSet("Incident", "Request")]
+        [ValidateSet("Incident", "Request", "1","2")]
         [string]$Type = "Incident",
 
         [parameter(
@@ -218,7 +218,7 @@ function New-GlpiToolsTicket {
 
         $AppToken = Get-GlpiToolsConfig -Verbose:$false | Select-Object -ExpandProperty AppToken
         $PathToGlpi = Get-GlpiToolsConfig -Verbose:$false | Select-Object -ExpandProperty PathToGlpi
-        $SessionToken = Set-GlpiToolsInitSession -Verbose:$false | Select-Object -ExpandProperty SessionToken
+        $SessionToken = Get-GlpiToolsSessionToken -Verbose:$false | Select-Object -ExpandProperty SessionToken
 
         #$ChoosenParam = ($PSCmdlet.MyInvocation.BoundParameters).Keys
 
@@ -228,7 +228,7 @@ function New-GlpiToolsTicket {
             "Medium" { $urgency_id = 3 }
             "High" { $urgency_id = 4 }
             "Very High" { $urgency_id = 5 }
-            Default { $urgency_id = 2 }
+            Default { $urgency_id = [int]$urgency }
         }
         switch ($impact) {
             "Very low" { $impact_id = 1 }
@@ -236,7 +236,7 @@ function New-GlpiToolsTicket {
             "Medium" { $impact_id = 3 }
             "High" { $impact_id = 4 }
             "Very High" { $impact_id = 5 }
-            Default { $impact_id = 2 }
+            Default { $impact_id = [int]$impact }
         }
         switch ($priority) {
             "Very low" { $priority_id = 1 }
@@ -244,12 +244,13 @@ function New-GlpiToolsTicket {
             "Medium" { $priority_id = 3 }
             "High" { $priority_id = 4 }
             "Very High" { $priority_id = 5 }
-            Default { $priority_id = 2 }
+            Default { $priority_id = [int]$priority }
         }
 
         switch ($Type) {
             "Incident" { $type_id = 1 }
             "Request" { $type_id = 2 }
+			Default { $type_id = [int]$Type }
         }
 
 
@@ -416,7 +417,7 @@ function New-GlpiToolsTicket {
     end {
         $Output
         $Output = [System.Collections.Generic.List[PSObject]]::New()
-        Set-GlpiToolsKillSession -SessionToken $SessionToken -Verbose:$false
+    
     }
 }
 

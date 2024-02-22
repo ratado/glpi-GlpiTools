@@ -58,7 +58,7 @@ function Get-GlpiToolsProfiles {
         $AppToken = $Script:AppToken
         $PathToGlpi = $Script:PathToGlpi
 
-        $SessionToken = Set-GlpiToolsInitSession | Select-Object -ExpandProperty SessionToken
+        $SessionToken = Get-GlpiToolsSessionToken | Select-Object -ExpandProperty SessionToken
         $AppToken = Get-GlpiToolsConfig | Select-Object -ExpandProperty AppToken
         $PathToGlpi = Get-GlpiToolsConfig | Select-Object -ExpandProperty PathToGlpi
 
@@ -153,6 +153,6 @@ function Get-GlpiToolsProfiles {
     }
     
     end {
-        Set-GlpiToolsKillSession -SessionToken $SessionToken
+        
     }
 }

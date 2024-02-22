@@ -9,7 +9,7 @@
     PS C:\Users\Wojtek> $SessionToken | Set-GlpiToolsKillSession
     Run command like that and you will kill session with API GLPI
 .EXAMPLE
-    PS C:\Users\Wojtek> Set-GlpiToolsKillSession -SessionToken $SessionToken
+    PS C:\Users\Wojtek> 
     Run command like that and you will kill session with API GLPI
 .INPUTS
     SessionToken from Set-GlpiToolsInitSession
@@ -30,6 +30,10 @@ function Set-GlpiToolsKillSession {
 
         $AppToken = Get-GlpiToolsConfig | Select-Object -ExpandProperty AppToken
         $PathToGlpi = Get-GlpiToolsConfig | Select-Object -ExpandProperty PathToGlpi
+		if($null -eq $PSBoundParameters['SessionToken']) {
+			$SessionToken = Get-GlpiToolsSessionToken | Select-Object -ExpandProperty SessionToken
+		}
+		
     }
     
     process {
@@ -46,5 +50,6 @@ function Set-GlpiToolsKillSession {
     }
     
     end {
+		Set-GlpiToolsSessionToken -ResetToken
     }
 }

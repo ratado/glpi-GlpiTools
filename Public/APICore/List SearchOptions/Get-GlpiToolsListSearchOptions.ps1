@@ -36,7 +36,7 @@ function Get-GlpiToolsListSearchOptions {
 
         $AppToken = Get-GlpiToolsConfig | Select-Object -ExpandProperty AppToken
         $PathToGlpi = Get-GlpiToolsConfig | Select-Object -ExpandProperty PathToGlpi
-        $SessionToken = Set-GlpiToolsInitSession | Select-Object -ExpandProperty SessionToken
+        $SessionToken = Get-GlpiToolsSessionToken | Select-Object -ExpandProperty SessionToken
 
         $SearchOptionsArray = [System.Collections.Generic.List[PSObject]]::New()
     }
@@ -73,7 +73,7 @@ function Get-GlpiToolsListSearchOptions {
     }
     
     end {
-        Set-GlpiToolsKillSession -SessionToken $SessionToken
+        
     }
 }
 

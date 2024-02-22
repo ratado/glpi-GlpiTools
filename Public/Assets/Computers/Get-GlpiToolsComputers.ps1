@@ -110,7 +110,7 @@ function Get-GlpiToolsComputers {
 
         $AppToken = Get-GlpiToolsConfig -Verbose:$false | Select-Object -ExpandProperty AppToken
         $PathToGlpi = Get-GlpiToolsConfig -Verbose:$false | Select-Object -ExpandProperty PathToGlpi
-        $SessionToken = Set-GlpiToolsInitSession -Verbose:$false | Select-Object -ExpandProperty SessionToken
+        $SessionToken = Get-GlpiToolsSessionToken -Verbose:$false | Select-Object -ExpandProperty SessionToken
 
         $ChoosenParam = ($PSCmdlet.MyInvocation.BoundParameters).Keys
 
@@ -224,6 +224,6 @@ function Get-GlpiToolsComputers {
     }
     
     end {
-        Set-GlpiToolsKillSession -SessionToken $SessionToken -Verbose:$false
+    
     }
 }

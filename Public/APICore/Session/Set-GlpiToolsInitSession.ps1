@@ -44,6 +44,8 @@ function Set-GlpiToolsInitSession {
         }
         $object = New-Object -TypeName PSCustomObject -Property $SessionHash
         $SessionToken += $object
+		
+		Set-GlpiToolsSessionToken -SessionToken $InitSession.session_token
         
     }
     

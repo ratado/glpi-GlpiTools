@@ -1,20 +1,20 @@
 <#
 .SYNOPSIS
-    Function Return the current $CFG_GLPI.
+    Function Return the current active entities.
 .DESCRIPTION
-    Function Return the current $CFG_GLPI.
+    Function Return the current active entities.
 .EXAMPLE
-    PS C:\> Get-GlpiToolsSystemConfig
-    Example will show current cfg_glpi configuration.
+    PS C:\> Get-GlpiToolsActiveProfile
+    Function Return the current active entities.
 .INPUTS
     None
 .OUTPUTS
-    None
+    Function returns PSCustomObject with property's of Active entities current logged user in GLPI
 .NOTES
-    PSP 05/2019
+    PSP 04/2019
 #>
 
-function Get-GlpiToolsSystemConfig {
+function Get-GlpiToolsActiveEntities {
     [CmdletBinding()]
     param (
         
@@ -38,12 +38,12 @@ function Get-GlpiToolsSystemConfig {
                 'Session-Token' = $SessionToken
             }
             method  = 'get'
-            uri     = "$($PathToGlpi)/getGlpiConfig/"
+            uri     = "$($PathToGlpi)/getActiveEntities/"
         }
             
-        $GlpiConfig = Invoke-RestMethod @params
+        $ActiveEntities = Invoke-RestMethod @params
 
-        $GlpiConfig.cfg_glpi
+        $ActiveEntities.active_entity
     }
     
     end {

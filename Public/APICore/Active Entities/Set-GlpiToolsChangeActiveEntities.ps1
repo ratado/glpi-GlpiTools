@@ -44,7 +44,7 @@ function Set-GlpiToolsChangeActiveEntities {
         $AppToken = $Script:AppToken
         $PathToGlpi = $Script:PathToGlpi
 
-        $SessionToken = Set-GlpiToolsInitSession | Select-Object -ExpandProperty SessionToken
+        $SessionToken = Get-GlpiToolsSessionToken | Select-Object -ExpandProperty SessionToken
         $AppToken = Get-GlpiToolsConfig | Select-Object -ExpandProperty AppToken
         $PathToGlpi = Get-GlpiToolsConfig | Select-Object -ExpandProperty PathToGlpi
     }
@@ -52,20 +52,19 @@ function Set-GlpiToolsChangeActiveEntities {
     process {
 
         if ($IsRecursive) {
-            $IsRecursiveState = 'true'
+            $IsRecursiveState = "true"
         } else {
-            $IsRecursiveState = 'false'
+            $IsRecursiveState = "false"
         }
 
-        $PostActiveEntities =
-        [pscustomobject]@{
-            entities_id     = $EntitiesId
-            is_recursive    = $IsRecursiveState
+        $PostActiveEntities = @{
+            'is_recursive'    = $IsRecursiveState
+			'entities_id'    = $EntitiesId
         } 
 
-        $GlpiUpload = $PostActiveEntities | ConvertTo-Json
-    
-        $Upload = '{ "input" : ' + $GlpiUpload + '}' 
+        #$GlpiUpload = @{ "input"  = $PostActiveEntities } 
+		
+        $Upload = $PostActiveEntities | ConvertTo-Json -Compress
         
         $params = @{
             headers = @{
@@ -73,14 +72,14 @@ function Set-GlpiToolsChangeActiveEntities {
                 'App-Token'     = $AppToken
                 'Session-Token' = $SessionToken
             }
-            method  = 'post'
-            uri     = "$($PathToGlpi)/changeActiveEntities/"
+            method  = 'POST'
+            uri     = "$($PathToGlpi)/changeActiveEntities"
             body    = ([System.Text.Encoding]::UTF8.GetBytes($Upload))
         }
         Invoke-RestMethod @params
     }
     
     end {
-        Set-GlpiToolsKillSession -SessionToken $SessionToken
+        
     }
 }
