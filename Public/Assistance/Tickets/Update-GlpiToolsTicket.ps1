@@ -86,20 +86,19 @@ function Update-GlpiToolsTicket {
         [int]$itilcategories_id,
         
         [parameter(Mandatory = $false)]
-        [ValidateSet("Very low", "Low", "Medium", "High", "Very High")]
+        [ValidateSet("Very low", "Low", "Medium", "High", "Very High", "1","2","3","4","5")]
         [string]$urgency = "Low",
         
         [parameter(Mandatory = $false)]
-        [ValidateSet("Very low", "Low", "Medium", "High", "Very High")]
+        [ValidateSet("Very low", "Low", "Medium", "High", "Very High", "1","2","3","4","5")]
         [string]$impact = "Low",
         
         [parameter(Mandatory = $false)]
-        [ValidateSet("Very low", "Low", "Medium", "High", "Very High")]
+        [ValidateSet("Very low", "Low", "Medium", "High", "Very High", "1","2","3","4","5")]
         [string]$priority = "Low",
 
         [parameter(Mandatory = $false)]
-        [ValidateSet("New", "Pending", "Solved")]
-        [string]$status,
+        [int]$status,
         
         # [parameter(Mandatory = $false,
         #     ParameterSetName = "Default")]
@@ -111,7 +110,7 @@ function Update-GlpiToolsTicket {
             ValueFromPipelineByPropertyName = $true,
             HelpMessage = "Ticket type"
         )]
-        [ValidateSet("Incident", "Request")]
+        [ValidateSet("Incident", "Request","1","2")]
         [string]$Type = "Incident",
         
         # [parameter(Mandatory = $false,
@@ -154,16 +153,44 @@ function Update-GlpiToolsTicket {
             "Granted" { $validation_id = 3 }
             Default { $validation_id = 1 }
         }
-        switch ($status) {
-            "New" { $status_id = 1 }
-            "Pending" { $status_id = 4 }
-            "Solved" { $status_id = 5 }
-            Default { $status_id = 1 }
-        }
+		# Too many states in the system. Prefer to use the ID
+        #switch ($status) {
+        #    "New" { $status_id = 1 }
+        #    "Pending" { $status_id = 4 }
+        #    "Solved" { $status_id = 5 }
+        #    Default { $status_id = 1 }
+        #}
+		$status_id = $status
 
         switch ($Type) {
             "Incident" { $type_id = 1 }
             "Request" { $type_id = 2 }
+			Default { [int]$Type }
+        }
+		
+		switch ($urgency) {
+            "Very low" { $urgency_id = 1 }
+            "Low" { $urgency_id = 2 }
+            "Medium" { $urgency_id = 3 }
+            "High" { $urgency_id = 4 }
+            "Very High" { $urgency_id = 5 }
+            Default { $urgency_id = [int]$urgency }
+        }
+        switch ($impact) {
+            "Very low" { $impact_id = 1 }
+            "Low" { $impact_id = 2 }
+            "Medium" { $impact_id = 3 }
+            "High" { $impact_id = 4 }
+            "Very High" { $impact_id = 5 }
+            Default { $impact_id = [int]$impact }
+        }
+        switch ($priority) {
+            "Very low" { $priority_id = 1 }
+            "Low" { $priority_id = 2 }
+            "Medium" { $priority_id = 3 }
+            "High" { $priority_id = 4 }
+            "Very High" { $priority_id = 5 }
+            Default { $priority_id = [int]$priority }
         }
 
         $Output = [System.Collections.Generic.List[PSObject]]::New()
@@ -177,7 +204,15 @@ function Update-GlpiToolsTicket {
         If ($PSBoundParameters['Type']) {
             $hashNewTicket["type"] = $type_id
         }
-
+		If ($PSBoundParameters['Urgency']) {
+            $hashNewTicket["urgency"] = $urgency_id
+        }
+        If ($PSBoundParameters['Impact']) {
+            $hashNewTicket["impact"] = $impact_id
+        }
+        If ($PSBoundParameters['Priority']) {
+            $hashNewTicket["priority"] = $priority_id
+		}
         If ($PSBoundParameters['Status']) {
             $hashNewTicket["status"] = $status_id
         }
@@ -200,7 +235,7 @@ function Update-GlpiToolsTicket {
             $hashNewTicket["content"] = $content 
         }
 
-        $GlpiUpload = $hashNewTicket | ConvertTo-Json
+        $GlpiUpload = $hashNewTicket | ConvertTo-Json -Compress
         $Upload = '{ "input" : ' + $GlpiUpload + '}'
 
         $params = @{
@@ -209,14 +244,14 @@ function Update-GlpiToolsTicket {
                 'App-Token'     = $AppToken
                 'Session-Token' = $SessionToken
             }
-            method  = 'put'
+            method  = 'PUT'
             uri     = "$($PathToGlpi)/Ticket/$($ticket_id)"
             body    = ([System.Text.Encoding]::UTF8.GetBytes($Upload))
         }
 
         Try {
-            Write-Verbose "Invoking API to create new ticket"
-            $GlpiTicket = Invoke-RestMethod @params -ErrorAction Stop
+            Write-Verbose "Invoking API to update the ticket"
+            $GlpiTicket = Invoke-RestMethod @params -ErrorAction Stop 
 
             If ($GlpiTicket -match "</body>") {
                 $GLPITicket = $GlpiTicket.split(">")[-1] | ConvertFrom-JSON

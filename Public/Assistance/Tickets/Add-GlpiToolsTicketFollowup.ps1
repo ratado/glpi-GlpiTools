@@ -8,7 +8,8 @@
     The ticket id this followup will be added to
 .PARAMETER content
     Provide the body/content of the followup
-
+.PARAMETER IsPrivate
+    Set the privacy of followup
 .OUTPUTS
     Function returns PSCustomObject with id's and messages from the GLPI API
 .NOTES
@@ -36,7 +37,14 @@ function Add-GlpiToolsTicketFollowup {
             HelpMessage = "followup content"
         )]
         [alias('Body')]
-        [string]$content
+        [string]$content,
+		
+		[parameter(
+            Mandatory = $false,
+            Position = 2,
+            HelpMessage = "Is private?"
+        )]
+        [switch]$IsPrivate
  
     )
     
@@ -51,19 +59,24 @@ function Add-GlpiToolsTicketFollowup {
         $SessionToken = Get-GlpiToolsSessionToken -Verbose:$false | Select-Object -ExpandProperty SessionToken
 
         #$ChoosenParam = ($PSCmdlet.MyInvocation.BoundParameters).Keys
-
+		
+		If ($PSBoundParameters['IsPrivate']) {
+			$is_private = 1
+		}
+		else { $is_private = 0 }
 
         $Output = [System.Collections.Generic.List[PSObject]]::New()
     }
     
     process {
+		
 
         $hashNewTicket = @{
             tickets_id         = $ticket_id
             content           = $content
             # items_id = $ticket_id
             # itemtype = "Ticket"
-            is_private = 0
+            is_private = $is_private
             requesttypes_id = 6
             
         }

@@ -36,7 +36,15 @@ function Add-GlpiToolsTicketSolution {
             HelpMessage = "content"
         )]
         [alias('Body')]
-        [string]$content
+        [string]$content,
+		
+		[parameter(
+            Mandatory = $false,
+            Position = 2,
+            HelpMessage = "Type of solution"
+        )]
+        [alias('ST')]
+        [int]$solutiontype_id=2
  
     )
     
@@ -59,21 +67,13 @@ function Add-GlpiToolsTicketSolution {
     process {
 
         $hashNewTicket = @{
-            # tickets_id         = $ticket_id
             content           = $content
             items_id = $ticket_id
             itemtype = "Ticket"
-            solutiontypes_id = 0
-            status = 5
+            solutiontypes_id = $solutiontype_id
+            # status = 5  # Keep default
             
         }
-        #https://forum.glpi-project.org/viewtopic.php?id=159609
-        # "items_id": "'.$ticket_id.'",
-        #  "content": "OK: . Chamado fechado automaticamente atraves do evento '.$event_id.'",
-        #  "solutiontypes_id": 2,
-        #  "itemtype": "Ticket",
-        # "status": 3
- 
 
         $GlpiUpload = $hashNewTicket | ConvertTo-Json
         $Upload = '{ "input" : ' + $GlpiUpload + '}'
