@@ -24,7 +24,8 @@ Module works on Windows or Linux with PowerShell Core.
 
 1.8.0
  * Change the session management, keeping it until the user request to kill the session.
- * Fix the Set-GlpiToolsChangeActiveEntities function
+ * Fix several Set-GlpiToolsChangeActiveEntities function
+ * Fix several Update-GlpiToolsTicket function
  * Create Get-GlpiToolsActiveEntities to get the current active entities of logged user
  * Create Get-GlpiToolsMyEntities to get all accessible entities of logged user
  * Create Get-GlpiToolsSessionToken to get the current session token
