@@ -41,7 +41,7 @@ function Get-GlpiToolsActiveProfile {
             uri     = "$($PathToGlpi)/getActiveProfile/"
         }
             
-        $ActiveProfile = Invoke-RestMethod @params
+        $ActiveProfile = Invoke-GlpiToolsRequestApi -Params $params
 
         $ActiveProfile.active_profile
     }

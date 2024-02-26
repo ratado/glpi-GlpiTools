@@ -152,7 +152,7 @@ function Get-GlpiToolsComputers {
                     uri     = "$($PathToGlpi)/Computer/?range=0-9999999999999"
                 }
                 
-                $GlpiComputerAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiComputerAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiComputer in $GlpiComputerAll) {
                     $ComputerHash = [ordered]@{ }
@@ -181,7 +181,7 @@ function Get-GlpiToolsComputers {
                     }
 
                     Try {
-                        $GlpiComputer = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiComputer = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ComputerHash = [ordered]@{ }

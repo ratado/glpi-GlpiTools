@@ -114,7 +114,7 @@ function Get-GlpiToolsItems{
             uri     = "$($PathToGlpi)/$($ItemType)/?range=0-9999999999999$($SearchTextString)$($IsDeletedString)$($OnlyIdString)$($ExtraParameter)"
         }
 
-        $GlpiObjectAll = Invoke-RestMethod @params -Verbose:$false
+        $GlpiObjectAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
         if (-not $Raw -and (@($GlpiObjectAll).count -gt 1)) {Write-Warning "RAW forced because more than 1 result"}
 
         foreach ($GlpiObject in $GlpiObjectAll) {

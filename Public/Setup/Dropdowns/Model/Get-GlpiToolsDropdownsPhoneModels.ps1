@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsPhoneModels {
                     uri     = "$($PathToGlpi)/phonemodel/?range=0-9999999999999"
                 }
                 
-                $PhoneModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $PhoneModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($PhoneModel in $PhoneModelsAll) {
                     $PhoneModelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsPhoneModels {
                     }
 
                     Try {
-                        $PhoneModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $PhoneModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PhoneModelHash = [ordered]@{ }

@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsUserTitles {
                     uri     = "$($PathToGlpi)/UserTitle/?range=0-9999999999999"
                 }
                 
-                $UserTitlesAll = Invoke-RestMethod @params -Verbose:$false
+                $UserTitlesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($UserTitle in $UserTitlesAll) {
                     $UserTitleHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsUserTitles {
                     }
 
                     Try {
-                        $UserTitle = Invoke-RestMethod @params -ErrorAction Stop
+                        $UserTitle = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $UserTitleHash = [ordered]@{ }

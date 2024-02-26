@@ -251,7 +251,7 @@ function Update-GlpiToolsTicket {
 
         Try {
             Write-Verbose "Invoking API to update the ticket"
-            $GlpiTicket = Invoke-RestMethod @params -ErrorAction Stop 
+            $GlpiTicket = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop 
 
             If ($GlpiTicket -match "</body>") {
                 $GLPITicket = $GlpiTicket.split(">")[-1] | ConvertFrom-JSON

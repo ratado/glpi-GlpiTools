@@ -85,7 +85,7 @@ function Get-GlpiToolsFinancialAndAdministrativeInformations {
                     uri     = "$($PathToGlpi)/infocom/?range=0-9999999999999"
                 }
                 
-                $GlpiFinancialAndAdminstrativeAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiFinancialAndAdminstrativeAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiFinancialAndAdminstrative in $GlpiFinancialAndAdminstrativeAll) {
                     $FinancialAndAdminstrativeHash = [ordered]@{ }
@@ -114,7 +114,7 @@ function Get-GlpiToolsFinancialAndAdministrativeInformations {
                     }
 
                     Try {
-                        $GlpiFinancialAndAdminstrative = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiFinancialAndAdminstrative = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $FinancialAndAdminstrativeHash = [ordered]@{ }

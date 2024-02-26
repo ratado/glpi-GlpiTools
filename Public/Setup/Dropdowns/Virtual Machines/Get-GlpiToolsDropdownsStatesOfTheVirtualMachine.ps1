@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsStatesOfTheVirtualMachine {
                     uri     = "$($PathToGlpi)/virtualmachinestate/?range=0-9999999999999"
                 }
                 
-                $StatesOfTheVirtualMachineAll = Invoke-RestMethod @params -Verbose:$false
+                $StatesOfTheVirtualMachineAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($StateOfTheVirtualMachine in $StatesOfTheVirtualMachineAll) {
                     $StateOfTheVirtualMachineHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsStatesOfTheVirtualMachine {
                     }
 
                     Try {
-                        $StateOfTheVirtualMachine = Invoke-RestMethod @params -ErrorAction Stop
+                        $StateOfTheVirtualMachine = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $StateOfTheVirtualMachineHash = [ordered]@{ }

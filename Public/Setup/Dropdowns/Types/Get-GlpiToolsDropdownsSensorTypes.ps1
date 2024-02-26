@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsSensorTypes {
                     uri     = "$($PathToGlpi)/DeviceSensorType/?range=0-9999999999999"
                 }
                 
-                $SensorTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $SensorTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($SensorType in $SensorTypesAll) {
                     $SensorTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsSensorTypes {
                     }
 
                     Try {
-                        $SensorType = Invoke-RestMethod @params -ErrorAction Stop
+                        $SensorType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $SensorTypeHash = [ordered]@{ }

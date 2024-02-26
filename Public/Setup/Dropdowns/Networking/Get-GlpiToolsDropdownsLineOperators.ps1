@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsLineOperators {
                     uri     = "$($PathToGlpi)/lineoperator/?range=0-9999999999999"
                 }
                 
-                $LineOperatorsAll = Invoke-RestMethod @params -Verbose:$false
+                $LineOperatorsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($LineOperator in $LineOperatorsAll) {
                     $LineOperatorHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsLineOperators {
                     }
 
                     Try {
-                        $LineOperator = Invoke-RestMethod @params -ErrorAction Stop
+                        $LineOperator = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $LineOperatorHash = [ordered]@{ }

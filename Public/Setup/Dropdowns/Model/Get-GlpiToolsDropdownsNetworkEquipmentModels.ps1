@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsNetworkEquipmentModels {
                     uri     = "$($PathToGlpi)/networkequipmentmodel/?range=0-9999999999999"
                 }
                 
-                $NetworkEquipmentModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $NetworkEquipmentModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($NetworkEquipmentModel in $NetworkEquipmentModelsAll) {
                     $NetworkEquipmentModelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsNetworkEquipmentModels {
                     }
 
                     Try {
-                        $NetworkEquipmentModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $NetworkEquipmentModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $NetworkEquipmentModelHash = [ordered]@{ }

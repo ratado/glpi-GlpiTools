@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsCloseTimes {
                     uri     = "$($PathToGlpi)/holiday/?range=0-9999999999999"
                 }
                 
-                $CloseTimesAll = Invoke-RestMethod @params -Verbose:$false
+                $CloseTimesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($CloseTime in $CloseTimesAll) {
                     $CloseTimeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsCloseTimes {
                     }
 
                     Try {
-                        $CloseTime = Invoke-RestMethod @params -ErrorAction Stop
+                        $CloseTime = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $CloseTimeHash = [ordered]@{ }

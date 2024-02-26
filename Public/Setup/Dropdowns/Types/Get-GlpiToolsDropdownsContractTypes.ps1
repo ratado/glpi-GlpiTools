@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsContractTypes {
                     uri     = "$($PathToGlpi)/contracttype/?range=0-9999999999999"
                 }
                 
-                $ContractTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $ContractTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($ContractType in $ContractTypesAll) {
                     $ContractTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsContractTypes {
                     }
 
                     Try {
-                        $ContractType = Invoke-RestMethod @params -ErrorAction Stop
+                        $ContractType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ContractTypeHash = [ordered]@{ }

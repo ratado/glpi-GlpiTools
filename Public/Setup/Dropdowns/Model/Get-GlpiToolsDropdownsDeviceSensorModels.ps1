@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsDeviceSensorModels {
                     uri     = "$($PathToGlpi)/DeviceSensorModel/?range=0-9999999999999"
                 }
                 
-                $DeviceSensorModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $DeviceSensorModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DeviceSensorModel in $DeviceSensorModelsAll) {
                     $DeviceSensorModelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsDeviceSensorModels {
                     }
 
                     Try {
-                        $DeviceSensorModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $DeviceSensorModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DeviceSensorModelHash = [ordered]@{ }

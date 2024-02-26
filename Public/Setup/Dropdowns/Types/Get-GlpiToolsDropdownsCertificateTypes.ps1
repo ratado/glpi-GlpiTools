@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsCertificateTypes {
                     uri     = "$($PathToGlpi)/certificatetype/?range=0-9999999999999"
                 }
                 
-                $CertificateTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $CertificateTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($CertificateType in $CertificateTypesAll) {
                     $CertificateTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsCertificateTypes {
                     }
 
                     Try {
-                        $CertificateType = Invoke-RestMethod @params -ErrorAction Stop
+                        $CertificateType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $CertificateTypeHash = [ordered]@{ }

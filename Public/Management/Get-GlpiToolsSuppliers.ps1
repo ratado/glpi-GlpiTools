@@ -90,7 +90,7 @@ function Get-GlpiToolsSuppliers {
                     uri     = "$($PathToGlpi)/Supplier/?range=0-9999999999999"
                 }
                 
-                $SuppliersAll = Invoke-RestMethod @params -Verbose:$false
+                $SuppliersAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Supplier in $SuppliersAll) {
                     $SupplierHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsSuppliers {
                     }
 
                     Try {
-                        $Supplier = Invoke-RestMethod @params -ErrorAction Stop
+                        $Supplier = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $SupplierHash = [ordered]@{ }

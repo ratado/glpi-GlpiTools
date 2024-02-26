@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsPeripheralModels {
                     uri     = "$($PathToGlpi)/peripheralmodel/?range=0-9999999999999"
                 }
                 
-                $PeripheralModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $PeripheralModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($PeripheralModel in $PeripheralModelsAll) {
                     $PeripheralModelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsPeripheralModels {
                     }
 
                     Try {
-                        $PeripheralModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $PeripheralModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PeripheralModelHash = [ordered]@{ }

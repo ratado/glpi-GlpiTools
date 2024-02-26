@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsContactTypes {
                     uri     = "$($PathToGlpi)/contacttype/?range=0-9999999999999"
                 }
                 
-                $ContactTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $ContactTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($ContactType in $ContactTypesAll) {
                     $ContactTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsContactTypes {
                     }
 
                     Try {
-                        $ContactType = Invoke-RestMethod @params -ErrorAction Stop
+                        $ContactType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ContactTypeHash = [ordered]@{ }

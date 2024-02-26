@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsLicenseTypes {
                     uri     = "$($PathToGlpi)/softwarelicensetype/?range=0-9999999999999"
                 }
                 
-                $LicenseTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $LicenseTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($LicenseType in $LicenseTypesAll) {
                     $LicenseTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsLicenseTypes {
                     }
 
                     Try {
-                        $LicenseType = Invoke-RestMethod @params -ErrorAction Stop
+                        $LicenseType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $LicenseTypeHash = [ordered]@{ }

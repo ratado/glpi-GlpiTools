@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsFileSystemsTypes {
                     uri     = "$($PathToGlpi)/filesystem/?range=0-9999999999999"
                 }
                 
-                $FileSystemsTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $FileSystemsTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($FileSystemType in $FileSystemsTypesAll) {
                     $FileSystemTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsFileSystemsTypes {
                     }
 
                     Try {
-                        $FileSystemType = Invoke-RestMethod @params -ErrorAction Stop
+                        $FileSystemType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $FileSystemTypeHash = [ordered]@{ }

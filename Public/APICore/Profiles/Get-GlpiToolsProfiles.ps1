@@ -82,7 +82,7 @@ function Get-GlpiToolsProfiles {
                     uri     = "$($PathToGlpi)/Profile/?range=0-9999999999999"
                 }
                 
-                $GlpiProfileAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiProfileAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiProfile in $GlpiProfileAll) {
                     $ProfileHash = [ordered]@{ }
@@ -110,7 +110,7 @@ function Get-GlpiToolsProfiles {
                     }
 
                     Try {
-                        $GlpiProfile = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiProfile = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ProfileHash = [ordered]@{ }

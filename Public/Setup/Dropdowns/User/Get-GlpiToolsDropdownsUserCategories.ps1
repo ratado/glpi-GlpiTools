@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsUserCategories {
                     uri     = "$($PathToGlpi)/UserCategory/?range=0-9999999999999"
                 }
                 
-                $UserCategoriesAll = Invoke-RestMethod @params -Verbose:$false
+                $UserCategoriesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($UserCategory in $UserCategoriesAll) {
                     $UserCategoryHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsUserCategories {
                     }
 
                     Try {
-                        $UserCategory = Invoke-RestMethod @params -ErrorAction Stop
+                        $UserCategory = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $UserCategoryHash = [ordered]@{ }

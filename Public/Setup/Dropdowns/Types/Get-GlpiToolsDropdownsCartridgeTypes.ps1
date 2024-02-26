@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsCartridgeTypes {
                     uri     = "$($PathToGlpi)/cartridgeitemtype/?range=0-9999999999999"
                 }
                 
-                $CartridgeTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $CartridgeTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($CartridgeType in $CartridgeTypesAll) {
                     $CartridgeTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsCartridgeTypes {
                     }
 
                     Try {
-                        $CartridgeType = Invoke-RestMethod @params -ErrorAction Stop
+                        $CartridgeType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $CartridgeTypeHash = [ordered]@{ }

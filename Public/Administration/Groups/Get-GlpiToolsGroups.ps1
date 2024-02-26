@@ -99,7 +99,7 @@ function Get-GlpiToolsGroups {
                     uri     = "$($PathToGlpi)/Group/?range=0-9999999999999"
                 }
                 
-                $GlpiGroupsAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiGroupsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiGroup in $GlpiGroupsAll) {
                     $GroupHash = [ordered]@{ }
@@ -127,7 +127,7 @@ function Get-GlpiToolsGroups {
                     }
 
                     Try {
-                        $GlpiGroup = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiGroup = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $GroupHash = [ordered]@{ }

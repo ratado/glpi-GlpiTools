@@ -142,7 +142,7 @@ function Get-GlpiToolsTickets {
                     uri     = "$($PathToGlpi)/Ticket/?range=0-9999999999999"
                 }
                 
-                $GlpiTicketAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiTicketAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiTicket in $GlpiTicketAll) {
                     $TicketHash = [ordered]@{ }
@@ -170,7 +170,7 @@ function Get-GlpiToolsTickets {
                     }
 
                     Try {
-                        $GlpiTicket = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiTicket = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $TicketHash = [ordered]@{ }

@@ -126,7 +126,7 @@ function Get-GlpiToolsSoftware {
                     uri     = "$($PathToGlpi)/Software/?range=0-99999999999"
                 }
                 
-                $GlpiSoftwareAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiSoftwareAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiSoftware in $GlpiSoftwareAll) {
                     $SoftwareHash = [ordered]@{ }
@@ -154,7 +154,7 @@ function Get-GlpiToolsSoftware {
                     }
 
                     Try {
-                        $GlpiSoftware = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiSoftware = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $SoftwareHash = [ordered]@{ }

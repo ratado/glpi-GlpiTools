@@ -142,7 +142,7 @@ function Get-GlpiToolsProblems {
                     uri     = "$($PathToGlpi)/Problem/?range=0-9999999999999"
                 }
                 
-                $GlpiProblemAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiProblemAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiProblem in $GlpiProblemAll) {
                     $ProblemHash = [ordered]@{ }
@@ -170,7 +170,7 @@ function Get-GlpiToolsProblems {
                     }
 
                     Try {
-                        $GlpiProblem = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiProblem = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ProblemHash = [ordered]@{ }

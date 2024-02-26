@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsBudgetTypes {
                     uri     = "$($PathToGlpi)/Budgettype/?range=0-9999999999999"
                 }
                 
-                $BudgetTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $BudgetTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($BudgetType in $BudgetTypesAll) {
                     $BudgetTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsBudgetTypes {
                     }
 
                     Try {
-                        $BudgetType = Invoke-RestMethod @params -ErrorAction Stop
+                        $BudgetType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $BudgetTypeHash = [ordered]@{ }

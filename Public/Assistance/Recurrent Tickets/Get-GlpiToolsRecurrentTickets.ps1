@@ -142,7 +142,7 @@ function Get-GlpiToolsRecurrentTickets {
                     uri     = "$($PathToGlpi)/ticketrecurrent/?range=0-9999999999999"
                 }
                 
-                $GlpiRecurrentTicketAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiRecurrentTicketAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiRecurrentTicket in $GlpiRecurrentTicketAll) {
                     $RecurrentTicketHash = [ordered]@{ }
@@ -170,7 +170,7 @@ function Get-GlpiToolsRecurrentTickets {
                     }
 
                     Try {
-                        $GlpiRecurrentTicket = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiRecurrentTicket = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $RecurrentTicketHash = [ordered]@{ }

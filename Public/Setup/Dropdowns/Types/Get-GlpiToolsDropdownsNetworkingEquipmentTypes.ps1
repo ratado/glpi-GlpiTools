@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsNetworkingEquipmentTypes {
                     uri     = "$($PathToGlpi)/networkequipmenttype/?range=0-9999999999999"
                 }
                 
-                $NetworkingEquipmentTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $NetworkingEquipmentTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($NetworkingEquipmentType in $NetworkingEquipmentTypesAll) {
                     $NetworkingEquipmentTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsNetworkingEquipmentTypes {
                     }
 
                     Try {
-                        $NetworkingEquipmentType = Invoke-RestMethod @params -ErrorAction Stop
+                        $NetworkingEquipmentType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $NetworkingEquipmentTypeHash = [ordered]@{ }

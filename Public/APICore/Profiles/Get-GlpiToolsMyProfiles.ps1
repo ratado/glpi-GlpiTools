@@ -43,7 +43,7 @@ function Get-GlpiToolsMyProfiles {
             uri     = "$($PathToGlpi)/getMyProfiles/"
         }
             
-        $MyProfiles = Invoke-RestMethod @params
+        $MyProfiles = Invoke-GlpiToolsRequestApi -Params $params
 
         foreach ($GlpiProfile in $MyProfiles.myprofiles) {
             $ProfileHash = [ordered]@{ }

@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsBlacklists {
                     uri     = "$($PathToGlpi)/Blacklist/?range=0-9999999999999"
                 }
                 
-                $GlpiBlacklistsAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiBlacklistsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Blacklists in $GlpiBlacklistsAll) {
                     $BlacklistsHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsBlacklists {
                     }
 
                     Try {
-                        $Blacklists = Invoke-RestMethod @params -ErrorAction Stop
+                        $Blacklists = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $BlacklistsHash = [ordered]@{ }

@@ -90,7 +90,7 @@ function Get-GlpiToolsBudgets {
                     uri     = "$($PathToGlpi)/budget/?range=0-9999999999999"
                 }
                 
-                $BudgetsAll = Invoke-RestMethod @params -Verbose:$false
+                $BudgetsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Budget in $BudgetsAll) {
                     $BudgetHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsBudgets {
                     }
 
                     Try {
-                        $Budget = Invoke-RestMethod @params -ErrorAction Stop
+                        $Budget = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $BudgetHash = [ordered]@{ }

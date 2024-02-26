@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsManufacturers {
                     uri     = "$($PathToGlpi)/Manufacturer/?range=0-9999999999999"
                 }
                 
-                $GlpiManufacturerAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiManufacturerAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($ManufacturerModel in $GlpiManufacturerAll) {
                     $ManufacturerHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsManufacturers {
                     }
 
                     Try {
-                        $ManufacturerModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $ManufacturerModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ManufacturerHash = [ordered]@{ }

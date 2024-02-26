@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsEnclosureModels {
                     uri     = "$($PathToGlpi)/enclosuremodel/?range=0-9999999999999"
                 }
                 
-                $EnclosureModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $EnclosureModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($EnclosureModel in $EnclosureModelsAll) {
                     $EnclosureModelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsEnclosureModels {
                     }
 
                     Try {
-                        $EnclosureModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $EnclosureModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $EnclosureModelHash = [ordered]@{ }

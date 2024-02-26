@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsDevicesTypes {
                     uri     = "$($PathToGlpi)/peripheraltype/?range=0-9999999999999"
                 }
                 
-                $DevicesTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $DevicesTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DeviceType in $DevicesTypesAll) {
                     $DeviceTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsDevicesTypes {
                     }
 
                     Try {
-                        $DeviceType = Invoke-RestMethod @params -ErrorAction Stop
+                        $DeviceType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DeviceTypeHash = [ordered]@{ }

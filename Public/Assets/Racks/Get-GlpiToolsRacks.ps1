@@ -150,7 +150,7 @@ function Get-GlpiToolsRacks {
                     uri     = "$($PathToGlpi)/Rack/?range=0-9999999999999"
                 }
                 
-                $GlpiRackAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiRackAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiRack in $GlpiRackAll) {
                     $RackHash = [ordered]@{ }
@@ -178,7 +178,7 @@ function Get-GlpiToolsRacks {
                     }
 
                     Try {
-                        $GlpiRack = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiRack = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $RackHash = [ordered]@{ }

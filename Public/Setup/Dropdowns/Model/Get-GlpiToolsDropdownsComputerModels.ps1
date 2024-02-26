@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsComputerModels {
                     uri     = "$($PathToGlpi)/ComputerModel/?range=0-9999999999999"
                 }
                 
-                $GlpiComputerModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiComputerModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiComputerModel in $GlpiComputerModelsAll) {
                     $ComputerModelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsComputerModels {
                     }
 
                     Try {
-                        $GlpiComputerModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiComputerModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ComputerModelHash = [ordered]@{ }

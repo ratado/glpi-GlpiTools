@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsBlacklistedMailContent {
                     uri     = "$($PathToGlpi)/Blacklistedmailcontent/?range=0-9999999999999"
                 }
                 
-                $GlpiBlacklistedMailContentAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiBlacklistedMailContentAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($BlacklistedMailContent in $GlpiBlacklistedMailContentAll) {
                     $BlacklistedMailContentHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsBlacklistedMailContent {
                     }
 
                     Try {
-                        $BlacklistedMailContent = Invoke-RestMethod @params -ErrorAction Stop
+                        $BlacklistedMailContent = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $BlacklistedMailContentHash = [ordered]@{ }

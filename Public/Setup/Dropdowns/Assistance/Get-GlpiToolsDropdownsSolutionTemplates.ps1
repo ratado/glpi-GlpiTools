@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsSolutionTemplates {
                     uri     = "$($PathToGlpi)/solutiontemplate/?range=0-9999999999999"
                 }
                 
-                $SolutionTemplatesAll = Invoke-RestMethod @params -Verbose:$false
+                $SolutionTemplatesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($SolutionTemplate in $SolutionTemplatesAll) {
                     $SolutionTemplateHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsSolutionTemplates {
                     }
 
                     Try {
-                        $SolutionTemplate = Invoke-RestMethod @params -ErrorAction Stop
+                        $SolutionTemplate = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $SolutionTemplateHash = [ordered]@{ }

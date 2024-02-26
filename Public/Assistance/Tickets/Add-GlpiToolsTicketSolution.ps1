@@ -91,7 +91,7 @@ function Add-GlpiToolsTicketSolution {
 
         Try {
             Write-Verbose "Invoking API to add ticket followup"
-            $GlpiTicket = Invoke-RestMethod @params -ErrorAction Stop
+            $GlpiTicket = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
             If ($GlpiTicket -match "</body>") {
                 $GLPITicket = $GlpiTicket.split(">")[-1] | ConvertFrom-JSON

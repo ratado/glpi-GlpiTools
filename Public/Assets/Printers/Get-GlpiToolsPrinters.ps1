@@ -150,7 +150,7 @@ function Get-GlpiToolsPrinters {
                     uri     = "$($PathToGlpi)/Printer/?range=0-9999999999999"
                 }
                 
-                $GlpiPrinterAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiPrinterAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiPrinter in $GlpiPrinterAll) {
                     $PrinterHash = [ordered]@{ }
@@ -178,7 +178,7 @@ function Get-GlpiToolsPrinters {
                     }
 
                     Try {
-                        $GlpiPrinter = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiPrinter = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PrinterHash = [ordered]@{ }

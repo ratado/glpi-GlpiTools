@@ -78,7 +78,7 @@ function Get-GlpiToolsEntities {
                     uri     = "$($PathToGlpi)/Entity/?range=0-9999999999999"
                 }
                 
-                $GlpiEntitiesAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiEntitiesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiEntity in $GlpiEntitiesAll) {
                     $EntityHash = [ordered]@{ }
@@ -106,7 +106,7 @@ function Get-GlpiToolsEntities {
                     }
 
                     Try {
-                        $GlpiEntity = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiEntity = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $EntityHash = [ordered]@{ }

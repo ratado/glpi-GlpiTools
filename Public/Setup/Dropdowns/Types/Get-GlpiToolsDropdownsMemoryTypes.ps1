@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsMemoryTypes {
                     uri     = "$($PathToGlpi)/DeviceMemoryType/?range=0-9999999999999"
                 }
                 
-                $MemoryTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $MemoryTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($MemoryType in $MemoryTypesAll) {
                     $MemoryTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsMemoryTypes {
                     }
 
                     Try {
-                        $MemoryType = Invoke-RestMethod @params -ErrorAction Stop
+                        $MemoryType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $MemoryTypeHash = [ordered]@{ }

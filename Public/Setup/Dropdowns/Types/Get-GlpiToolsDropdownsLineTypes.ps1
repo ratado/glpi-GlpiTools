@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsLineTypes {
                     uri     = "$($PathToGlpi)/Linetype/?range=0-9999999999999"
                 }
                 
-                $LineTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $LineTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($LineType in $LineTypesAll) {
                     $LineTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsLineTypes {
                     }
 
                     Try {
-                        $LineType = Invoke-RestMethod @params -ErrorAction Stop
+                        $LineType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $LineTypeHash = [ordered]@{ }

@@ -90,7 +90,7 @@ function Get-GlpiToolsReminders {
                     uri     = "$($PathToGlpi)/reminder/?range=0-9999999999999"
                 }
                 
-                $RemindersAll = Invoke-RestMethod @params -Verbose:$false
+                $RemindersAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Reminder in $RemindersAll) {
                     $ReminderHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsReminders {
                     }
 
                     Try {
-                        $Reminder = Invoke-RestMethod @params -ErrorAction Stop
+                        $Reminder = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ReminderHash = [ordered]@{ }

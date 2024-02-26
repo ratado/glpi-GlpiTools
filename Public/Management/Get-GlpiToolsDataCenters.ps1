@@ -90,7 +90,7 @@ function Get-GlpiToolsDataCenters {
                     uri     = "$($PathToGlpi)/DataCenter/?range=0-9999999999999"
                 }
                 
-                $DataCentersAll = Invoke-RestMethod @params -Verbose:$false
+                $DataCentersAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DataCenter in $DataCentersAll) {
                     $DataCenterHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDataCenters {
                     }
 
                     Try {
-                        $DataCenter = Invoke-RestMethod @params -ErrorAction Stop
+                        $DataCenter = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DataCenterHash = [ordered]@{ }

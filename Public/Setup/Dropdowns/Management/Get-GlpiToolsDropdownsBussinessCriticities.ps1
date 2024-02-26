@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsBussinessCriticities {
                     uri     = "$($PathToGlpi)/businesscriticity/?range=0-9999999999999"
                 }
                 
-                $BussinessCriticitiesAll = Invoke-RestMethod @params -Verbose:$false
+                $BussinessCriticitiesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($BussinessCriticity in $BussinessCriticitiesAll) {
                     $BussinessCriticityHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsBussinessCriticities {
                     }
 
                     Try {
-                        $BussinessCriticity = Invoke-RestMethod @params -ErrorAction Stop
+                        $BussinessCriticity = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $BussinessCriticityHash = [ordered]@{ }

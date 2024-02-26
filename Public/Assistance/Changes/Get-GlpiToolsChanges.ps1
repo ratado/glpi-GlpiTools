@@ -142,7 +142,7 @@ function Get-GlpiToolsChanges {
                     uri     = "$($PathToGlpi)/Change/?range=0-9999999999999"
                 }
                 
-                $GlpiChangeAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiChangeAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiChange in $GlpiChangeAll) {
                     $ChangeHash = [ordered]@{ }
@@ -170,7 +170,7 @@ function Get-GlpiToolsChanges {
                     }
 
                     Try {
-                        $GlpiChange = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiChange = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ChangeHash = [ordered]@{ }

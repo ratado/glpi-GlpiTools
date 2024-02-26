@@ -51,7 +51,7 @@ function Get-GlpiToolsFusionInventoryConfig {
             method  = 'get'
             uri     = "$($PathToGlpi)/PluginFusioninventoryConfig/?range=0-999999999" 
         }
-        $AllFusionConfig = Invoke-RestMethod @params
+        $AllFusionConfig = Invoke-GlpiToolsRequestApi -Params $params
 
         foreach ($FusionConfig in $AllFusionConfig) {
             $FusionHash = [ordered]@{ }

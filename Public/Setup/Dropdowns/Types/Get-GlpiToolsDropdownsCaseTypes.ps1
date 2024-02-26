@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsCaseTypes {
                     uri     = "$($PathToGlpi)/DeviceCaseType/?range=0-9999999999999"
                 }
                 
-                $CaseTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $CaseTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($CaseType in $CaseTypesAll) {
                     $CaseTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsCaseTypes {
                     }
 
                     Try {
-                        $CaseType = Invoke-RestMethod @params -ErrorAction Stop
+                        $CaseType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $CaseTypeHash = [ordered]@{ }

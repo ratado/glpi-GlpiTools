@@ -96,7 +96,7 @@ function Update-GlpiToolsItems {
                     uri     = "$($PathToGlpi)/$($UpdateTo)/"
                     body    = ([System.Text.Encoding]::UTF8.GetBytes($JsonPayload))
                 }
-                Invoke-RestMethod @params
+                Invoke-GlpiToolsRequestApi -Params $params
             }
             ItemId {
                 $GlpiUpload = $ItemsHashtableWithoutId | ConvertTo-Json
@@ -113,7 +113,7 @@ function Update-GlpiToolsItems {
                     uri     = "$($PathToGlpi)/$($UpdateTo)/$($ItemId)"
                     body    = ([System.Text.Encoding]::UTF8.GetBytes($Upload))
                 }
-                Invoke-RestMethod @params
+                Invoke-GlpiToolsRequestApi -Params $params
             }
             Default { Write-Verbose "You didn't specified any parameter, choose from one available" }
         }

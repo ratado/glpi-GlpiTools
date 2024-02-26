@@ -90,7 +90,7 @@ function Get-GlpiToolsCertificates {
                     uri     = "$($PathToGlpi)/Certificate/?range=0-9999999999999"
                 }
                 
-                $CertificatesAll = Invoke-RestMethod @params -Verbose:$false
+                $CertificatesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Certificate in $CertificatesAll) {
                     $CertificateHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsCertificates {
                     }
 
                     Try {
-                        $Certificate = Invoke-RestMethod @params -ErrorAction Stop
+                        $Certificate = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $CertificateHash = [ordered]@{ }

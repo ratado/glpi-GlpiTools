@@ -324,7 +324,7 @@ function New-GlpiToolsTicket {
 
         Try {
             Write-Verbose "Invoking API to create new ticket"
-            $GlpiTicket = Invoke-RestMethod @params -ErrorAction Stop
+            $GlpiTicket = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
             If ($GlpiTicket -match "</body>") {
                 $GLPITicket = $GlpiTicket.split(">")[-1] | ConvertFrom-JSON
@@ -355,7 +355,7 @@ function New-GlpiToolsTicket {
                     body    = ([System.Text.Encoding]::UTF8.GetBytes($Upload))
                 }
 
-                $GlpiTicketAddRequester = Invoke-RestMethod @params -ErrorAction Stop
+                $GlpiTicketAddRequester = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
                 Write-Verbose $GlpiTicketAddRequester
 
             }
@@ -387,7 +387,7 @@ function New-GlpiToolsTicket {
                         body    = ([System.Text.Encoding]::UTF8.GetBytes($Upload))
                     }
 
-                    $GlpiTicketAddItem = Invoke-RestMethod @params -ErrorAction Stop
+                    $GlpiTicketAddItem = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
                     Write-Verbose $GlpiTicketAddItem
 
                     If ($GlpiTicketAddItem -match "</body>") {

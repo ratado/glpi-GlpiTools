@@ -90,7 +90,7 @@ function Get-GlpiToolsContacts {
                     uri     = "$($PathToGlpi)/Contact/?range=0-9999999999999"
                 }
                 
-                $ContactsAll = Invoke-RestMethod @params -Verbose:$false
+                $ContactsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Contact in $ContactsAll) {
                     $ContactHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsContacts {
                     }
 
                     Try {
-                        $Contact = Invoke-RestMethod @params -ErrorAction Stop
+                        $Contact = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ContactHash = [ordered]@{ }

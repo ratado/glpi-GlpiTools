@@ -86,7 +86,7 @@ function Get-GlpiToolsComputerSoftwareVersions {
                     uri     = "$($PathToGlpi)/Computer_SoftwareVersion/?range=0-9999999999999"
                 }
                 
-                $GlpiComputerSoftwareVersionAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiComputerSoftwareVersionAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiComputerSoftwareVersion in $GlpiComputerSoftwareVersionAll) {
                     $ComputerSoftwareVersionHash = [ordered]@{ }
@@ -115,7 +115,7 @@ function Get-GlpiToolsComputerSoftwareVersions {
                     }
 
                     Try {
-                        $GlpiComputerSoftwareVersion = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiComputerSoftwareVersion = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ComputerSoftwareVersionHash = [ordered]@{ }

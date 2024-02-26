@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsDevicePowerSupplyModels {
                     uri     = "$($PathToGlpi)/DevicePowerSupplyModel/?range=0-9999999999999"
                 }
                 
-                $DevicePowerSupplyModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $DevicePowerSupplyModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DevicePowerSupplyModel in $DevicePowerSupplyModelsAll) {
                     $DevicePowerSupplyModelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsDevicePowerSupplyModels {
                     }
 
                     Try {
-                        $DevicePowerSupplyModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $DevicePowerSupplyModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DevicePowerSupplyModelHash = [ordered]@{ }

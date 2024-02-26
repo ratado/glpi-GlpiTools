@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsDocumentHeadings {
                     uri     = "$($PathToGlpi)/documentcategory/?range=0-9999999999999"
                 }
                 
-                $DocumentHeadingsAll = Invoke-RestMethod @params -Verbose:$false
+                $DocumentHeadingsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DocumentHeading in $DocumentHeadingsAll) {
                     $DocumentHeadingHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsDocumentHeadings {
                     }
 
                     Try {
-                        $DocumentHeading = Invoke-RestMethod @params -ErrorAction Stop
+                        $DocumentHeading = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DocumentHeadingHash = [ordered]@{ }

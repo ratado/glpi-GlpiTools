@@ -90,7 +90,7 @@ function Get-GlpiToolsRssFeeds {
                     uri     = "$($PathToGlpi)/rssfeed/?range=0-9999999999999"
                 }
                 
-                $RssfeedsAll = Invoke-RestMethod @params -Verbose:$false
+                $RssfeedsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Rssfeed in $RssfeedsAll) {
                     $RssfeedHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsRssFeeds {
                     }
 
                     Try {
-                        $Rssfeed = Invoke-RestMethod @params -ErrorAction Stop
+                        $Rssfeed = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $RssfeedHash = [ordered]@{ }

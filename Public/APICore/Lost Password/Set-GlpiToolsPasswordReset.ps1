@@ -58,7 +58,7 @@ function Set-GlpiToolsPasswordReset {
             body    = ([System.Text.Encoding]::UTF8.GetBytes($PasswordReset))
         }
         
-        Invoke-RestMethod @params 
+        Invoke-GlpiToolsRequestApi -Params $params 
         
     }
     

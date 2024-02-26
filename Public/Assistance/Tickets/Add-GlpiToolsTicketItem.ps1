@@ -117,7 +117,7 @@ function Add-GlpiToolsTicketItem {
                 body    = ([System.Text.Encoding]::UTF8.GetBytes($Upload))
             }
 
-            $GlpiTicketAddItem = Invoke-RestMethod @params -ErrorAction Stop
+            $GlpiTicketAddItem = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
             Write-Verbose $GlpiTicketAddItem
 
             If ($GlpiTicketAddItem -match "</body>") {

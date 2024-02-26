@@ -41,7 +41,7 @@ function Get-GlpiToolsActiveEntities {
             uri     = "$($PathToGlpi)/getActiveEntities/"
         }
             
-        $ActiveEntities = Invoke-RestMethod @params
+        $ActiveEntities = Invoke-GlpiToolsRequestApi -Params $params
 
         $ActiveEntities.active_entity
     }

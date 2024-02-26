@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsNetworkInterfaces {
                     uri     = "$($PathToGlpi)/networkinterface/?range=0-9999999999999"
                 }
                 
-                $NetworkInterfacesAll = Invoke-RestMethod @params -Verbose:$false
+                $NetworkInterfacesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($NetworkInterface in $NetworkInterfacesAll) {
                     $NetworkInterfaceHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsNetworkInterfaces {
                     }
 
                     Try {
-                        $NetworkInterface = Invoke-RestMethod @params -ErrorAction Stop
+                        $NetworkInterface = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $NetworkInterfaceHash = [ordered]@{ }

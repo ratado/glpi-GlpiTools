@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsDeviceDriveModels {
                     uri     = "$($PathToGlpi)/devicedrivemodel/?range=0-9999999999999"
                 }
                 
-                $DeviceDriveModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $DeviceDriveModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DeviceDriveModel in $DeviceDriveModelsAll) {
                     $DeviceDriveModelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsDeviceDriveModels {
                     }
 
                     Try {
-                        $DeviceDriveModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $DeviceDriveModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DeviceDriveModelHash = [ordered]@{ }

@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsDeviceSoundCardModels {
                     uri     = "$($PathToGlpi)/DeviceSoundCardModel/?range=0-9999999999999"
                 }
                 
-                $DeviceSoundCardModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $DeviceSoundCardModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DeviceSoundCardModel in $DeviceSoundCardModelsAll) {
                     $DeviceSoundCardModelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsDeviceSoundCardModels {
                     }
 
                     Try {
-                        $DeviceSoundCardModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $DeviceSoundCardModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DeviceSoundCardModelHash = [ordered]@{ }

@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsDocumentTypes {
                     uri     = "$($PathToGlpi)/documenttype/?range=0-9999999999999"
                 }
                 
-                $DocumentTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $DocumentTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DocumentType in $DocumentTypesAll) {
                     $DocumentTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsDocumentTypes {
                     }
 
                     Try {
-                        $DocumentType = Invoke-RestMethod @params -ErrorAction Stop
+                        $DocumentType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DocumentTypeHash = [ordered]@{ }

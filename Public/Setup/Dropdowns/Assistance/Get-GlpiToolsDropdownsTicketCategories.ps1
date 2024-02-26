@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsTicketCategories {
                     uri     = "$($PathToGlpi)/itilcategory/?range=0-9999999999999"
                 }
                 
-                $TicketCategoriesAll = Invoke-RestMethod @params -Verbose:$false
+                $TicketCategoriesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($TicketCategories in $TicketCategoriesAll) {
                     $TicketCategoriesHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsTicketCategories {
                     }
 
                     Try {
-                        $TicketCategories = Invoke-RestMethod @params -ErrorAction Stop
+                        $TicketCategories = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $TicketCategoriesHash = [ordered]@{ }

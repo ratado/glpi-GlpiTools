@@ -123,7 +123,7 @@ function Search-GlpiToolsItems {
             uri     = "$($PathToGlpi)/search/$($SearchFor)?is_deleted=$($Trash)&as_map=0$SearchPath&search=Search&itemtype=$($SearchFor)&range=0-9999999999999"
         }
             
-        $SearchResult = Invoke-RestMethod @params
+        $SearchResult = Invoke-GlpiToolsRequestApi -Params $params
         
         try {
             $SearchResults = $SearchResult | Select-Object -ExpandProperty data -ErrorAction Stop

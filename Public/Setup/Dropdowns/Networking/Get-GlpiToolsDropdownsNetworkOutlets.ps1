@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsNetworkOutlets {
                     uri     = "$($PathToGlpi)/netpoint/?range=0-9999999999999"
                 }
                 
-                $NetworkOutletAll = Invoke-RestMethod @params -Verbose:$false
+                $NetworkOutletAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($NetworkOutlet in $NetworkOutletAll) {
                     $NetworkOutletHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsNetworkOutlets {
                     }
 
                     Try {
-                        $NetworkOutlet = Invoke-RestMethod @params -ErrorAction Stop
+                        $NetworkOutlet = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $NetworkOutletHash = [ordered]@{ }

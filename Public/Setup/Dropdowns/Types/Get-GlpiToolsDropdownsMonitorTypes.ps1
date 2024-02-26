@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsMonitorTypes {
                     uri     = "$($PathToGlpi)/monitortype/?range=0-9999999999999"
                 }
                 
-                $MonitorTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $MonitorTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($MonitorType in $MonitorTypesAll) {
                     $MonitorTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsMonitorTypes {
                     }
 
                     Try {
-                        $MonitorType = Invoke-RestMethod @params -ErrorAction Stop
+                        $MonitorType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $MonitorTypeHash = [ordered]@{ }

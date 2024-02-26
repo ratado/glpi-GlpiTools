@@ -85,7 +85,7 @@ function Get-GlpiToolsDropdownsOSUpdateSources {
                     uri     = "$($PathToGlpi)/autoupdatesystem/?range=0-9999999999999"
                 }
                 
-                $GlpiUpdateSourcesAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiUpdateSourcesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiUpdateSources in $GlpiUpdateSourcesAll) {
                     $UpdateSourcesHash = [ordered]@{ }
@@ -113,7 +113,7 @@ function Get-GlpiToolsDropdownsOSUpdateSources {
                     }
 
                     Try {
-                        $GlpiUpdateSources = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiUpdateSources = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         
                         $UpdateSourcesHash = [ordered]@{ }

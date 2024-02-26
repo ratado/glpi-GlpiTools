@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsVirtualizationSystems {
                     uri     = "$($PathToGlpi)/virtualmachinetype/?range=0-9999999999999"
                 }
                 
-                $VirtualizationSystemsAll = Invoke-RestMethod @params -Verbose:$false
+                $VirtualizationSystemsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($VirtualizationSystem in $VirtualizationSystemsAll) {
                     $VirtualizationSystemHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsVirtualizationSystems {
                     }
 
                     Try {
-                        $VirtualizationSystem = Invoke-RestMethod @params -ErrorAction Stop
+                        $VirtualizationSystem = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $VirtualizationSystemHash = [ordered]@{ }

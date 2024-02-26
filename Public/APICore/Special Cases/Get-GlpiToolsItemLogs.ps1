@@ -71,7 +71,7 @@ function Get-GlpiToolsItemLogs {
             uri     = "$($PathToGlpi)/$($LogsFor)/$($ItemId)/Log?range=0-9999999999999"
         }
         
-        $GlpiLogAll = Invoke-RestMethod @params -Verbose:$false
+        $GlpiLogAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
         foreach ($GlpiLog in $GlpiLogAll) {
             $LogHash = [ordered]@{ }

@@ -61,7 +61,7 @@ function Get-GlpiToolsMyEntities {
 			body	= $GetActiveEntities
         }
   
-        $MyEntities = Invoke-RestMethod @params
+        $MyEntities = Invoke-GlpiToolsRequestApi -Params $params
 
         foreach ($GlpiEntities in $MyEntities.myentities) {
             $EntitiesHash = [ordered]@{ }

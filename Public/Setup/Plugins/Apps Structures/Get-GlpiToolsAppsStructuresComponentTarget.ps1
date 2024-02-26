@@ -83,7 +83,7 @@ function Get-GlpiToolsAppsStructuresComponentTarget {
                     uri     = "$($PathToGlpi)/PluginArchiswSwcomponenttarget/?range=0-9999999999999"
                 }
                 
-                $GlpiComponentTargetAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiComponentTargetAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
         
                 foreach ($GlpiComponentTarget in $GlpiComponentTargetAll) {
                     $ComponentTargetHash = [ordered]@{ }
@@ -111,7 +111,7 @@ function Get-GlpiToolsAppsStructuresComponentTarget {
                     }
                     
                     try {
-                        $GlpiComponentTargetAll = Invoke-RestMethod @params -Verbose:$false
+                        $GlpiComponentTargetAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
             
                         foreach ($GlpiComponentTarget in $GlpiComponentTargetAll) {
                             $ComponentTargetHash = [ordered]@{ }

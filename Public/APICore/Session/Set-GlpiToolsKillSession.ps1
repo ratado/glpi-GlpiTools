@@ -46,7 +46,7 @@ function Set-GlpiToolsKillSession {
             method  = 'get'
             uri     = "$($PathToGlpi)/killSession/" 
         }
-        Invoke-RestMethod @params | Out-Null
+        Invoke-GlpiToolsRequestApi -Params $params | Out-Null
     }
     
     end {

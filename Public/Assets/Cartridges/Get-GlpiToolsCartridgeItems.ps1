@@ -150,7 +150,7 @@ function Get-GlpiToolsCartridgeItems {
                     uri     = "$($PathToGlpi)/CartridgeItem/?range=0-9999999999999"
                 }
                 
-                $GlpiCartridgeItemAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiCartridgeItemAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiCartridgeItem in $GlpiCartridgeItemAll) {
                     $CartridgeItemHash = [ordered]@{ }
@@ -178,7 +178,7 @@ function Get-GlpiToolsCartridgeItems {
                     }
 
                     Try {
-                        $GlpiCartridgeItem = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiCartridgeItem = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $CartridgeItemHash = [ordered]@{ }

@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsProjectTaskTemplates {
                     uri     = "$($PathToGlpi)/projecttasktemplate/?range=0-9999999999999"
                 }
                 
-                $ProjectTaskTemplatesAll = Invoke-RestMethod @params -Verbose:$false
+                $ProjectTaskTemplatesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($ProjectTaskTemplate in $ProjectTaskTemplatesAll) {
                     $ProjectTaskTemplateHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsProjectTaskTemplates {
                     }
 
                     Try {
-                        $ProjectTaskTemplate = Invoke-RestMethod @params -ErrorAction Stop
+                        $ProjectTaskTemplate = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ProjectTaskTemplateHash = [ordered]@{ }

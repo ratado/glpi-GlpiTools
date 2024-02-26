@@ -150,7 +150,7 @@ function Get-GlpiToolsPdus {
                     uri     = "$($PathToGlpi)/Pdu/?range=0-9999999999999"
                 }
                 
-                $GlpiPduAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiPduAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiPdu in $GlpiPduAll) {
                     $PduHash = [ordered]@{ }
@@ -178,7 +178,7 @@ function Get-GlpiToolsPdus {
                     }
 
                     Try {
-                        $GlpiPdu = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiPdu = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PduHash = [ordered]@{ }

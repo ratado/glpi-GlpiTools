@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsOSArchitectures {
                     uri     = "$($PathToGlpi)/operatingsystemarchitecture/?range=0-9999999999999"
                 }
                 
-                $OSArchitectureAll = Invoke-RestMethod @params -Verbose:$false
+                $OSArchitectureAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($OSArchitecture in $OSArchitectureAll) {
                     $OSArchitectureHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsOSArchitectures {
                     }
 
                     Try {
-                        $OSArchitecture = Invoke-RestMethod @params -ErrorAction Stop
+                        $OSArchitecture = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $OSArchitectureHash = [ordered]@{ }

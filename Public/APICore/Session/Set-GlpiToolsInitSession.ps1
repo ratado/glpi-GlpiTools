@@ -37,7 +37,7 @@ function Set-GlpiToolsInitSession {
             method  = 'get'
             uri     = "$($PathToGlpi)/initSession/" 
         }
-        $InitSession = Invoke-RestMethod @params
+        $InitSession = Invoke-GlpiToolsRequestApi -Params $params
         
         $SessionHash = [ordered]@{
             'SessionToken' = $InitSession.session_token

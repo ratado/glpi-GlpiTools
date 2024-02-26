@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsPhonesPowerSupplyTypes {
                     uri     = "$($PathToGlpi)/phonepowersupply/?range=0-9999999999999"
                 }
                 
-                $PhonesPowerSupplyTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $PhonesPowerSupplyTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($PhonePowerSupplyType in $PhonesPowerSupplyTypesAll) {
                     $PhonePowerSupplyTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsPhonesPowerSupplyTypes {
                     }
 
                     Try {
-                        $PhonePowerSupplyType = Invoke-RestMethod @params -ErrorAction Stop
+                        $PhonePowerSupplyType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PhonePowerSupplyTypeHash = [ordered]@{ }

@@ -150,7 +150,7 @@ function Get-GlpiToolsConsumableItems {
                     uri     = "$($PathToGlpi)/ConsumableItem/?range=0-9999999999999"
                 }
                 
-                $GlpiConsumableItemAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiConsumableItemAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiConsumableItem in $GlpiConsumableItemAll) {
                     $ConsumableItemHash = [ordered]@{ }
@@ -178,7 +178,7 @@ function Get-GlpiToolsConsumableItems {
                     }
 
                     Try {
-                        $GlpiConsumableItem = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiConsumableItem = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ConsumableItemHash = [ordered]@{ }

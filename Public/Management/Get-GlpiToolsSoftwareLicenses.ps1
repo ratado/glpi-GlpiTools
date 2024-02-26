@@ -90,7 +90,7 @@ function Get-GlpiToolsSoftwareLicenses {
                     uri     = "$($PathToGlpi)/softwarelicense/?range=0-9999999999999"
                 }
                 
-                $SoftwareLicensesAll = Invoke-RestMethod @params -Verbose:$false
+                $SoftwareLicensesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($SoftwareLicense in $SoftwareLicensesAll) {
                     $SoftwareLicenseHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsSoftwareLicenses {
                     }
 
                     Try {
-                        $SoftwareLicense = Invoke-RestMethod @params -ErrorAction Stop
+                        $SoftwareLicense = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $SoftwareLicenseHash = [ordered]@{ }

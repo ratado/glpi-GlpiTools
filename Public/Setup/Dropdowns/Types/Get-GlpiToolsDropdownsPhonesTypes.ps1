@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsPhonesTypes {
                     uri     = "$($PathToGlpi)/phonetype/?range=0-9999999999999"
                 }
                 
-                $PhonesTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $PhonesTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($PhoneType in $PhonesTypesAll) {
                     $PhoneTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsPhonesTypes {
                     }
 
                     Try {
-                        $PhoneType = Invoke-RestMethod @params -ErrorAction Stop
+                        $PhoneType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PhoneTypeHash = [ordered]@{ }

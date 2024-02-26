@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsRequestSources {
                     uri     = "$($PathToGlpi)/requesttype/?range=0-9999999999999"
                 }
                 
-                $RequestSourcesAll = Invoke-RestMethod @params -Verbose:$false
+                $RequestSourcesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($RequestSource in $RequestSourcesAll) {
                     $RequestSourceHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsRequestSources {
                     }
 
                     Try {
-                        $RequestSource = Invoke-RestMethod @params -ErrorAction Stop
+                        $RequestSource = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $RequestSourceHash = [ordered]@{ }

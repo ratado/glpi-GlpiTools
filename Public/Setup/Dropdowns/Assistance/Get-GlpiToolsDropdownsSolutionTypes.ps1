@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsSolutionTypes {
                     uri     = "$($PathToGlpi)/solutiontype/?range=0-9999999999999"
                 }
                 
-                $SolutionTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $SolutionTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($SolutionType in $SolutionTypesAll) {
                     $SolutionTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsSolutionTypes {
                     }
 
                     Try {
-                        $SolutionType = Invoke-RestMethod @params -ErrorAction Stop
+                        $SolutionType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $SolutionTypeHash = [ordered]@{ }

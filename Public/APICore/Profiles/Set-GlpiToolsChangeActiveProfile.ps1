@@ -57,7 +57,7 @@ function Set-GlpiToolsChangeActiveProfile {
             uri     = "$($PathToGlpi)/changeActiveProfile/"
             body    = $GlpiChangeEntity
         }
-        Invoke-RestMethod @params
+        Invoke-GlpiToolsRequestApi -Params $params
 
     }
     

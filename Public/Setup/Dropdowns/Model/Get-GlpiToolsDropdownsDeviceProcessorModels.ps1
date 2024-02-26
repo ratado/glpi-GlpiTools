@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsDeviceProcessorModels {
                     uri     = "$($PathToGlpi)/DeviceProcessorModel/?range=0-9999999999999"
                 }
                 
-                $DeviceProcessorModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $DeviceProcessorModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DeviceProcessorModel in $DeviceProcessorModelsAll) {
                     $DeviceProcessorModelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsDeviceProcessorModels {
                     }
 
                     Try {
-                        $DeviceProcessorModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $DeviceProcessorModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DeviceProcessorModelHash = [ordered]@{ }

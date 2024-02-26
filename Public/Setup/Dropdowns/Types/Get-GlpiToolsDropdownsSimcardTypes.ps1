@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsSimcardTypes {
                     uri     = "$($PathToGlpi)/DeviceSimcardType/?range=0-9999999999999"
                 }
                 
-                $SimcardTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $SimcardTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($SimcardType in $SimcardTypesAll) {
                     $SimcardTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsSimcardTypes {
                     }
 
                     Try {
-                        $SimcardType = Invoke-RestMethod @params -ErrorAction Stop
+                        $SimcardType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $SimcardTypeHash = [ordered]@{ }

@@ -90,7 +90,7 @@ function Get-GlpiToolsProjects {
                     uri     = "$($PathToGlpi)/project/?range=0-9999999999999"
                 }
                 
-                $ProjectsAll = Invoke-RestMethod @params -Verbose:$false
+                $ProjectsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Project in $ProjectsAll) {
                     $ProjectHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsProjects {
                     }
 
                     Try {
-                        $Project = Invoke-RestMethod @params -ErrorAction Stop
+                        $Project = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ProjectHash = [ordered]@{ }

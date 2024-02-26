@@ -150,7 +150,7 @@ function Get-GlpiToolsPhones {
                     uri     = "$($PathToGlpi)/Phone/?range=0-9999999999999"
                 }
                 
-                $GlpiPhoneAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiPhoneAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiPhone in $GlpiPhoneAll) {
                     $PhoneHash = [ordered]@{ }
@@ -178,7 +178,7 @@ function Get-GlpiToolsPhones {
                     }
 
                     Try {
-                        $GlpiPhone = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiPhone = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PhoneHash = [ordered]@{ }

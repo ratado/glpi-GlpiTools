@@ -96,7 +96,7 @@ function Get-GlpiToolsDropdownsStatusesOfItems {
                     uri     = "$($PathToGlpi)/State/?range=0-9999999999999"
                 }
                 
-                $GlpiStatesAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiStatesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiStates in $GlpiStatesAll) {
                     $StatesHash = [ordered]@{ }
@@ -124,7 +124,7 @@ function Get-GlpiToolsDropdownsStatusesOfItems {
                     }
 
                     Try {
-                        $GlpiStates = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiStates = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $StatesHash = [ordered]@{ }

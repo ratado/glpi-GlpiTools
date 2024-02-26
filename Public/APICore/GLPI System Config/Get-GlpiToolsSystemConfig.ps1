@@ -41,7 +41,7 @@ function Get-GlpiToolsSystemConfig {
             uri     = "$($PathToGlpi)/getGlpiConfig/"
         }
             
-        $GlpiConfig = Invoke-RestMethod @params
+        $GlpiConfig = Invoke-GlpiToolsRequestApi -Params $params
 
         $GlpiConfig.cfg_glpi
     }

@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsNetworks {
                     uri     = "$($PathToGlpi)/Network/?range=0-9999999999999"
                 }
                 
-                $GlpiNetworkAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiNetworkAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($NetworkModel in $GlpiNetworkAll) {
                     $NetworkHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsNetworks {
                     }
 
                     Try {
-                        $NetworkModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $NetworkModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $NetworkHash = [ordered]@{ }

@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsKnowledgeBaseCategories {
                     uri     = "$($PathToGlpi)/knowbaseitemcategory/?range=0-9999999999999"
                 }
                 
-                $KnowledgeBaseCategoriesAll = Invoke-RestMethod @params -Verbose:$false
+                $KnowledgeBaseCategoriesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($KnowledgeBaseCategory in $KnowledgeBaseCategoriesAll) {
                     $KnowledgeBaseCategoryHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsKnowledgeBaseCategories {
                     }
 
                     Try {
-                        $KnowledgeBaseCategory = Invoke-RestMethod @params -ErrorAction Stop
+                        $KnowledgeBaseCategory = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $KnowledgeBaseCategoryHash = [ordered]@{ }

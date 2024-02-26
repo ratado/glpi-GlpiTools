@@ -146,7 +146,7 @@ function Get-GlpiToolsNetworkEquipments {
                     uri     = "$($PathToGlpi)/NetworkEquipment/?range=0-9999999999999"
                 }
                 
-                $GlpiNetworkEquipmentAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiNetworkEquipmentAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiNetworkEquipment in $GlpiNetworkEquipmentAll) {
                     $NetworkEquipmentHash = [ordered]@{ }
@@ -174,7 +174,7 @@ function Get-GlpiToolsNetworkEquipments {
                     }
 
                     Try {
-                        $GlpiNetworkEquipment = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiNetworkEquipment = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $NetworkEquipmentHash = [ordered]@{ }

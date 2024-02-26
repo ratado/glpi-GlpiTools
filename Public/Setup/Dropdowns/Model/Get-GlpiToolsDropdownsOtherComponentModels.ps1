@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsOtherComponentModels {
                     uri     = "$($PathToGlpi)/DevicePciModel/?range=0-9999999999999"
                 }
                 
-                $OtherComponentModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $OtherComponentModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($OtherComponentModel in $OtherComponentModelsAll) {
                     $OtherComponentModelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsOtherComponentModels {
                     }
 
                     Try {
-                        $OtherComponentModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $OtherComponentModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $OtherComponentModelHash = [ordered]@{ }

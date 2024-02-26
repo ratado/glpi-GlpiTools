@@ -142,7 +142,7 @@ function Get-GlpiToolsMonitors {
                     uri     = "$($PathToGlpi)/Monitor/?range=0-9999999999999"
                 }
                 
-                $GlpiMonitorAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiMonitorAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiMonitor in $GlpiMonitorAll) {
                     $MonitorHash = [ordered]@{ }
@@ -170,7 +170,7 @@ function Get-GlpiToolsMonitors {
                     }
 
                     Try {
-                        $GlpiMonitor = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiMonitor = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $MonitorHash = [ordered]@{ }

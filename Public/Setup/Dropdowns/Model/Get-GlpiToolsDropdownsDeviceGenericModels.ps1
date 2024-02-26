@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsDeviceGenericModels {
                     uri     = "$($PathToGlpi)/devicegenericmodel/?range=0-9999999999999"
                 }
                 
-                $DeviceGenericModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $DeviceGenericModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DeviceGenericModel in $DeviceGenericModelsAll) {
                     $DeviceGenericModelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsDeviceGenericModels {
                     }
 
                     Try {
-                        $DeviceGenericModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $DeviceGenericModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DeviceGenericModelHash = [ordered]@{ }

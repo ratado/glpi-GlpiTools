@@ -50,7 +50,7 @@ function Get-GlpiToolsPlugins {
             method  = 'get'
             uri     = "$($PathToGlpi)/Plugin/" 
         }
-        $Plugins = Invoke-RestMethod @params
+        $Plugins = Invoke-GlpiToolsRequestApi -Params $params
 
         if ($Raw) {
             foreach ($Plugin in $Plugins) {

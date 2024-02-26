@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsPrinterTypes {
                     uri     = "$($PathToGlpi)/printertype/?range=0-9999999999999"
                 }
                 
-                $PrinterTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $PrinterTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($PrinterType in $PrinterTypesAll) {
                     $PrinterTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsPrinterTypes {
                     }
 
                     Try {
-                        $PrinterType = Invoke-RestMethod @params -ErrorAction Stop
+                        $PrinterType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PrinterTypeHash = [ordered]@{ }

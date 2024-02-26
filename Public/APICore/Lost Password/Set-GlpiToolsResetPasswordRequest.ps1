@@ -47,7 +47,7 @@ function Set-GlpiToolsResetPasswordRequest {
             uri     = "$($PathToGlpi)/lostPassword/"
             body    = ([System.Text.Encoding]::UTF8.GetBytes($PasswordResetReq))
         }
-        Invoke-RestMethod @params
+        Invoke-GlpiToolsRequestApi -Params $params
     }
     
     end {

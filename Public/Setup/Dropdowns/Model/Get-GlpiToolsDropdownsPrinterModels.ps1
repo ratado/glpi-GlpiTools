@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsPrinterModels {
                     uri     = "$($PathToGlpi)/printermodel/?range=0-9999999999999"
                 }
                 
-                $PrinterModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $PrinterModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($PrinterModel in $PrinterModelsAll) {
                     $PrinterModelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsPrinterModels {
                     }
 
                     Try {
-                        $PrinterModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $PrinterModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PrinterModelHash = [ordered]@{ }

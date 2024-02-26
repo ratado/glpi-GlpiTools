@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsConsumableTypes {
                     uri     = "$($PathToGlpi)/consumableitemtype/?range=0-9999999999999"
                 }
                 
-                $ConsumableTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $ConsumableTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($ConsumableType in $ConsumableTypesAll) {
                     $ConsumableTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsConsumableTypes {
                     }
 
                     Try {
-                        $ConsumableType = Invoke-RestMethod @params -ErrorAction Stop
+                        $ConsumableType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ConsumableTypeHash = [ordered]@{ }

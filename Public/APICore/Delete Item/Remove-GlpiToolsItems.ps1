@@ -101,7 +101,7 @@ function Remove-GlpiToolsItems {
                     method  = 'delete'
                     uri     = "$($PathToGlpi)/$($RemoveFrom)/$($ItemId)$($PurgeValue)"
                 }
-                Invoke-RestMethod @params
+                Invoke-GlpiToolsRequestApi -Params $params
             }
             HashtableToRemove {
                 $GlpiRemove = $HashtableToRemove | ConvertTo-Json
@@ -118,7 +118,7 @@ function Remove-GlpiToolsItems {
                     uri     = "$($PathToGlpi)/$($RemoveFrom)/"
                     body    = ([System.Text.Encoding]::UTF8.GetBytes($Remove))
                 }
-                Invoke-RestMethod @params
+                Invoke-GlpiToolsRequestApi -Params $params
             }
             JsonPayload {
                 $params = @{
@@ -131,7 +131,7 @@ function Remove-GlpiToolsItems {
                     uri     = "$($PathToGlpi)/$($RemoveFrom)/"
                     body    = ([System.Text.Encoding]::UTF8.GetBytes($JsonPayload))
                 }
-                Invoke-RestMethod @params
+                Invoke-GlpiToolsRequestApi -Params $params
             }
             Default { Write-Verbose "You didn't specified any parameter, choose from one available" }
         }

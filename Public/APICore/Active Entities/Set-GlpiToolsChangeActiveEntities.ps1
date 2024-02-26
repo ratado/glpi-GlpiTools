@@ -76,7 +76,7 @@ function Set-GlpiToolsChangeActiveEntities {
             uri     = "$($PathToGlpi)/changeActiveEntities"
             body    = ([System.Text.Encoding]::UTF8.GetBytes($Upload))
         }
-        Invoke-RestMethod @params
+        Invoke-GlpiToolsRequestApi -Params $params
     }
     
     end {

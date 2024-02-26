@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsTaskCategories {
                     uri     = "$($PathToGlpi)/taskcategory/?range=0-9999999999999"
                 }
                 
-                $TaskCategoriesAll = Invoke-RestMethod @params -Verbose:$false
+                $TaskCategoriesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($TaskCategory in $TaskCategoriesAll) {
                     $TaskCategoryHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsTaskCategories {
                     }
 
                     Try {
-                        $TaskCategory = Invoke-RestMethod @params -ErrorAction Stop
+                        $TaskCategory = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $TaskCategoryHash = [ordered]@{ }

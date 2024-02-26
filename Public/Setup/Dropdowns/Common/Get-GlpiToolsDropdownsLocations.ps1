@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsLocations {
                     uri     = "$($PathToGlpi)/Location/?range=0-9999999999999"
                 }
                 
-                $GlpiLocationsAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiLocationsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($LocationModel in $GlpiLocationsAll) {
                     $LocationHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsLocations {
                     }
 
                     Try {
-                        $LocationModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $LocationModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $LocationHash = [ordered]@{ }

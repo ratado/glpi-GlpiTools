@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsOSKernels {
                     uri     = "$($PathToGlpi)/operatingsystemkernel/?range=0-9999999999999"
                 }
                 
-                $OSKernelsAll = Invoke-RestMethod @params -Verbose:$false
+                $OSKernelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($OSKernel in $OSKernelsAll) {
                     $OSKernelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsOSKernels {
                     }
 
                     Try {
-                        $OSKernel = Invoke-RestMethod @params -ErrorAction Stop
+                        $OSKernel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $OSKernelHash = [ordered]@{ }

@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsProjectTasksTypes {
                     uri     = "$($PathToGlpi)/projecttasktype/?range=0-9999999999999"
                 }
                 
-                $ProjectTasksTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $ProjectTasksTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($ProjectTaskType in $ProjectTasksTypesAll) {
                     $ProjectTaskTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsProjectTasksTypes {
                     }
 
                     Try {
-                        $ProjectTaskType = Invoke-RestMethod @params -ErrorAction Stop
+                        $ProjectTaskType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ProjectTaskTypeHash = [ordered]@{ }

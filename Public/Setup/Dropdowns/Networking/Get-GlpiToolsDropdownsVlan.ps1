@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsVlan {
                     uri     = "$($PathToGlpi)/vlan/?range=0-9999999999999"
                 }
                 
-                $VlanAll = Invoke-RestMethod @params -Verbose:$false
+                $VlanAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Vlan in $VlanAll) {
                     $VlanHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsVlan {
                     }
 
                     Try {
-                        $Vlan = Invoke-RestMethod @params -ErrorAction Stop
+                        $Vlan = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $VlanHash = [ordered]@{ }

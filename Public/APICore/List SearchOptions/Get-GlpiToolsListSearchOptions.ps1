@@ -51,7 +51,7 @@ function Get-GlpiToolsListSearchOptions {
             method  = 'get'
             uri = "$($PathToGlpi)/listSearchOptions/$($ListOptionsFor)"
         }
-        $ListSearchOptions = Invoke-RestMethod @params
+        $ListSearchOptions = Invoke-GlpiToolsRequestApi -Params $params
         $ListProperties = $ListSearchOptions.PSObject.Properties | Select-Object -Property Name,Value
         
         foreach ( $list in $ListProperties ) {

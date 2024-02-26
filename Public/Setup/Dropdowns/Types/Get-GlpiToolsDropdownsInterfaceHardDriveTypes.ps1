@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsInterfaceHardDriveTypes {
                     uri     = "$($PathToGlpi)/interfacetype/?range=0-9999999999999"
                 }
                 
-                $InterfaceHardDriveTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $InterfaceHardDriveTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($InterfaceHardDriveType in $InterfaceHardDriveTypesAll) {
                     $InterfaceHardDriveTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsInterfaceHardDriveTypes {
                     }
 
                     Try {
-                        $InterfaceHardDriveType = Invoke-RestMethod @params -ErrorAction Stop
+                        $InterfaceHardDriveType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $InterfaceHardDriveTypeHash = [ordered]@{ }

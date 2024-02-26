@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsMonitorModels {
                     uri     = "$($PathToGlpi)/MonitorModel/?range=0-9999999999999"
                 }
                 
-                $GlpiMonitorModelAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiMonitorModelAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($MonitorModel in $GlpiMonitorModelAll) {
                     $MonitorModelHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsMonitorModels {
                     }
 
                     Try {
-                        $MonitorModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $MonitorModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $MonitorModelHash = [ordered]@{ }

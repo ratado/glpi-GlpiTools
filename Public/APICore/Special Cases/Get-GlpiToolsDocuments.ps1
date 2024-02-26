@@ -88,7 +88,7 @@ function Get-GlpiToolsDocuments {
                     uri     = "$($PathToGlpi)/Document/?range=0-9999999999999"
                 }
                 
-                $GlpiDocumentAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiDocumentAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiDocument in $GlpiDocumentAll) {
                     $DocumentHash = [ordered]@{ }
@@ -119,7 +119,7 @@ function Get-GlpiToolsDocuments {
                             uri     = "$($PathToGlpi)/Document/$($DId)"
                         }
                         try {
-                            $GlpiDocument = Invoke-RestMethod @params
+                            $GlpiDocument = Invoke-GlpiToolsRequestApi -Params $params
 
                             $GlpiDocument
                         } catch {
@@ -138,7 +138,7 @@ function Get-GlpiToolsDocuments {
                         }
 
                         try {
-                            $GlpiDocument = Invoke-RestMethod @params
+                            $GlpiDocument = Invoke-GlpiToolsRequestApi -Params $params
 
                             $DocumentHash = [ordered]@{ }
                             $DocumentProperties = $GlpiDocument.PSObject.Properties | Select-Object -Property Name, Value 
@@ -167,7 +167,7 @@ function Get-GlpiToolsDocuments {
                         }
 
                         try {
-                            $GlpiDocument = Invoke-RestMethod @params
+                            $GlpiDocument = Invoke-GlpiToolsRequestApi -Params $params
 
                             $DocumentHash = [ordered]@{ }
                             $DocumentProperties = $GlpiDocument.PSObject.Properties | Select-Object -Property Name, Value 

@@ -90,7 +90,7 @@ function Get-GlpiToolsDropdownsThirdPartyTypes {
                     uri     = "$($PathToGlpi)/suppliertype/?range=0-9999999999999"
                 }
                 
-                $ThirdPartyTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $ThirdPartyTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($ThirdPartyType in $ThirdPartyTypesAll) {
                     $ThirdPartyTypeHash = [ordered]@{ }
@@ -118,7 +118,7 @@ function Get-GlpiToolsDropdownsThirdPartyTypes {
                     }
 
                     Try {
-                        $ThirdPartyType = Invoke-RestMethod @params -ErrorAction Stop
+                        $ThirdPartyType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ThirdPartyTypeHash = [ordered]@{ }

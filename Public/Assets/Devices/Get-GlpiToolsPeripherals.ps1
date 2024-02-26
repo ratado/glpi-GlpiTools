@@ -150,7 +150,7 @@ function Get-GlpiToolsPeripherals {
                     uri     = "$($PathToGlpi)/Peripheral/?range=0-9999999999999"
                 }
                 
-                $GlpiPeripheralAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiPeripheralAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiPeripheral in $GlpiPeripheralAll) {
                     $PeripheralHash = [ordered]@{ }
@@ -178,7 +178,7 @@ function Get-GlpiToolsPeripherals {
                     }
 
                     Try {
-                        $GlpiPeripheral = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiPeripheral = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PeripheralHash = [ordered]@{ }
