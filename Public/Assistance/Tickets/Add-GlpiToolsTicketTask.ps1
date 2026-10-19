@@ -88,7 +88,7 @@ function Add-GlpiToolsTicketTask {
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
             $V3Body = @{ content = $content }
             if ($PSBoundParameters['Status']) { $V3Body['state'] = $state_id }
-            if ($PSBoundParameters['Duration']) { $V3Body['duration'] = $duration }
+            if ($PSBoundParameters.ContainsKey('duration')) { $V3Body['duration'] = $duration }
             Invoke-GlpiToolsRequest -Method Post -Resource "/Assistance/Ticket/$ticket_id/Timeline/Task" -Body $V3Body
             return
         }

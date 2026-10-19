@@ -132,7 +132,8 @@ function Get-GlpiToolsTickets {
     process {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            switch ($ChoosenParam) {
+            # the parameter set is used because pipeline input is not bound yet in the begin block
+            switch ($PSCmdlet.ParameterSetName) {
                 All {
                     # the legacy listing leaves the trash out
                     Invoke-GlpiToolsRequest -Method Get -Resource '/Assistance/Ticket' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All
@@ -143,16 +144,26 @@ function Get-GlpiToolsTickets {
                         Assert-GlpiToolsV3Supported -Name "-Parameter $Parameter"
                     }
                     foreach ($TId in $TicketId) {
+                        $V3Ticket = $null
                         try {
                             $V3Ticket = Invoke-GlpiToolsRequest -Method Get -Resource "/Assistance/Ticket/$TId"
-                            if ($Parameter -eq 'WithDocuments') {
-                                $V3Ticket | Add-Member -NotePropertyName '_documents' -NotePropertyValue @(Invoke-GlpiToolsRequest -Method Get -Resource "/Assistance/Ticket/$TId/Timeline/Document" -All)
-                            }
-                            $V3Ticket
                         } catch {
                             # only a missing ticket is skipped; other failures are reported
                             if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
                             Write-Verbose -Message "Ticket ID = $TId is not found"
+                        }
+                        if ($V3Ticket) {
+                            if ($Parameter -eq 'WithDocuments') {
+                                $V3Documents = @()
+                                try {
+                                    $V3Documents = @(Invoke-GlpiToolsRequest -Method Get -Resource "/Assistance/Ticket/$TId/Timeline/Document" -All)
+                                } catch {
+                                    # a ticket without readable documents is still returned
+                                    if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
+                                }
+                                $V3Ticket | Add-Member -NotePropertyName '_documents' -NotePropertyValue $V3Documents
+                            }
+                            $V3Ticket
                         }
                     }
                 }

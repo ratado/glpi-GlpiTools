@@ -200,7 +200,8 @@ function Update-GlpiToolsTicket {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
             $V3Body = @{}
-            if ($PSBoundParameters['Type']) { $V3Body['type'] = $type_id }
+            # the numeric values of -Type are not converted by the legacy setup, so they are read here
+            if ($PSBoundParameters['Type']) { $V3Body['type'] = $(if ($Type -in '1', '2') { [int]$Type } else { $type_id }) }
             if ($PSBoundParameters['Urgency']) { $V3Body['urgency'] = $urgency_id }
             if ($PSBoundParameters['Impact']) { $V3Body['impact'] = $impact_id }
             if ($PSBoundParameters['Priority']) { $V3Body['priority'] = $priority_id }
@@ -216,10 +217,10 @@ function Update-GlpiToolsTicket {
             }
             # a requester or technician is added to the ticket team
             if ($PSBoundParameters['requester_id']) {
-                Invoke-GlpiToolsRequest -Method Post -Resource "/Assistance/Ticket/$ticket_id/TeamMember" -Body @{ type = 'User'; id = $requester_id; role = 'requester' } | Out-Null
+                Add-GlpiToolsV3TeamMember -Resource "/Assistance/Ticket/$ticket_id" -Role requester -UserId $requester_id
             }
             if ($PSBoundParameters['technician_id']) {
-                Invoke-GlpiToolsRequest -Method Post -Resource "/Assistance/Ticket/$ticket_id/TeamMember" -Body @{ type = 'User'; id = $technician_id; role = 'assigned' } | Out-Null
+                Add-GlpiToolsV3TeamMember -Resource "/Assistance/Ticket/$ticket_id" -Role assigned -UserId $technician_id
             }
             $V3Ticket
             return

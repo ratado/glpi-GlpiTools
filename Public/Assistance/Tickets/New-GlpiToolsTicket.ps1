@@ -277,10 +277,10 @@ function New-GlpiToolsTicket {
             $V3Ticket = Invoke-GlpiToolsRequest -Method Post -Resource '/Assistance/Ticket' -Body $V3Body
             # a requester or technician becomes a member of the ticket team
             if ($PSBoundParameters['requester_id']) {
-                Invoke-GlpiToolsRequest -Method Post -Resource "/Assistance/Ticket/$($V3Ticket.id)/TeamMember" -Body @{ type = 'User'; id = $requester_id; role = 'requester' } | Out-Null
+                Add-GlpiToolsV3TeamMember -Resource "/Assistance/Ticket/$($V3Ticket.id)" -Role requester -UserId $requester_id
             }
             if ($PSBoundParameters['technician_id']) {
-                Invoke-GlpiToolsRequest -Method Post -Resource "/Assistance/Ticket/$($V3Ticket.id)/TeamMember" -Body @{ type = 'User'; id = $technician_id; role = 'assigned' } | Out-Null
+                Add-GlpiToolsV3TeamMember -Resource "/Assistance/Ticket/$($V3Ticket.id)" -Role assigned -UserId $technician_id
             }
             $V3Ticket
             return

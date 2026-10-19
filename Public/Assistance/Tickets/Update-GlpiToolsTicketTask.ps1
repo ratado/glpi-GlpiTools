@@ -96,9 +96,13 @@ function Update-GlpiToolsTicketTask {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
             $V3Body = @{}
-            if ($PSBoundParameters['content']) { $V3Body['content'] = $content }
+            if ($PSBoundParameters.ContainsKey('content')) { $V3Body['content'] = $content }
             if ($PSBoundParameters['Status']) { $V3Body['state'] = $state_id }
-            if ($PSBoundParameters['Duration']) { $V3Body['duration'] = $duration }
+            if ($PSBoundParameters.ContainsKey('duration')) { $V3Body['duration'] = $duration }
+            if ($V3Body.Count -eq 0) {
+                Write-Warning 'Nothing to update: give -content, -Status or -duration.'
+                return
+            }
             Invoke-GlpiToolsRequest -Method Patch -Resource "/Assistance/Ticket/$ticket_id/Timeline/Task/$task_id" -Body $V3Body
             return
         }

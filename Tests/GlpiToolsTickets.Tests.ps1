@@ -49,6 +49,18 @@ Describe 'Ticket cmdlets on API v3' {
             } -ModuleName GlpiTools
             { Get-GlpiToolsTickets -TicketId 99 } | Should -Throw '*boom*'
         }
+        It 'works with pipeline input' {
+            2, 3 | Get-GlpiToolsTickets | Out-Null
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 2 -ParameterFilter { $Resource -match '^/Assistance/Ticket/[23]$' }
+        }
+        It 'still returns the ticket when its documents are not found' {
+            Mock Invoke-GlpiToolsRequest {
+                $e = [System.Management.Automation.ErrorRecord]::new([System.Exception]::new('gone'), 'GlpiApi.404', 'InvalidOperation', $null)
+                $PSCmdlet.ThrowTerminatingError($e)
+            } -ModuleName GlpiTools -ParameterFilter { $Resource -like '*/Timeline/Document' }
+            Mock Invoke-GlpiToolsRequest { [pscustomobject]@{ id = 2 } } -ModuleName GlpiTools -ParameterFilter { $Resource -eq '/Assistance/Ticket/2' }
+            (Get-GlpiToolsTickets -TicketId 2 -Parameter WithDocuments -ErrorAction SilentlyContinue).id | Should -Be 2
+        }
         It 'adds the documents with -Parameter WithDocuments' {
             Get-GlpiToolsTickets -TicketId 2 -Parameter WithDocuments | Out-Null
             Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq '/Assistance/Ticket/2/Timeline/Document' }
@@ -72,6 +84,7 @@ Describe 'Ticket cmdlets on API v3' {
             }
         }
         It 'adds requester and technician to the team of the new ticket' {
+            Mock Invoke-GlpiToolsRequest { @() } -ModuleName GlpiTools -ParameterFilter { $Method -eq 'Get' -and $Resource -like '*/TeamMember' }
             New-GlpiToolsTicket -name 'S' -content 'B' -requester_id 4 -technician_id 5 | Out-Null
             Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq '/Assistance/Ticket/9/TeamMember' -and $Body.role -eq 'requester' -and $Body.id -eq 4 -and $Body.type -eq 'User' }
             Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq '/Assistance/Ticket/9/TeamMember' -and $Body.role -eq 'assigned' -and $Body.id -eq 5 }
@@ -91,7 +104,19 @@ Describe 'Ticket cmdlets on API v3' {
                 $Body.global_validation -eq 3 -and $Body.category.id -eq 3 -and -not $Body.ContainsKey('urgency') -and -not $Body.ContainsKey('content')
             }
         }
+        It 'keeps a numeric -Type' {
+            Update-GlpiToolsTicket -ticket_id 7 -Type 2 | Out-Null
+            Update-GlpiToolsTicket -ticket_id 7 -Type Incident | Out-Null
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Method -eq 'Patch' -and $Body.type -eq 2 }
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Method -eq 'Patch' -and $Body.type -eq 1 }
+        }
+        It 'does not add a team member twice' {
+            Mock Invoke-GlpiToolsRequest { [pscustomobject]@{ role = 'requester'; id = 4; type = 'User' } } -ModuleName GlpiTools -ParameterFilter { $Method -eq 'Get' -and $Resource -like '*/TeamMember' }
+            Update-GlpiToolsTicket -ticket_id 7 -requester_id 4 | Out-Null
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 0 -ParameterFilter { $Method -eq 'Post' }
+        }
         It 'adds the requester to the team' {
+            Mock Invoke-GlpiToolsRequest { @() } -ModuleName GlpiTools -ParameterFilter { $Method -eq 'Get' -and $Resource -like '*/TeamMember' }
             Update-GlpiToolsTicket -ticket_id 7 -requester_id 4 | Out-Null
             Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq '/Assistance/Ticket/7/TeamMember' -and $Body.role -eq 'requester' }
             Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 0 -ParameterFilter { $Method -eq 'Patch' }
@@ -120,6 +145,12 @@ Describe 'Ticket cmdlets on API v3' {
             Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Method -eq 'Post' -and $Resource -eq '/Assistance/Ticket/7/Timeline/Task' -and $Body.state -eq 2 -and $Body.duration -eq 60 }
             Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Method -eq 'Get' -and $Resource -eq '/Assistance/Ticket/7/Timeline/Task' -and $All }
             Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Method -eq 'Patch' -and $Resource -eq '/Assistance/Ticket/7/Timeline/Task/11' -and $Body.state -eq 1 -and $Body.content -eq 'u' }
+        }
+        It 'sends a zero duration and refuses an empty task update' {
+            Add-GlpiToolsTicketTask -ticket_id 7 -content 't' -duration 0 | Out-Null
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Body.ContainsKey('duration') -and $Body.duration -eq 0 }
+            Update-GlpiToolsTicketTask -task_id 11 -ticket_id 7 -WarningAction SilentlyContinue | Out-Null
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 0 -ParameterFilter { $Method -eq 'Patch' }
         }
         It 'has no equivalent for linking items' {
             { Add-GlpiToolsTicketItem -ticket_id 7 -item_id 1 -item_type Computer } | Should -Throw '*Add-GlpiToolsTicketItem is not supported*'
