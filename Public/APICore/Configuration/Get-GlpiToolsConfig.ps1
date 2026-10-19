@@ -6,7 +6,8 @@
     and show stored values.
 .EXAMPLE
     PS C:\Users\Wojtek> Get-GlpiToolsConfig
-    Running script like that, shows you current config data.
+    Running script like that, shows you current config data, including the API flavour
+    (ApiVersion v1 or v3) and the OAuth fields used by API v3 (null when not in use).
 .INPUTS
     None
 .OUTPUTS
@@ -42,8 +43,8 @@ function Get-GlpiToolsConfig {
         if (Test-Path -Path $Config) {
             $ConfigData = Get-Content $Config | ConvertFrom-Json
         
-            $AppTokenSS = ConvertTo-SecureString $ConfigData.AppToken
-            $UserTokenSS = ConvertTo-SecureString $ConfigData.UserToken
+            $AppTokenSS = if ($ConfigData.AppToken) { ConvertTo-SecureString $ConfigData.AppToken } else { New-Object System.Security.SecureString }
+            $UserTokenSS = if ($ConfigData.UserToken) { ConvertTo-SecureString $ConfigData.UserToken } else { New-Object System.Security.SecureString }
             $PathToGlpiSS = ConvertTo-SecureString $ConfigData.PathToGlpi
 
             if ($IsLinux) {
@@ -60,6 +61,14 @@ function Get-GlpiToolsConfig {
                 'AppToken' = $AppTokenDecrypt
                 'UserToken' = $UserTokenDecrypt
                 'PathToGlpi' = $PathToGlpiDecrypt
+                'ApiVersion' = $(if ($ConfigData.ApiVersion) { $ConfigData.ApiVersion } else { 'v1' })
+                'AuthMode' = $ConfigData.AuthMode
+                'ClientId' = ConvertFrom-GlpiConfigSecret -Value $ConfigData.ClientId
+                'ClientSecret' = ConvertFrom-GlpiConfigSecret -Value $ConfigData.ClientSecret
+                'Username' = ConvertFrom-GlpiConfigSecret -Value $ConfigData.Username
+                'Password' = ConvertFrom-GlpiConfigSecret -Value $ConfigData.Password
+                'Scope' = $ConfigData.Scope
+                'SkipCertificateCheck' = [bool]$ConfigData.SkipCertificateCheck
             }
 
             $object = New-Object -TypeName PSCustomObject -Property $ConfigHash

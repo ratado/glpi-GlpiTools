@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## Unreleased
+
+- `Set-GlpiToolsConfig` can now be set up for the GLPI 12 REST API v3, using an OAuth client with the user name and password.
+- Added the `-SkipCertificateCheck` option to the configuration, to be used only with self-signed certificates.
+- The configuration file is now readable only by its owner on Linux.
+- Existing configurations keep working as the legacy API, with no changes needed.
+
 ## 1.8.0
 
 - Changed the session management, keeping it until the user requests to kill the session.
