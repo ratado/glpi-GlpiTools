@@ -84,6 +84,15 @@ function Add-GlpiToolsTicketTask {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Body = @{ content = $content }
+            if ($PSBoundParameters['Status']) { $V3Body['state'] = $state_id }
+            if ($PSBoundParameters['Duration']) { $V3Body['duration'] = $duration }
+            Invoke-GlpiToolsRequest -Method Post -Resource "/Assistance/Ticket/$ticket_id/Timeline/Task" -Body $V3Body
+            return
+        }
+
 
         $hashNewTask = @{
             tickets_id         = $ticket_id

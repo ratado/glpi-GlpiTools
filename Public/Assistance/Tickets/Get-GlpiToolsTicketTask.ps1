@@ -48,6 +48,13 @@ function Get-GlpiToolsTicketTask {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            # the timeline lists each task wrapped as {type, item}; the task itself is returned, as in the legacy API
+            (Invoke-GlpiToolsRequest -Method Get -Resource "/Assistance/Ticket/$ticket_id/Timeline/Task" -All) | ForEach-Object { $_.item }
+            return
+        }
+
 
         # $hashNewTicket = @{
         #     tickets_id         = $ticket_id

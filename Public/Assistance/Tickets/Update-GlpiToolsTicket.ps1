@@ -197,6 +197,34 @@ function Update-GlpiToolsTicket {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Body = @{}
+            if ($PSBoundParameters['Type']) { $V3Body['type'] = $type_id }
+            if ($PSBoundParameters['Urgency']) { $V3Body['urgency'] = $urgency_id }
+            if ($PSBoundParameters['Impact']) { $V3Body['impact'] = $impact_id }
+            if ($PSBoundParameters['Priority']) { $V3Body['priority'] = $priority_id }
+            if ($PSBoundParameters['Status']) { $V3Body['status'] = @{ id = $status_id } }
+            if ($Validation -and $PSBoundParameters['Validation']) { $V3Body['global_validation'] = $validation_id }
+            if ($PSBoundParameters['itilcategories_id']) { $V3Body['category'] = @{ id = $itilcategories_id } }
+            if ($PSBoundParameters['name']) { $V3Body['name'] = $name }
+            if ($PSBoundParameters['content']) { $V3Body['content'] = $content }
+            if ($V3Body.Count -gt 0) {
+                $V3Ticket = Invoke-GlpiToolsRequest -Method Patch -Resource "/Assistance/Ticket/$ticket_id" -Body $V3Body
+            } else {
+                $V3Ticket = [pscustomobject]@{ id = $ticket_id }
+            }
+            # a requester or technician is added to the ticket team
+            if ($PSBoundParameters['requester_id']) {
+                Invoke-GlpiToolsRequest -Method Post -Resource "/Assistance/Ticket/$ticket_id/TeamMember" -Body @{ type = 'User'; id = $requester_id; role = 'requester' } | Out-Null
+            }
+            if ($PSBoundParameters['technician_id']) {
+                Invoke-GlpiToolsRequest -Method Post -Resource "/Assistance/Ticket/$ticket_id/TeamMember" -Body @{ type = 'User'; id = $technician_id; role = 'assigned' } | Out-Null
+            }
+            $V3Ticket
+            return
+        }
+
 
         $hashNewTicket = @{
         }

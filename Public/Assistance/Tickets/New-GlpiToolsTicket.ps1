@@ -258,6 +258,34 @@ function New-GlpiToolsTicket {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            # these options have no counterpart in the v3; they are refused before anything is created
+            if ($PSBoundParameters['Item_id'] -or $PSBoundParameters['Item_type']) {
+                Assert-GlpiToolsV3Supported -Name '-item_id/-item_type'
+            }
+            if ($DisableNotification) {
+                Assert-GlpiToolsV3Supported -Name '-DisableNotification'
+            }
+            $V3Body = @{ name = $name; content = $content; type = $type_id }
+            if ($PSBoundParameters['Urgency']) { $V3Body['urgency'] = $urgency_id }
+            if ($PSBoundParameters['Impact']) { $V3Body['impact'] = $impact_id }
+            if ($PSBoundParameters['Priority']) { $V3Body['priority'] = $priority_id }
+            if ($PSBoundParameters['Type'] -eq 'Request' -and $PSBoundParameters['ApprovalRequired']) { $V3Body['global_validation'] = 2 }
+            if ($PSBoundParameters['itilcategories_id']) { $V3Body['category'] = @{ id = $itilcategories_id } }
+            if ($PSBoundParameters['requesttypes_id']) { $V3Body['request_type'] = @{ id = $requesttypes_id } }
+            $V3Ticket = Invoke-GlpiToolsRequest -Method Post -Resource '/Assistance/Ticket' -Body $V3Body
+            # a requester or technician becomes a member of the ticket team
+            if ($PSBoundParameters['requester_id']) {
+                Invoke-GlpiToolsRequest -Method Post -Resource "/Assistance/Ticket/$($V3Ticket.id)/TeamMember" -Body @{ type = 'User'; id = $requester_id; role = 'requester' } | Out-Null
+            }
+            if ($PSBoundParameters['technician_id']) {
+                Invoke-GlpiToolsRequest -Method Post -Resource "/Assistance/Ticket/$($V3Ticket.id)/TeamMember" -Body @{ type = 'User'; id = $technician_id; role = 'assigned' } | Out-Null
+            }
+            $V3Ticket
+            return
+        }
+
 
         $hashNewTicket = @{
             name                = $name

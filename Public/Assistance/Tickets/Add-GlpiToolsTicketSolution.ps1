@@ -65,6 +65,12 @@ function Add-GlpiToolsTicketSolution {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Invoke-GlpiToolsRequest -Method Post -Resource "/Assistance/Ticket/$ticket_id/Timeline/Solution" -Body @{ content = $content; type = @{ id = $solutiontype_id } }
+            return
+        }
+
 
         $hashNewTicket = @{
             content           = $content

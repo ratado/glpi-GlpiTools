@@ -130,6 +130,39 @@ function Get-GlpiToolsTickets {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            switch ($ChoosenParam) {
+                All {
+                    # the legacy listing leaves the trash out
+                    Invoke-GlpiToolsRequest -Method Get -Resource '/Assistance/Ticket' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All
+                }
+                TicketId {
+                    # the v3 answer already carries the names of the related items; only the extras that exist in the v3 are supported
+                    if ($Parameter -and $Parameter -notin 'ExpandDropdowns', 'WithDocuments') {
+                        Assert-GlpiToolsV3Supported -Name "-Parameter $Parameter"
+                    }
+                    foreach ($TId in $TicketId) {
+                        try {
+                            $V3Ticket = Invoke-GlpiToolsRequest -Method Get -Resource "/Assistance/Ticket/$TId"
+                            if ($Parameter -eq 'WithDocuments') {
+                                $V3Ticket | Add-Member -NotePropertyName '_documents' -NotePropertyValue @(Invoke-GlpiToolsRequest -Method Get -Resource "/Assistance/Ticket/$TId/Timeline/Document" -All)
+                            }
+                            $V3Ticket
+                        } catch {
+                            # only a missing ticket is skipped; other failures are reported
+                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
+                            Write-Verbose -Message "Ticket ID = $TId is not found"
+                        }
+                    }
+                }
+                TicketName {
+                    Search-GlpiToolsItems -SearchFor Ticket -SearchType contains -SearchValue $TicketName -SearchInTrash $SearchInTrash
+                }
+            }
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{

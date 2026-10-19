@@ -92,6 +92,12 @@ function Add-GlpiToolsTicketItem {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Add-GlpiToolsTicketItem'
+            return
+        }
+
 
         Try {
             Write-Verbose "Invoking API to add Item with id $($Item_id) of type $item_type to ticket $ticket_id"
