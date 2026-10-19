@@ -27,6 +27,18 @@ function Get-GlpiToolsSessionToken {
     
     process {
 
+        # API v3: the access token expires, so it is renewed (or requested) when needed
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $Current = $global:GlpiToolsSessionToken
+            if ($null -eq $Current -or ($Current.ExpiresAt -and [datetime]::UtcNow -ge $Current.ExpiresAt)) {
+                Update-GlpiToolsAccessToken
+            }
+            else {
+                $Current
+            }
+            return
+        }
+
         if($global:GlpiToolsSessionToken -eq $null){
 			Set-GlpiToolsInitSession
 		}
