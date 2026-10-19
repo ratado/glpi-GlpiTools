@@ -1,0 +1,75 @@
+{
+    "id": 2,
+    "name": "VERIF ORIGEM 5358",
+    "content": "<p>A\u00e7\u00e3o &amp; \u00e7edilha &lt;script&gt;x&lt;\/script&gt;<\/p>",
+    "is_deleted": false,
+    "urgency": 3,
+    "impact": 3,
+    "priority": 3,
+    "actiontime": 0,
+    "begin_waiting_date": "2026-10-05T19:41:06-03:00",
+    "waiting_duration": 0,
+    "resolution_duration": 0,
+    "close_duration": 0,
+    "resolution_date": null,
+    "date_creation": null,
+    "date_mod": "2026-10-05T19:41:06-03:00",
+    "date": null,
+    "date_solve": "2026-10-05T19:41:06-03:00",
+    "date_close": null,
+    "type": 1,
+    "external_id": null,
+    "take_into_account_date": "2026-10-05T10:27:08-03:00",
+    "take_into_account_duration": 0,
+    "sla_waiting_duration": 0,
+    "global_validation": 1,
+    "status": {
+        "id": 5,
+        "name": "Solucionado"
+    },
+    "user_recipient": {
+        "id": 2,
+        "username": "glpi"
+    },
+    "user_editor": {
+        "id": 2,
+        "username": "glpi"
+    },
+    "category": {
+        "id": 6,
+        "name": "VC_ORIG_5358"
+    },
+    "location": null,
+    "request_type": {
+        "id": 1,
+        "name": "Helpdesk"
+    },
+    "sla_ttr": null,
+    "sla_tto": null,
+    "sla_level_ttr": null,
+    "entity": {
+        "id": 1,
+        "name": "IBGE",
+        "completename": "Entidade raiz > IBGE"
+    },
+    "costs": [],
+    "ola_waiting_duration": 0,
+    "ola_ttr_begin_date": null,
+    "ola_tto_begin_date": null,
+    "internal_resolution_date": null,
+    "internal_take_into_account_date": null,
+    "ola_ttr": [],
+    "ola_tto": [],
+    "ola_level_ttr": null,
+    "team": [
+        {
+            "_type": "UserTeamMember",
+            "id": 3,
+            "role": "requester",
+            "user": {
+                "id": 2,
+                "username": "glpi"
+            }
+        }
+    ]
+}

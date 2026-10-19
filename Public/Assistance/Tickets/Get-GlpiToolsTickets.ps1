@@ -136,7 +136,7 @@ function Get-GlpiToolsTickets {
             switch ($PSCmdlet.ParameterSetName) {
                 All {
                     # the legacy listing leaves the trash out
-                    Invoke-GlpiToolsRequest -Method Get -Resource '/Assistance/Ticket' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All
+                    Invoke-GlpiToolsRequest -Method Get -Resource '/Assistance/Ticket' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType Ticket -Raw
                 }
                 TicketId {
                     # the v3 answer already carries the names of the related items; only the extras that exist in the v3 are supported
@@ -163,7 +163,8 @@ function Get-GlpiToolsTickets {
                                 }
                                 $V3Ticket | Add-Member -NotePropertyName '_documents' -NotePropertyValue $V3Documents
                             }
-                            $V3Ticket
+                            # the legacy properties are returned, converted to names unless -Raw is used
+                            $V3Ticket | ConvertFrom-GlpiToolsV3Item -ItemType Ticket -Raw:$Raw
                         }
                     }
                 }
