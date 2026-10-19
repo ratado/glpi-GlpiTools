@@ -30,15 +30,24 @@ function Update-GlpiToolsAccessToken {
 
     # try the refresh token first; a rejected one is not an error, the password grant follows
     $Current = $global:GlpiToolsSessionToken
-    if (-not $NewSession -and $Current.RefreshToken) {
+    $OldRefreshToken = $null
+    if ($Current.RefreshToken) {
+        # the refresh token is kept as SecureString in the session
+        $OldRefreshToken = [System.Net.NetworkCredential]::new('', $Current.RefreshToken).Password
+    }
+    if (-not $NewSession -and $OldRefreshToken) {
         try {
             $Response = Invoke-GlpiToolsTokenRequest -Body @{
                 grant_type    = 'refresh_token'
-                refresh_token = $Current.RefreshToken
+                refresh_token = $OldRefreshToken
                 client_id     = $GlpiConfig.ClientId
                 client_secret = $GlpiConfig.ClientSecret
             }
         } catch {
+            # only a rejected grant falls back to the password; network and server failures are reported as they are
+            if ($_.FullyQualifiedErrorId -notlike 'GlpiOAuth.invalid_grant*') {
+                throw
+            }
             Write-Verbose "Refresh token was not accepted, using the password grant"
         }
     }
@@ -54,9 +63,13 @@ function Update-GlpiToolsAccessToken {
         }
     }
 
-    # expiry is kept 60 seconds early, so a token is never used right at its limit
-    $ExpiresAt = [datetime]::UtcNow.AddSeconds([int]$Response.expires_in - 60)
+    # expiry is kept early (60 seconds, or half of a short lifetime), so a token is never used right at its limit
+    $Lifetime = if ([int]$Response.expires_in -gt 0) { [int]$Response.expires_in } else { 3600 }
+    $ExpiresAt = [datetime]::UtcNow.AddSeconds($Lifetime - [math]::Min(60, $Lifetime / 2))
 
-    Set-GlpiToolsSessionToken -SessionToken $Response.access_token -RefreshToken $Response.refresh_token -ExpiresAt $ExpiresAt -TokenType $Response.token_type
+    # a response without a new refresh token keeps the previous one
+    $NewRefreshToken = if ($Response.refresh_token) { $Response.refresh_token } else { $OldRefreshToken }
+
+    Set-GlpiToolsSessionToken -SessionToken $Response.access_token -RefreshToken $NewRefreshToken -ExpiresAt $ExpiresAt -TokenType $Response.token_type
     $global:GlpiToolsSessionToken
 }

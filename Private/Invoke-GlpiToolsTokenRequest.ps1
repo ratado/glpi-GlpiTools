@@ -40,19 +40,24 @@ function Invoke-GlpiToolsTokenRequest {
     try {
         Invoke-RestMethod @params
     } catch {
+        # keep the caught error: inside the switch the automatic variable is the switch value
+        $Caught = $_
         # read the OAuth error from the response body, if there is one
         $OAuthError = $null
-        if ($_.ErrorDetails.Message) {
-            try { $OAuthError = $_.ErrorDetails.Message | ConvertFrom-Json } catch { $OAuthError = $null }
+        if ($Caught.ErrorDetails.Message) {
+            try { $OAuthError = $Caught.ErrorDetails.Message | ConvertFrom-Json } catch { $OAuthError = $null }
         }
-        switch ($OAuthError.error) {
-            'invalid_client' { throw "GLPI rejected the OAuth client (invalid_client). Check ClientId and ClientSecret in Set-GlpiToolsConfig." }
-            'invalid_grant' { throw "GLPI rejected the credentials or the refresh token (invalid_grant): $($OAuthError.error_description)" }
-            'invalid_scope' { throw "GLPI rejected the requested scope (invalid_scope). Check the scopes enabled for the OAuth client." }
+        $Message = switch ($OAuthError.error) {
+            'invalid_client' { "GLPI rejected the OAuth client (invalid_client). Check ClientId and ClientSecret in Set-GlpiToolsConfig." }
+            'invalid_grant' { "GLPI rejected the credentials or the refresh token (invalid_grant): $($OAuthError.error_description)" }
+            'invalid_scope' { "GLPI rejected the requested scope (invalid_scope). Check the scopes enabled for the OAuth client." }
             default {
-                if ($OAuthError.error) { throw "GLPI token request failed ($($OAuthError.error)): $($OAuthError.error_description)" }
-                throw "GLPI token request failed: $($_.Exception.Message)"
+                if ($OAuthError.error) { "GLPI token request failed ($($OAuthError.error)): $($OAuthError.error_description)" }
+                else { "GLPI token request failed: $($Caught.Exception.Message)" }
             }
         }
+        # the error id lets callers tell a rejected grant from a network or server failure
+        $ErrorId = if ($OAuthError.error) { "GlpiOAuth.$($OAuthError.error)" } else { 'GlpiOAuth.RequestFailed' }
+        $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new([System.Exception]::new($Message), $ErrorId, [System.Management.Automation.ErrorCategory]::AuthenticationError, $null))
     }
 }

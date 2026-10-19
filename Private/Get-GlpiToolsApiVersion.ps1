@@ -19,11 +19,22 @@ function Get-GlpiToolsApiVersion {
     [CmdletBinding()]
     param ()
 
-    $GlpiConfig = Get-GlpiToolsConfig -WarningAction SilentlyContinue
-
-    if ($GlpiConfig -and $GlpiConfig.ApiVersion -eq 'v3') {
-        'v3'
+    # only the plain ApiVersion field is read, so no secret is decrypted on every call
+    if ($IsLinux) {
+        $Config = Join-Path -Path "$env:HOME/.config/GlpiToolsConfig\" -ChildPath 'Configuration.json'
     } else {
-        'v1'
+        $Config = Join-Path -Path "$env:LOCALAPPDATA\GlpiToolsConfig\" -ChildPath 'Configuration.json'
     }
+
+    if (Test-Path -Path $Config) {
+        try {
+            $ConfigData = Get-Content -Path $Config -Raw | ConvertFrom-Json
+        } catch {
+            return 'v1'
+        }
+        if ($ConfigData.ApiVersion -eq 'v3') {
+            return 'v3'
+        }
+    }
+    'v1'
 }

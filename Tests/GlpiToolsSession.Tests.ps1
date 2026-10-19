@@ -60,7 +60,7 @@ Describe 'API v3 session' {
     It 'stores refresh token, type and an expiry 60 seconds before expires_in' {
         Set-GlpiToolsInitSession | Out-Null
         $t = $global:GlpiToolsSessionToken
-        $t.RefreshToken | Should -Be 'RT1'
+        [System.Net.NetworkCredential]::new('', $t.RefreshToken).Password | Should -Be 'RT1'
         $t.TokenType | Should -Be 'Bearer'
         ($t.ExpiresAt - [datetime]::UtcNow).TotalSeconds | Should -BeGreaterThan 3500
         ($t.ExpiresAt - [datetime]::UtcNow).TotalSeconds | Should -BeLessThan 3541
@@ -84,9 +84,43 @@ Describe 'API v3 session' {
     It 'repeats the password grant when the refresh token is rejected' {
         Set-GlpiToolsInitSession | Out-Null
         $global:GlpiToolsSessionToken.ExpiresAt = [datetime]::UtcNow.AddMinutes(-1)
-        Mock Invoke-RestMethod { throw 'rejected' } -ModuleName GlpiTools -ParameterFilter { $Body.grant_type -eq 'refresh_token' }
+        Mock Invoke-RestMethod {
+            $e = [System.Management.Automation.ErrorRecord]::new([System.Exception]::new('Bad Request'), 'x', 'NotSpecified', $null)
+            $e.ErrorDetails = [System.Management.Automation.ErrorDetails]::new('{"error":"invalid_grant","error_description":"expired"}')
+            throw $e
+        } -ModuleName GlpiTools -ParameterFilter { $Body.grant_type -eq 'refresh_token' }
         Mock Invoke-RestMethod { [pscustomobject]@{ token_type = 'Bearer'; expires_in = 3600; access_token = 'AT2'; refresh_token = 'RT2' } } -ModuleName GlpiTools -ParameterFilter { $Body.grant_type -eq 'password' }
         (Get-GlpiToolsSessionToken).SessionToken | Should -Be 'AT2'
+    }
+    It 'does not send the password when the refresh fails for another reason' {
+        Set-GlpiToolsInitSession | Out-Null
+        $global:GlpiToolsSessionToken.ExpiresAt = [datetime]::UtcNow.AddMinutes(-1)
+        Mock Invoke-RestMethod { throw 'server error 500' } -ModuleName GlpiTools -ParameterFilter { $Body.grant_type -eq 'refresh_token' }
+        { Get-GlpiToolsSessionToken } | Should -Throw '*server error 500*'
+        # the password was sent only by the initial session, not by the failed renewal
+        Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Body.grant_type -eq 'password' } -Scope It
+    }
+    It 'keeps the previous refresh token when the response has none' {
+        Set-GlpiToolsInitSession | Out-Null
+        $global:GlpiToolsSessionToken.ExpiresAt = [datetime]::UtcNow.AddMinutes(-1)
+        Mock Invoke-RestMethod { [pscustomobject]@{ token_type = 'Bearer'; expires_in = 3600; access_token = 'AT3' } } -ModuleName GlpiTools
+        Get-GlpiToolsSessionToken | Out-Null
+        [System.Net.NetworkCredential]::new('', $global:GlpiToolsSessionToken.RefreshToken).Password | Should -Be 'RT1'
+    }
+    It 'falls back to one hour when expires_in is missing or too short' -ForEach @(@{ Value = $null }, @{ Value = 0 }, @{ Value = 30 }) {
+        Mock Invoke-RestMethod { [pscustomobject]@{ token_type = 'Bearer'; expires_in = $Value; access_token = 'AT'; refresh_token = 'R' } } -ModuleName GlpiTools
+        Set-GlpiToolsInitSession | Out-Null
+        $left = ($global:GlpiToolsSessionToken.ExpiresAt - [datetime]::UtcNow).TotalSeconds
+        $left | Should -BeGreaterThan 10
+    }
+    It 'does not print the refresh token' {
+        $out = Set-GlpiToolsInitSession | Out-String
+        $out | Should -Not -Match 'RT1'
+        (Get-GlpiToolsSessionToken | Out-String) | Should -Not -Match 'RT1'
+    }
+    It 'reports the cause of a connection failure' {
+        Mock Invoke-RestMethod { throw 'Connection refused' } -ModuleName GlpiTools
+        { Set-GlpiToolsInitSession } | Should -Throw '*Connection refused*'
     }
     It 'adds SkipCertificateCheck to the token request when configured' {
         Set-GlpiToolsConfig -ApiVersion v3 -PathToGlpi 'https://glpi.example.com' -ClientId c -ClientSecret s -Username u -Password p -SkipCertificateCheck
