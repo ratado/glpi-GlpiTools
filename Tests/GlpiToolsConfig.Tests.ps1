@@ -6,13 +6,16 @@ BeforeAll {
     New-Item -ItemType Directory -Path $script:TempHome | Out-Null
     $env:HOME = $script:TempHome
     $env:LOCALAPPDATA = $script:TempHome
-    Import-Module (Join-Path $PSScriptRoot '..' 'GlpiTools.psd1') -Force
-    # private functions are reached through the module that loads the .ps1 files
-    $script:GlpiModule = (Get-Module GlpiTools).NestedModules | Where-Object { $_.Name -eq 'GlpiTools' } | Select-Object -First 1
+    # the script module is imported directly so that private functions are reachable and mockable
+    Import-Module (Join-Path $PSScriptRoot '..' 'GlpiTools.psm1') -Force
+    # the tests write and delete files, so they must stay inside the temporary home
+    $script:SavedSession = $global:GlpiToolsSessionToken
     $script:ConfigFile = if ($IsLinux) { "$env:HOME/.config/GlpiToolsConfig\Configuration.json" } else { "$env:LOCALAPPDATA\GlpiToolsConfig\Configuration.json" }
+    if (-not $script:ConfigFile.StartsWith($script:TempHome)) { throw "Config path is outside the temporary home: $script:ConfigFile" }
 }
 
 AfterAll {
+    $global:GlpiToolsSessionToken = $script:SavedSession
     $env:HOME = $script:OriginalHome
     $env:LOCALAPPDATA = $script:OriginalLocalAppData
     Remove-Item -Path $script:TempHome -Recurse -Force -ErrorAction SilentlyContinue
@@ -42,7 +45,7 @@ Describe 'Set-GlpiToolsConfig / Get-GlpiToolsConfig' {
             $raw | Should -Not -Match 'user456'
         }
         It 'reports v1 through Get-GlpiToolsApiVersion' {
-            & $GlpiModule { Get-GlpiToolsApiVersion } | Should -Be 'v1'
+            Get-GlpiToolsApiVersion | Should -Be 'v1'
         }
     }
 
@@ -84,7 +87,7 @@ Describe 'Set-GlpiToolsConfig / Get-GlpiToolsConfig' {
             $raw | Should -Not -Match '"pw"'
         }
         It 'reports v3 through Get-GlpiToolsApiVersion' {
-            & $GlpiModule { Get-GlpiToolsApiVersion } | Should -Be 'v3'
+            Get-GlpiToolsApiVersion | Should -Be 'v3'
         }
         It 'restricts file permissions on Linux' -Skip:(-not $IsLinux) {
             (Get-Item $ConfigFile).UnixFileMode | Should -Be ([System.IO.UnixFileMode]'UserRead, UserWrite')
@@ -106,8 +109,17 @@ Describe 'Set-GlpiToolsConfig / Get-GlpiToolsConfig' {
         It 'rejects -ApiVersion v1 together with OAuth parameters' {
             { Set-GlpiToolsConfig -ApiVersion v1 -PathToGlpi 'https://x' -ClientId 'c' -ClientSecret 's' -Username 'u' -Password 'p' } | Should -Throw
         }
-        It 'rejects v3 without ApiVersion v3' {
+        It 'rejects -ApiVersion v3 with legacy tokens' {
             { Set-GlpiToolsConfig -ApiVersion v3 -AppToken 'a' -UserToken 'b' -PathToGlpi 'https://x' } | Should -Throw
+        }
+        It 'rejects empty secrets and keeps the previous config' {
+            Set-GlpiToolsConfig -AppToken 'keep' -UserToken 'me' -PathToGlpi 'http://x/apirest.php'
+            { Set-GlpiToolsConfig -PathToGlpi 'https://x' -ClientId 'c' -ClientSecret '' -Username 'u' -Password 'p' } | Should -Throw
+            (Get-GlpiToolsConfig).AppToken | Should -Be 'keep'
+        }
+        It 'infers v3 when ApiVersion is omitted' {
+            Set-GlpiToolsConfig -PathToGlpi 'https://x' -ClientId 'c' -ClientSecret 's' -Username 'u' -Password 'p'
+            (Get-GlpiToolsConfig).ApiVersion | Should -Be 'v3'
         }
     }
 
@@ -117,6 +129,40 @@ Describe 'Set-GlpiToolsConfig / Get-GlpiToolsConfig' {
             $r = Get-GlpiToolsConfig -WarningVariable w -WarningAction SilentlyContinue
             $r | Should -BeNullOrEmpty
             $w | Should -Not -BeNullOrEmpty
+        }
+    }
+
+    Context 'certificate option in requests' {
+        BeforeEach {
+            Mock Invoke-RestMethod { 'ok' } -ModuleName GlpiTools
+        }
+        It 'adds SkipCertificateCheck when the option is on' {
+            Set-GlpiToolsConfig -AppToken 'a' -UserToken 'b' -PathToGlpi 'https://x/apirest.php' -SkipCertificateCheck
+            Invoke-GlpiToolsRequestApi -Params @{ uri = 'https://x'; method = 'get' } | Out-Null
+            Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -ParameterFilter { $SkipCertificateCheck -eq $true } -Exactly 1
+        }
+        It 'does not add it by default' {
+            Set-GlpiToolsConfig -AppToken 'a' -UserToken 'b' -PathToGlpi 'https://x/apirest.php'
+            Invoke-GlpiToolsRequestApi -Params @{ uri = 'https://x'; method = 'get' } | Out-Null
+            Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -ParameterFilter { -not $SkipCertificateCheck } -Exactly 1
+        }
+    }
+
+    Context 'session closing on reconfiguration' {
+        BeforeEach {
+            Mock Invoke-RestMethod { 'ok' } -ModuleName GlpiTools
+        }
+        It 'calls killSession for an open legacy session' {
+            Set-GlpiToolsConfig -AppToken 'a' -UserToken 'b' -PathToGlpi 'https://x/apirest.php'
+            Set-GlpiToolsSessionToken -SessionToken 'tok'
+            Set-GlpiToolsConfig -AppToken 'a2' -UserToken 'b2' -PathToGlpi 'https://x/apirest.php'
+            Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -ParameterFilter { $Uri -match 'killSession' } -Exactly 1
+            $global:GlpiToolsSessionToken | Should -BeNullOrEmpty
+        }
+        It 'does not call the server when there is no session' {
+            Set-GlpiToolsConfig -AppToken 'a3' -UserToken 'b3' -PathToGlpi 'https://x/apirest.php'
+            Set-GlpiToolsConfig -AppToken 'a4' -UserToken 'b4' -PathToGlpi 'https://x/apirest.php'
+            Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 0
         }
     }
 }

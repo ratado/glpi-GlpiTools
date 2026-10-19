@@ -30,6 +30,13 @@ function Invoke-GlpiToolsRequestApi {
     
     process {
 
+        # honour the certificate option stored by Set-GlpiToolsConfig, without touching the caller's hashtable
+        $Params = $Params.Clone()
+        $GlpiConfig = Get-GlpiToolsConfig -WarningAction SilentlyContinue
+        if ($GlpiConfig -and $GlpiConfig.SkipCertificateCheck -and -not $Params.ContainsKey('SkipCertificateCheck')) {
+            $Params['SkipCertificateCheck'] = $true
+        }
+
         try {
 			$result = Invoke-RestMethod @Params -ErrorVariable ErrResp
 		}

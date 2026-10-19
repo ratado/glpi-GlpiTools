@@ -26,6 +26,7 @@
     OAuth scopes requested at the token endpoint, separated by space. Default is api. API v3 only.
 .PARAMETER SkipCertificateCheck
     Stores the option to ignore TLS certificate validation (self-signed certificates). Off by default.
+    Applied to every request made through the module.
 .EXAMPLE
     PS C:\Users\Wojtek> Set-GlpiToolsConfig -AppToken 'dsahu2uh2uh32gt43tf434t' -UserToken 'sdasg3123hg3t1ftf21t3' -PathToGlpi 'http://pathtoglpi/glpi'
     This example show how to set GLPI config file for the legacy API
@@ -50,19 +51,20 @@ function Set-GlpiToolsConfig {
         [parameter(Mandatory = $true, ParameterSetName = 'Legacy')]
         [parameter(Mandatory = $true, ParameterSetName = 'V3Password')]
         [string]$PathToGlpi,
-        [parameter(Mandatory = $false, ParameterSetName = 'Legacy')]
-        [parameter(Mandatory = $true, ParameterSetName = 'V3Password')]
+        [parameter(Mandatory = $false)]
         [ValidateSet('v1', 'v3')]
-        [string]$ApiVersion = 'v1',
+        [string]$ApiVersion,
         [parameter(Mandatory = $true, ParameterSetName = 'V3Password')]
+        [ValidateNotNullOrEmpty()]
         [string]$ClientId,
         [parameter(Mandatory = $true, ParameterSetName = 'V3Password')]
-        [ValidateScript({ $_ -is [string] -or $_ -is [securestring] })]
+        [ValidateScript({ ($_ -is [string] -and $_ -ne '') -or ($_ -is [securestring] -and $_.Length -gt 0) })]
         [object]$ClientSecret,
         [parameter(Mandatory = $true, ParameterSetName = 'V3Password')]
+        [ValidateNotNullOrEmpty()]
         [string]$Username,
         [parameter(Mandatory = $true, ParameterSetName = 'V3Password')]
-        [ValidateScript({ $_ -is [string] -or $_ -is [securestring] })]
+        [ValidateScript({ ($_ -is [string] -and $_ -ne '') -or ($_ -is [securestring] -and $_.Length -gt 0) })]
         [object]$Password,
         [parameter(Mandatory = $false, ParameterSetName = 'V3Password')]
         [string]$Scope = 'api',
@@ -83,22 +85,25 @@ function Set-GlpiToolsConfig {
         }
 
         # the legacy set accepts only the v1 flavour
-        if ($PSCmdlet.ParameterSetName -eq 'Legacy' -and $ApiVersion -ne 'v1') {
-            throw "ApiVersion '$ApiVersion' requires the OAuth parameters (ClientId, ClientSecret, Username, Password)."
+        if ($PSCmdlet.ParameterSetName -eq 'Legacy' -and $ApiVersion -eq 'v3') {
+            throw "-ApiVersion v3 requires -ClientId, -ClientSecret, -Username and -Password."
         }
-        # the v3 set accepts only the v3 flavour
-        if ($PSCmdlet.ParameterSetName -eq 'V3Password' -and $ApiVersion -ne 'v3') {
-            throw "OAuth parameters require -ApiVersion v3."
+        # the OAuth set accepts only the v3 flavour
+        if ($PSCmdlet.ParameterSetName -eq 'V3Password' -and $ApiVersion -eq 'v1') {
+            throw "-ApiVersion v1 cannot be combined with the OAuth parameters (-ClientId, -ClientSecret, -Username, -Password)."
+        }
+
+        # close the legacy session opened with the previous configuration, while its settings are still on disk
+        if ($global:GlpiToolsSessionToken -and (Test-Path -Path $Config) -and (Get-GlpiToolsApiVersion) -eq 'v1') {
+            try {
+                Set-GlpiToolsKillSession | Out-Null
+            } catch {
+                Write-Verbose "Could not close the previous session on the server"
+            }
         }
 
         if (!(Test-Path $ConfigPath)) {
             New-Item -Path $ConfigPath -ItemType Directory | Out-Null
-        } else {
-            try {
-                Remove-Item -Path $Config -ErrorAction Stop    
-            } catch {
-                
-            }
         }
     }
 
@@ -143,19 +148,23 @@ function Set-GlpiToolsConfig {
                 'SkipCertificateCheck' = [bool]$SkipCertificateCheck
             }
         }
-        $ConfigHash | ConvertTo-Json | Out-File -FilePath $Config
+        # the previous file is replaced only after the new content is ready
+        Remove-Item -Path $Config -ErrorAction SilentlyContinue
 
-        # restrict the file to the owner, since the protection of ConvertFrom-SecureString is weaker on Linux
+        # create the file empty and restrict it to the owner before any secret is written, since the protection of ConvertFrom-SecureString is weaker on Linux
+        New-Item -Path $Config -ItemType File -Force | Out-Null
         if ($IsLinux) {
             try {
                 # the config path may contain a literal backslash, so the provider resolves it first
-                [System.IO.File]::SetUnixFileMode((Get-Item -Path $Config).FullName, [System.IO.UnixFileMode]'UserRead, UserWrite')
+                [System.IO.File]::SetUnixFileMode((Get-Item -LiteralPath $Config).FullName, [System.IO.UnixFileMode]'UserRead, UserWrite')
+                [System.IO.File]::SetUnixFileMode((Get-Item -LiteralPath $ConfigPath).FullName, [System.IO.UnixFileMode]'UserRead, UserWrite, UserExecute')
             } catch {
-                Write-Verbose "Could not restrict permissions of $Config"
+                Write-Warning "Could not restrict permissions of $Config"
             }
         }
+        $ConfigHash | ConvertTo-Json | Out-File -FilePath $Config
 
-        # drop any session opened with a previous configuration
+        # drop the local token of the previous configuration
         Set-GlpiToolsSessionToken -ResetToken
     }
 }

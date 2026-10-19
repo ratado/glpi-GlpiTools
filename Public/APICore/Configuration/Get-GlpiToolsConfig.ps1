@@ -43,20 +43,10 @@ function Get-GlpiToolsConfig {
         if (Test-Path -Path $Config) {
             $ConfigData = Get-Content $Config | ConvertFrom-Json
         
-            $AppTokenSS = if ($ConfigData.AppToken) { ConvertTo-SecureString $ConfigData.AppToken } else { New-Object System.Security.SecureString }
-            $UserTokenSS = if ($ConfigData.UserToken) { ConvertTo-SecureString $ConfigData.UserToken } else { New-Object System.Security.SecureString }
-            $PathToGlpiSS = ConvertTo-SecureString $ConfigData.PathToGlpi
+            $AppTokenDecrypt = ConvertFrom-GlpiConfigSecret -Value $ConfigData.AppToken
+            $UserTokenDecrypt = ConvertFrom-GlpiConfigSecret -Value $ConfigData.UserToken
+            $PathToGlpiDecrypt = ConvertFrom-GlpiConfigSecret -Value $ConfigData.PathToGlpi
 
-            if ($IsLinux) {
-                $AppTokenDecrypt = [System.Runtime.InteropServices.marshal]::PtrToStringUni([System.Runtime.InteropServices.marshal]::SecureStringToGlobalAllocUnicode($AppTokenSS))
-                $UserTokenDecrypt = [System.Runtime.InteropServices.marshal]::PtrToStringUni([System.Runtime.InteropServices.marshal]::SecureStringToGlobalAllocUnicode($UserTokenSS))
-                $PathToGlpiDecrypt = [System.Runtime.InteropServices.marshal]::PtrToStringUni([System.Runtime.InteropServices.marshal]::SecureStringToGlobalAllocUnicode($PathToGlpiSS))
-            } else {
-                $AppTokenDecrypt = [System.Runtime.InteropServices.marshal]::PtrToStringAuto([System.Runtime.InteropServices.marshal]::SecureStringToBSTR($AppTokenSS))
-                $UserTokenDecrypt = [System.Runtime.InteropServices.marshal]::PtrToStringAuto([System.Runtime.InteropServices.marshal]::SecureStringToBSTR($UserTokenSS))
-                $PathToGlpiDecrypt = [System.Runtime.InteropServices.marshal]::PtrToStringAuto([System.Runtime.InteropServices.marshal]::SecureStringToBSTR($PathToGlpiSS))
-            }
-            
             $ConfigHash = [ordered]@{
                 'AppToken' = $AppTokenDecrypt
                 'UserToken' = $UserTokenDecrypt
