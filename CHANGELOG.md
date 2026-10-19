@@ -10,6 +10,7 @@ All notable changes to this project are documented in this file.
 - With the REST API v3 configured, the generic commands (`Get-`, `Add-`, `Update-` and `Remove-GlpiToolsItems`, `Search-GlpiToolsItems`), the entity and profile commands, the system settings and the documents list now work. Commands with no equivalent in the API v3 stop with a clear message.
 - With the REST API v3 configured, the ticket commands work: listing, creating and updating tickets, and adding followups, solutions and tasks. Linking an item to a ticket, `-DisableNotification` and some `-Parameter` options are not available in the API v3 and stop with a clear message.
 - With the REST API v3 configured, `Get-GlpiToolsTickets` returns the same properties and values as the legacy API (IDs with `-Raw`, names without it).
+- With the REST API v3 configured, `Get-GlpiToolsChanges`, `Get-GlpiToolsProblems` and `Get-GlpiToolsRecurrentTickets` work and return the same properties as the legacy API.
 - Changing the configuration now closes the session that was open on the GLPI server.
 - The configuration file is now readable only by its owner on Linux.
 - Existing configurations keep working as the legacy API, with no changes needed.

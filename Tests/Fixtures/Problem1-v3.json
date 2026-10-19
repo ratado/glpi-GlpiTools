@@ -1,0 +1,69 @@
+{
+    "id": 1,
+    "name": "IBGETOOLKIT-QA-P1",
+    "content": "qa toolkit",
+    "is_deleted": false,
+    "urgency": 3,
+    "impact": 3,
+    "priority": 3,
+    "actiontime": 0,
+    "begin_waiting_date": null,
+    "waiting_duration": 0,
+    "resolution_duration": 0,
+    "close_duration": 0,
+    "resolution_date": null,
+    "date_creation": "2026-10-07T08:55:51-03:00",
+    "date_mod": "2026-10-07T08:59:40-03:00",
+    "date": "2026-10-07T08:55:51-03:00",
+    "date_solve": null,
+    "date_close": null,
+    "status": {
+        "id": 2,
+        "name": "Em atendimento (atribu\u00eddo)"
+    },
+    "user_recipient": {
+        "id": 2,
+        "username": "glpi"
+    },
+    "user_editor": {
+        "id": 2,
+        "username": "glpi"
+    },
+    "category": null,
+    "location": null,
+    "entity": {
+        "id": 0,
+        "name": "Entidade raiz",
+        "completename": "Entidade raiz"
+    },
+    "costs": [],
+    "team": [
+        {
+            "_type": "UserTeamMember",
+            "id": 1,
+            "role": "assigned",
+            "user": {
+                "id": 2,
+                "username": "glpi"
+            }
+        },
+        {
+            "_type": "GroupTeamMember",
+            "id": 1,
+            "role": "assigned",
+            "group": {
+                "id": 1,
+                "name": "Redes"
+            }
+        },
+        {
+            "_type": "UserTeamMember",
+            "id": 2,
+            "role": "assigned",
+            "user": {
+                "id": 4,
+                "username": "tech"
+            }
+        }
+    ]
+}

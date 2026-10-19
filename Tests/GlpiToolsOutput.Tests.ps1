@@ -112,3 +112,20 @@ Describe 'ConvertFrom-GlpiToolsV3Item decimals' {
         ($V3 | ConvertFrom-GlpiToolsV3Item -ItemType Computer -Raw).ticket_tco | Should -BeNullOrEmpty
     }
 }
+
+Describe 'ConvertFrom-GlpiToolsV3Item for changes and problems' {
+    It 'keeps order and values of the legacy API for <Type> <Id>' -ForEach @(
+        @{ Type = 'Change'; Id = 1 }
+        @{ Type = 'Problem'; Id = 1 }
+    ) {
+        $V3 = Get-Content -Path (Join-Path $PSScriptRoot 'Fixtures' "$Type$Id-v3.json") -Raw | ConvertFrom-Json -DateKind String
+        $V1 = Get-Content -Path (Join-Path $PSScriptRoot 'Fixtures' "$Type$Id-v1-Raw.json") -Raw | ConvertFrom-Json -DateKind String
+        $Converted = $V3 | ConvertFrom-GlpiToolsV3Item -ItemType $Type -Raw
+        $Names = @($Converted.PSObject.Properties.Name | Where-Object { $_ -ne 'team' })
+        $Names | Where-Object { $_ -notin $V1.PSObject.Properties.Name } | Should -BeNullOrEmpty
+        $Names | Should -Be @($V1.PSObject.Properties.Name | Where-Object { $_ -in $Names })
+        foreach ($Name in $Names) {
+            "${Name}: $(@($Converted.$Name) -join ',')" | Should -Be "${Name}: $(@($V1.$Name) -join ',')"
+        }
+    }
+}
