@@ -169,7 +169,7 @@ function Get-GlpiToolsTickets {
                     }
                 }
                 TicketName {
-                    Search-GlpiToolsItems -SearchFor Ticket -SearchType contains -SearchValue $TicketName -SearchInTrash $SearchInTrash
+                    Search-GlpiToolsItems -SearchFor Ticket -SearchType contains -SearchValue $TicketName -SearchInTrash $SearchInTrash | ConvertFrom-GlpiToolsV3Item -ItemType Ticket -Raw
                 }
             }
             return

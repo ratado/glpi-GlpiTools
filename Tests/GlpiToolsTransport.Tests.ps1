@@ -88,7 +88,7 @@ Describe 'Invoke-GlpiToolsRequest' {
         Set-GlpiToolsConfig -ApiVersion v3 -PathToGlpi 'https://glpi.example.com' -ClientId 'cid' -ClientSecret 'csecret' -Username 'glpi' -Password 'pw'
         # token grant answers and API answers are told apart by the URI
         Mock Invoke-RestMethod { [pscustomobject]@{ token_type = 'Bearer'; expires_in = 3600; access_token = 'AT1'; refresh_token = 'RT1' } } -ModuleName GlpiTools -ParameterFilter { $Uri -like '*/api.php/token' }
-        Mock Invoke-RestMethod { Set-Variable -Name $ResponseHeadersVariable -Value @{} -Scope 2; [pscustomobject]@{ id = 2 } } -ModuleName GlpiTools -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
+        Mock Invoke-GlpiToolsRestMethod { Set-Variable -Name $ResponseHeadersVariable -Value @{} -Scope 2; [pscustomobject]@{ id = 2 } } -ModuleName GlpiTools -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
     }
 
     It 'refuses to run with a legacy configuration' {
@@ -98,24 +98,24 @@ Describe 'Invoke-GlpiToolsRequest' {
     It 'sends the bearer token and the API version header to the right URL' {
         $r = Invoke-GlpiToolsRequest -Method Get -Resource '/Assistance/Ticket/2'
         $r.id | Should -Be 2
-        Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter {
+        Should -Invoke Invoke-GlpiToolsRestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter {
             $Uri -eq 'https://glpi.example.com/api.php/v3.0/Assistance/Ticket/2' -and $Method -eq 'Get' -and
             $Headers['Authorization'] -eq 'Bearer AT1' -and $Headers['GLPI-API-Version'] -eq '3.0.0' -and $Headers['Accept'] -eq 'application/json'
         }
     }
     It 'encodes the query string' {
         Invoke-GlpiToolsRequest -Method Get -Resource '/Assistance/Ticket' -Query @{ filter = 'name==a b;id=ge=2' } | Out-Null
-        Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Uri -eq 'https://glpi.example.com/api.php/v3.0/Assistance/Ticket?filter=name%3D%3Da%20b%3Bid%3Dge%3D2' }
+        Should -Invoke Invoke-GlpiToolsRestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Uri -eq 'https://glpi.example.com/api.php/v3.0/Assistance/Ticket?filter=name%3D%3Da%20b%3Bid%3Dge%3D2' }
     }
     It 'sends the body as JSON' {
         Invoke-GlpiToolsRequest -Method Post -Resource '/Assistance/Ticket' -Body @{ name = 'Ação' } | Out-Null
-        Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter {
+        Should -Invoke Invoke-GlpiToolsRestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter {
             $Method -eq 'Post' -and $ContentType -eq 'application/json' -and $Body -eq '{"name":"Ação"}'
         }
     }
     It 'reads every page of a listing' {
         # 3 pages of 2 items, total 5, reported by Content-Range
-        Mock Invoke-RestMethod {
+        Mock Invoke-GlpiToolsRestMethod {
             $start = [int]([regex]::Match($Uri, 'start=(\d+)').Groups[1].Value)
             $items = @($start..([math]::Min($start + 1, 4)) | ForEach-Object { [pscustomobject]@{ id = $_ } })
             Set-Variable -Name $ResponseHeadersVariable -Value @{ 'Content-Range' = @("$start-$($start + $items.Count - 1)/5") } -Scope 2
@@ -123,10 +123,10 @@ Describe 'Invoke-GlpiToolsRequest' {
         } -ModuleName GlpiTools -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
         $r = Invoke-GlpiToolsRequest -Method Get -Resource '/Assets/Computer' -All -PageSize 2
         $r.id | Should -Be @(0, 1, 2, 3, 4)
-        Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 3 -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
+        Should -Invoke Invoke-GlpiToolsRestMethod -ModuleName GlpiTools -Exactly 3 -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
     }
     It 'stops on a short page when Content-Range is missing' {
-        Mock Invoke-RestMethod {
+        Mock Invoke-GlpiToolsRestMethod {
             $start = [int]([regex]::Match($Uri, 'start=(\d+)').Groups[1].Value)
             Set-Variable -Name $ResponseHeadersVariable -Value @{} -Scope 2
             if ($start -eq 0) { @([pscustomobject]@{ id = 0 }, [pscustomobject]@{ id = 1 }) } else { @([pscustomobject]@{ id = 2 }) }
@@ -135,16 +135,16 @@ Describe 'Invoke-GlpiToolsRequest' {
         @($r).Count | Should -Be 3
     }
     It 'uses the limit of the caller as page size and stops on a repeated page' {
-        Mock Invoke-RestMethod {
+        Mock Invoke-GlpiToolsRestMethod {
             Set-Variable -Name $ResponseHeadersVariable -Value @{} -Scope 2
             @([pscustomobject]@{ id = 7 }, [pscustomobject]@{ id = 8 })
         } -ModuleName GlpiTools -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
         $r = Invoke-GlpiToolsRequest -Method Get -Resource '/Assets/Computer' -All -Query @{ limit = 2 }
         @($r).Count | Should -Be 2
-        Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 2 -ParameterFilter { $Uri -like '*limit=2*' }
+        Should -Invoke Invoke-GlpiToolsRestMethod -ModuleName GlpiTools -Exactly 2 -ParameterFilter { $Uri -like '*limit=2*' }
     }
     It 'returns file content as one byte array' {
-        Mock Invoke-RestMethod { Set-Variable -Name $ResponseHeadersVariable -Value @{} -Scope 2; , [byte[]](1, 2, 3) } -ModuleName GlpiTools -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
+        Mock Invoke-GlpiToolsRestMethod { Set-Variable -Name $ResponseHeadersVariable -Value @{} -Scope 2; , [byte[]](1, 2, 3) } -ModuleName GlpiTools -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
         $r = Invoke-GlpiToolsRequest -Method Get -Resource '/Management/Document/1/Download' -Accept 'application/octet-stream'
         $r -is [byte[]] | Should -BeTrue
         $r.Length | Should -Be 3
@@ -152,16 +152,16 @@ Describe 'Invoke-GlpiToolsRequest' {
     It 'does not send the context headers with -NoContext' {
         Set-GlpiToolsV3Context -EntityId 3
         Invoke-GlpiToolsRequest -Method Get -Resource '/session' -NoContext | Out-Null
-        Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Uri -like '*/v3.0/*' -and -not $Headers.ContainsKey('GLPI-Entity') }
+        Should -Invoke Invoke-GlpiToolsRestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Uri -like '*/v3.0/*' -and -not $Headers.ContainsKey('GLPI-Entity') }
         $global:GlpiToolsContext = $null
     }
     It 'returns an empty result for an empty listing' {
-        Mock Invoke-RestMethod { Set-Variable -Name $ResponseHeadersVariable -Value @{ 'Content-Range' = @('0--1/0') } -Scope 2; @() } -ModuleName GlpiTools -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
+        Mock Invoke-GlpiToolsRestMethod { Set-Variable -Name $ResponseHeadersVariable -Value @{ 'Content-Range' = @('0--1/0') } -Scope 2; @() } -ModuleName GlpiTools -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
         @(Invoke-GlpiToolsRequest -Method Get -Resource '/Assets/Computer' -All).Count | Should -Be 0
     }
     It 'renews the token once on 401 and repeats the request' {
         $script:calls = 0
-        Mock Invoke-RestMethod {
+        Mock Invoke-GlpiToolsRestMethod {
             $script:calls++
             if ($script:calls -eq 1) {
                 $resp = [System.Net.Http.HttpResponseMessage]::new([System.Net.HttpStatusCode]::Unauthorized)
@@ -172,11 +172,11 @@ Describe 'Invoke-GlpiToolsRequest' {
             [pscustomobject]@{ id = 2 }
         } -ModuleName GlpiTools -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
         (Invoke-GlpiToolsRequest -Method Get -Resource '/Assistance/Ticket/2').id | Should -Be 2
-        Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 2 -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
+        Should -Invoke Invoke-GlpiToolsRestMethod -ModuleName GlpiTools -Exactly 2 -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
         Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 2 -ParameterFilter { $Uri -like '*/api.php/token' }
     }
     It 'turns an API error into an exception with status and message' {
-        Mock Invoke-RestMethod {
+        Mock Invoke-GlpiToolsRestMethod {
             $resp = [System.Net.Http.HttpResponseMessage]::new([System.Net.HttpStatusCode]::NotFound)
             $ex = [Microsoft.PowerShell.Commands.HttpResponseException]::new('Not Found', $resp)
             $e = [System.Management.Automation.ErrorRecord]::new($ex, 'x', 'NotSpecified', $null)
@@ -192,5 +192,30 @@ Describe 'Invoke-GlpiToolsRequest' {
         $v = Invoke-GlpiToolsRequest -Method Get -Resource '/Assistance/Ticket/2' -Verbose 4>&1 | Out-String
         $v | Should -Not -Match 'AT1'
         $v | Should -Not -Match 'csecret'
+    }
+}
+
+Describe 'Invoke-GlpiToolsRestMethod' {
+    BeforeEach {
+        $script:Json = '{"id":2,"date_mod":"2026-10-05T19:41:06-03:00","date_solve":"2026-10-05T19:41:06.123+05:30","date_close":null,"name":"2026-10-05T19:41:06-03:00 text"}'
+        Mock Invoke-WebRequest { [pscustomobject]@{ Content = $script:Json; Headers = @{ 'Content-Type' = 'application/json'; 'Content-Range' = '0-0/1' } } } -ModuleName GlpiTools
+    }
+    It 'keeps the wall time of the dates whatever the time zone of the computer' {
+        $Result = & (Get-Module GlpiTools) { Invoke-GlpiToolsRestMethod -Uri 'https://x/api.php/v3.0/a' -Method Get -Headers @{} }
+        $Result.date_mod.ToString('yyyy-MM-dd HH:mm:ss', [cultureinfo]::InvariantCulture) | Should -Be '2026-10-05 19:41:06'
+        $Result.date_solve.ToString('yyyy-MM-dd HH:mm:ss', [cultureinfo]::InvariantCulture) | Should -Be '2026-10-05 19:41:06'
+        $Result.date_close | Should -BeNullOrEmpty
+    }
+    It 'does not touch text that only contains a date' {
+        $Result = & (Get-Module GlpiTools) { Invoke-GlpiToolsRestMethod -Uri 'https://x/api.php/v3.0/a' -Method Get -Headers @{} }
+        $Result.name | Should -Be '2026-10-05T19:41:06-03:00 text'
+    }
+    It 'passes the response headers to the caller' {
+        $Headers = & (Get-Module GlpiTools) { Invoke-GlpiToolsRestMethod -Uri 'https://x/api.php/v3.0/a' -Method Get -Headers @{} -ResponseHeadersVariable H | Out-Null; $H }
+        $Headers['Content-Range'] | Should -Be '0-0/1'
+    }
+    It 'returns an answer that is not JSON as it is' {
+        Mock Invoke-WebRequest { [pscustomobject]@{ Content = 'plain'; Headers = @{ 'Content-Type' = 'text/plain' } } } -ModuleName GlpiTools
+        & (Get-Module GlpiTools) { Invoke-GlpiToolsRestMethod -Uri 'https://x/api.php/v3.0/a' -Method Get -Headers @{} } | Should -Be 'plain'
     }
 }

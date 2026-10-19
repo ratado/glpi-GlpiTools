@@ -61,7 +61,7 @@ function ConvertFrom-GlpiToolsV3Item {
                 date {
                     # the wall time of the ISO 8601 text is kept, as the legacy API shows the server time
                     if ($Value -is [datetime]) {
-                        $Value = $Value.ToString('yyyy-MM-dd HH:mm:ss')
+                        $Value = $Value.ToString('yyyy-MM-dd HH:mm:ss', [cultureinfo]::InvariantCulture)
                     } elseif ($Value -match '^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2}:\d{2})') {
                         $Value = "$($Matches[1]) $($Matches[2])"
                     }
@@ -71,7 +71,9 @@ function ConvertFrom-GlpiToolsV3Item {
                 }
                 decimal {
                     # the legacy API sends decimals as text with four places
-                    $Value = ([decimal]$Value).ToString('0.0000', [cultureinfo]::InvariantCulture)
+                    if ($null -ne $Value -and "$Value" -ne '') {
+                        $Value = ([decimal]$Value).ToString('0.0000', [cultureinfo]::InvariantCulture)
+                    }
                 }
                 dropdown {
                     $Value = ConvertTo-GlpiToolsV3Relation -Relation $Value -Named $Field.named -Raw:$Raw

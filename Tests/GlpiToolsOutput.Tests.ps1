@@ -104,3 +104,11 @@ Describe 'ConvertFrom-GlpiToolsV3Item for the other item types' {
         $Converted.entities_id | Should -Be 'Entidade raiz'
     }
 }
+
+Describe 'ConvertFrom-GlpiToolsV3Item decimals' {
+    It 'keeps an empty decimal empty' {
+        $V3 = Get-Content -Path (Join-Path $PSScriptRoot 'Fixtures' 'Computer5-v3.json') -Raw | ConvertFrom-Json -DateKind String
+        $V3.ticket_tco = $null
+        ($V3 | ConvertFrom-GlpiToolsV3Item -ItemType Computer -Raw).ticket_tco | Should -BeNullOrEmpty
+    }
+}

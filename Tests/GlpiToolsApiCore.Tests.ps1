@@ -183,20 +183,20 @@ Describe 'Context headers in requests' {
     BeforeEach {
         Set-GlpiToolsConfig -ApiVersion v3 -PathToGlpi 'https://glpi.example.com' -ClientId c -ClientSecret s -Username u -Password p
         Set-GlpiToolsSessionToken -SessionToken 'AT' -ExpiresAt ([datetime]::UtcNow.AddHours(1))
-        Mock Invoke-RestMethod { Set-Variable -Name $ResponseHeadersVariable -Value @{} -Scope 2; 'ok' } -ModuleName GlpiTools
+        Mock Invoke-GlpiToolsRestMethod { Set-Variable -Name $ResponseHeadersVariable -Value @{} -Scope 2; 'ok' } -ModuleName GlpiTools
     }
     It 'sends entity and profile headers once chosen' {
         Set-GlpiToolsV3Context -EntityId 3 -EntityRecursive $true
         Set-GlpiToolsV3Context -ProfileId 6
         Invoke-GlpiToolsRequest -Method Get -Resource '/Assistance/Ticket' | Out-Null
-        Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter {
+        Should -Invoke Invoke-GlpiToolsRestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter {
             $Headers['GLPI-Entity'] -eq '3' -and $Headers['GLPI-Entity-Recursive'] -eq 'true' -and $Headers['GLPI-Profile'] -eq '6'
         }
     }
     It 'sends no context headers by default' {
         $global:GlpiToolsContext = $null
         Invoke-GlpiToolsRequest -Method Get -Resource '/Assistance/Ticket' | Out-Null
-        Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter { -not $Headers.ContainsKey('GLPI-Entity') -and -not $Headers.ContainsKey('GLPI-Profile') }
+        Should -Invoke Invoke-GlpiToolsRestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter { -not $Headers.ContainsKey('GLPI-Entity') -and -not $Headers.ContainsKey('GLPI-Profile') }
     }
 }
 

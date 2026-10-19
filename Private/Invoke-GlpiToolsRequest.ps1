@@ -87,14 +87,14 @@ function Invoke-GlpiToolsRequest {
         }
 
         $params = @{
-            method                  = $Method
-            uri                     = $Uri
-            headers                 = @{
+            Method                  = $Method
+            Uri                     = $Uri
+            Headers                 = @{
                 'Authorization'       = "Bearer $((Get-GlpiToolsSessionToken).SessionToken)"
                 'Accept'              = $Accept
                 'GLPI-API-Version'    = '3.0.0'
             }
-            responseHeadersVariable = 'ResponseHeaders'
+            ResponseHeadersVariable = 'ResponseHeaders'
         }
         # entity and profile chosen with Set-GlpiToolsChangeActiveEntities / Set-GlpiToolsChangeActiveProfile
         $Context = if ($NoContext) { $null } else { $global:GlpiToolsContext }
@@ -106,14 +106,14 @@ function Invoke-GlpiToolsRequest {
             $params['headers']['GLPI-Profile'] = [string]$Context.ProfileId
         }
         if ($Body) {
-            $params['body'] = $Body | ConvertTo-Json -Depth 10 -Compress
-            $params['contentType'] = 'application/json'
+            $params['Body'] = $Body | ConvertTo-Json -Depth 10 -Compress
+            $params['ContentType'] = 'application/json'
         }
         if ($GlpiConfig.SkipCertificateCheck) {
             $params['SkipCertificateCheck'] = $true
         }
 
-        $Data = Invoke-RestMethod @params
+        $Data = Invoke-GlpiToolsRestMethod @params
         [pscustomobject]@{ Data = $Data; Headers = $ResponseHeaders }
     }
 
