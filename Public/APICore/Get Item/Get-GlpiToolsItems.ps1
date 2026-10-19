@@ -106,11 +106,17 @@ function Get-GlpiToolsItems{
             # -SearchText matches the text inside each field, like the legacy searchText
             $Criteria = @()
             foreach ($key in $SearchText.Keys) {
-                $Criteria += @{ Field = $key; Operator = 'contains'; Value = $SearchText[$key] }
+                # the legacy text is a regular expression: the anchors ^ and $ select equals, starts with or ends with
+                $V3Text = [string]$SearchText[$key]
+                $V3Operator = 'contains'
+                if ($V3Text -match '^\^(.*)\$$') { $V3Operator = 'equals'; $V3Text = $Matches[1] }
+                elseif ($V3Text -match '^\^(.*)$') { $V3Operator = 'startswith'; $V3Text = $Matches[1] }
+                elseif ($V3Text -match '^(.*)\$$') { $V3Operator = 'endswith'; $V3Text = $Matches[1] }
+                $Criteria += @{ Field = $key; Operator = $V3Operator; Value = $V3Text }
             }
             # the legacy API lists items outside the trash unless -SearchInTrash is used
-            $Criteria += @{ Field = 'is_deleted'; Operator = 'equals'; Value = $(if ($SearchInTrash) { 1 } else { 0 }) }
-            $V3Items = Invoke-GlpiToolsRequest -Method Get -Resource (Get-GlpiToolsV3Route -ItemType $ItemType) -Query @{ filter = (ConvertTo-GlpiToolsRsql -Criteria $Criteria) } -All
+            $V3Required = @{ Field = 'is_deleted'; Operator = 'equals'; Value = $(if ($SearchInTrash) { 1 } else { 0 }) }
+            $V3Items = Invoke-GlpiToolsRequest -Method Get -Resource (Get-GlpiToolsV3Route -ItemType $ItemType) -Query @{ filter = (ConvertTo-GlpiToolsRsql -Criteria $Criteria -Required $V3Required) } -All
             if ($OnlyId) {
                 $V3Items = $V3Items | Select-Object -Property id
             }

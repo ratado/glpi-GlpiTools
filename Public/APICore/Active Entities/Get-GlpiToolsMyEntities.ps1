@@ -48,10 +48,10 @@ function Get-GlpiToolsMyEntities {
                         & $V3Flatten $Node.children
                     }
                 }
-                & $V3Flatten (Invoke-GlpiToolsRequest -Method Get -Resource '/Session/EntityTree')
+                & $V3Flatten (Invoke-GlpiToolsRequest -Method Get -Resource '/Session/EntityTree' -NoContext)
             } else {
                 # only the entities directly assigned to the profiles of the user
-                $V3Session = Invoke-GlpiToolsRequest -Method Get -Resource '/session'
+                $V3Session = Invoke-GlpiToolsRequest -Method Get -Resource '/session' -NoContext
                 $V3Session.profiles.PSObject.Properties.Value.entities | Sort-Object -Property id -Unique | ForEach-Object {
                     [pscustomobject][ordered]@{ 'id' = $_.id; 'name' = $_.name }
                 }

@@ -48,6 +48,14 @@ Describe 'Generic item cmdlets on API v3' {
             $r = Get-GlpiToolsItems -ItemType Computer -OnlyId $true
             $r.PSObject.Properties.Name | Should -Be @('id')
         }
+        It 'maps regular expression anchors of -SearchText' -ForEach @(
+            @{ Text = '^234$'; Expected = 'id==234;is_deleted==0' }
+            @{ Text = '^PC'; Expected = 'id=ilike=PC*;is_deleted==0' }
+            @{ Text = 'PC$'; Expected = 'id=ilike=*PC;is_deleted==0' }
+        ) {
+            Get-GlpiToolsItems -ItemType Ticket -SearchText @{ id = $Text } | Out-Null
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Query.filter -eq $Expected }
+        }
         It 'rejects -ExtraParameter and unknown item types' {
             { Get-GlpiToolsItems -ItemType Ticket -ExtraParameter '&with_logs=true' } | Should -Throw '*-ExtraParameter is not supported*'
             { Get-GlpiToolsItems -ItemType DeviceMemoryModel } | Should -Throw '*not supported by the GLPI API v3*'
@@ -78,6 +86,11 @@ Describe 'Generic item cmdlets on API v3' {
     }
 
     Context 'Remove-GlpiToolsItems' {
+        It 'refuses payload elements without an id' {
+            { Remove-GlpiToolsItems -RemoveFrom Computer -HashtableToRemove @{ input = @(@{ name = 'x' }) } } | Should -Throw '*integer id*'
+            { Update-GlpiToolsItems -UpdateTo Computer -JsonPayload '{"input":[{"name":"a"}]}' } | Should -Throw '*integer id*'
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 0
+        }
         It 'sends items to the trash by default' {
             Remove-GlpiToolsItems -RemoveFrom Ticket -ItemId 5 | Out-Null
             Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Method -eq 'Delete' -and $Resource -eq '/Assistance/Ticket/5' -and -not $Query }
@@ -99,7 +112,7 @@ Describe 'Generic item cmdlets on API v3' {
         }
         It 'joins several criteria and negates with +NOT' {
             Search-GlpiToolsItems -SearchFor Computer -SearchType contains, contains -SearchField 1, 1 -SearchValue a, b -SearchLink OR+NOT | Out-Null
-            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Query.filter -eq 'name=ilike=*a*,name=notilike=*b*;is_deleted==0' }
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Query.filter -eq '(name=ilike=*a*,name=notilike=*b*);is_deleted==0' }
         }
         It 'rejects numeric search options it cannot translate' {
             { Search-GlpiToolsItems -SearchFor Computer -SearchType contains -SearchField 40 -SearchValue a } | Should -Throw '*cannot be translated*'

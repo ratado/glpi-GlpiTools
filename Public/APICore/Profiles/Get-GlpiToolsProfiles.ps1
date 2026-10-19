@@ -78,6 +78,8 @@ function Get-GlpiToolsProfiles {
                         try {
                             Invoke-GlpiToolsRequest -Method Get -Resource "/Administration/Profile/$PId"
                         } catch {
+                            # only a missing profile is skipped; other failures are reported
+                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
                             Write-Verbose -Message "Profile ID = $PId is not found"
                         }
                     }

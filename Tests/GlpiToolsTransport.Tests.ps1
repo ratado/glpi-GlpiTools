@@ -66,6 +66,11 @@ Describe 'ConvertTo-GlpiToolsRsql' {
     It 'wraps values that start with a quote' {
         ConvertTo-GlpiToolsRsql -Filter @{ name = '"x' } | Should -Be ('name==' + [char]39 + [char]34 + 'x' + [char]39)
     }
+    It 'puts parentheses around OR criteria before the required ones' {
+        ConvertTo-GlpiToolsRsql -Criteria @{ Field = 'a'; Value = 1 }, @{ Field = 'b'; Value = 2; Link = 'OR' } -Required @{ Field = 'is_deleted'; Value = 0 } | Should -Be '(a==1,b==2);is_deleted==0'
+        ConvertTo-GlpiToolsRsql -Criteria @{ Field = 'a'; Value = 1 }, @{ Field = 'b'; Value = 2 } -Required @{ Field = 'is_deleted'; Value = 0 } | Should -Be 'a==1;b==2;is_deleted==0'
+        ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 } | Should -Be 'is_deleted==0'
+    }
     It 'does not let a value add criteria' {
         $r = ConvertTo-GlpiToolsRsql -Filter @{ name = 'x;is_deleted==1' }
         $r | Should -Be 'name==x\;is_deleted==1'
@@ -128,6 +133,27 @@ Describe 'Invoke-GlpiToolsRequest' {
         } -ModuleName GlpiTools -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
         $r = Invoke-GlpiToolsRequest -Method Get -Resource '/Assets/Computer' -All -PageSize 2
         @($r).Count | Should -Be 3
+    }
+    It 'uses the limit of the caller as page size and stops on a repeated page' {
+        Mock Invoke-RestMethod {
+            Set-Variable -Name $ResponseHeadersVariable -Value @{} -Scope 2
+            @([pscustomobject]@{ id = 7 }, [pscustomobject]@{ id = 8 })
+        } -ModuleName GlpiTools -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
+        $r = Invoke-GlpiToolsRequest -Method Get -Resource '/Assets/Computer' -All -Query @{ limit = 2 }
+        @($r).Count | Should -Be 2
+        Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 2 -ParameterFilter { $Uri -like '*limit=2*' }
+    }
+    It 'returns file content as one byte array' {
+        Mock Invoke-RestMethod { Set-Variable -Name $ResponseHeadersVariable -Value @{} -Scope 2; , [byte[]](1, 2, 3) } -ModuleName GlpiTools -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }
+        $r = Invoke-GlpiToolsRequest -Method Get -Resource '/Management/Document/1/Download' -Accept 'application/octet-stream'
+        $r -is [byte[]] | Should -BeTrue
+        $r.Length | Should -Be 3
+    }
+    It 'does not send the context headers with -NoContext' {
+        Set-GlpiToolsV3Context -EntityId 3
+        Invoke-GlpiToolsRequest -Method Get -Resource '/session' -NoContext | Out-Null
+        Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Uri -like '*/v3.0/*' -and -not $Headers.ContainsKey('GLPI-Entity') }
+        $global:GlpiToolsContext = $null
     }
     It 'returns an empty result for an empty listing' {
         Mock Invoke-RestMethod { Set-Variable -Name $ResponseHeadersVariable -Value @{ 'Content-Range' = @('0--1/0') } -Scope 2; @() } -ModuleName GlpiTools -ParameterFilter { $Uri -like '*/api.php/v3.0/*' }

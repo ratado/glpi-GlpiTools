@@ -90,6 +90,8 @@ function Get-GlpiToolsDocuments {
                             Invoke-GlpiToolsRequest -Method Get -Resource "/Management/Document/$DId"
                         }
                     } catch {
+                        # only a missing document is skipped; other failures are reported
+                        if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
                         Write-Verbose -Message "Document ID = $DId is not found"
                     }
                 }

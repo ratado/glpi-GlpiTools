@@ -93,6 +93,9 @@ function Update-GlpiToolsItems {
                 $V3Inputs = if ($V3Payload.ContainsKey('input')) { $V3Payload['input'] } else { $V3Payload }
                 foreach ($V3Input in @($V3Inputs)) {
                     $V3Id = $V3Input['id']
+                    if ($V3Id -isnot [int] -and $V3Id -notmatch '^\d+$') {
+                        throw "Each element to update needs an integer id."
+                    }
                     $V3Input.Remove('id')
                     Invoke-GlpiToolsRequest -Method Patch -Resource "$V3Route/$V3Id" -Body $V3Input
                 }

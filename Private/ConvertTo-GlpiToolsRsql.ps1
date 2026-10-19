@@ -9,6 +9,9 @@
     Criteria as hashtables with Field, Operator (default equals) and Value. Optional Link (AND or OR)
     tells how the criterion is joined to the previous one; the default is AND.
     Operators: equals, notequals, contains, notcontains, startswith, endswith, lt, le, gt, ge, in, out, isnull, notnull.
+.PARAMETER Required
+    Criteria that must always hold (joined by AND to the whole result, for example the trash filter).
+    When the other criteria use OR they are wrapped in parentheses first, since AND binds tighter than OR.
 .PARAMETER Filter
     Shortcut for equality criteria, joined by AND. Example: @{ name = 'foo'; is_deleted = 0 }.
 .EXAMPLE
@@ -32,7 +35,10 @@ function ConvertTo-GlpiToolsRsql {
         [object[]]$Criteria,
 
         [parameter(Mandatory = $false)]
-        [hashtable]$Filter
+        [hashtable]$Filter,
+
+        [parameter(Mandatory = $false)]
+        [object[]]$Required
     )
 
     # escapes a single value; values starting with a quote are wrapped in the other kind of quote
@@ -60,40 +66,57 @@ function ConvertTo-GlpiToolsRsql {
         in = '=in='; out = '=out='; isnull = '=isnull='; notnull = '=notnull='
     }
 
-    $Result = ''
-    foreach ($Item in $All) {
-        $Field = [string]$Item.Field
-        if ($Field -notmatch '^[a-zA-Z0-9_.]+$') {
-            throw "Invalid property name in filter: $Field"
-        }
-        $Operator = if ($Item.Operator) { ([string]$Item.Operator).ToLower() } else { 'equals' }
-        if (-not $Operators.ContainsKey($Operator)) {
-            throw "Unknown filter operator: $Operator"
-        }
+    # joins a list of criteria in the order given
+    $Build = {
+        param($Items)
+        $Result = ''
+        foreach ($Item in $Items) {
+            $Field = [string]$Item.Field
+            if ($Field -notmatch '^[a-zA-Z0-9_.]+$') {
+                throw "Invalid property name in filter: $Field"
+            }
+            $Operator = if ($Item.Operator) { ([string]$Item.Operator).ToLower() } else { 'equals' }
+            if (-not $Operators.ContainsKey($Operator)) {
+                throw "Unknown filter operator: $Operator"
+            }
 
-        $Piece = switch ($Operator) {
-            { $_ -in 'isnull', 'notnull' } {
-                # unary operators take no value; the value is a boolean flag for the API
-                "$Field$($Operators[$Operator])"
+            $Piece = switch ($Operator) {
+                { $_ -in 'isnull', 'notnull' } {
+                    # unary operators take no value; the value is a boolean flag for the API
+                    "$Field$($Operators[$Operator])"
+                }
+                { $_ -in 'in', 'out' } {
+                    $List = @($Item.Value) | ForEach-Object { '"' + (([string]$_) -replace '(["\\])', '\$1') + '"' }
+                    "$Field$($Operators[$Operator])($($List -join ','))"
+                }
+                { $_ -in 'contains', 'notcontains' } { "$Field$($Operators[$Operator])*$(& $FormatValue ([string]$Item.Value))*" }
+                'startswith' { "$Field$($Operators[$Operator])$(& $FormatValue ([string]$Item.Value))*" }
+                'endswith' { "$Field$($Operators[$Operator])*$(& $FormatValue ([string]$Item.Value))" }
+                default { "$Field$($Operators[$Operator])$(& $FormatValue ([string]$Item.Value))" }
             }
-            { $_ -in 'in', 'out' } {
-                $List = @($Item.Value) | ForEach-Object { '"' + (([string]$_) -replace '(["\\])', '\$1') + '"' }
-                "$Field$($Operators[$Operator])($($List -join ','))"
-            }
-            { $_ -in 'contains', 'notcontains' } { "$Field$($Operators[$Operator])*$(& $FormatValue ([string]$Item.Value))*" }
-            'startswith' { "$Field$($Operators[$Operator])$(& $FormatValue ([string]$Item.Value))*" }
-            'endswith' { "$Field$($Operators[$Operator])*$(& $FormatValue ([string]$Item.Value))" }
-            default { "$Field$($Operators[$Operator])$(& $FormatValue ([string]$Item.Value))" }
-        }
 
-        if ($Result -ne '') {
-            $Link = if ($Item.Link) { ([string]$Item.Link).ToUpper() } else { 'AND' }
-            if ($Link -notin 'AND', 'OR') {
-                throw "Unknown filter link: $Link"
+            if ($Result -ne '') {
+                $Link = if ($Item.Link) { ([string]$Item.Link).ToUpper() } else { 'AND' }
+                if ($Link -notin 'AND', 'OR') {
+                    throw "Unknown filter link: $Link"
+                }
+                $Result += $(if ($Link -eq 'OR') { ',' } else { ';' })
             }
-            $Result += $(if ($Link -eq 'OR') { ',' } else { ';' })
+            $Result += $Piece
         }
-        $Result += $Piece
+        $Result
     }
-    $Result
+
+    $Main = & $Build $All
+    if ($Required) {
+        $Extra = & $Build $Required
+        # AND binds tighter than OR, so criteria joined by OR need parentheses before the required ones
+        if ($Main -ne '') {
+            if ($Main -match '(?<!\\),') { $Main = "($Main)" }
+            $Main = "$Main;$Extra"
+        } else {
+            $Main = $Extra
+        }
+    }
+    $Main
 }

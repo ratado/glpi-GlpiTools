@@ -18,6 +18,9 @@
     Reads every page of a listing and returns all items.
 .PARAMETER Accept
     Accept header of the request. Default is application/json.
+.PARAMETER NoContext
+    Does not send the entity and profile chosen with Set-GlpiToolsChangeActiveEntities and
+    Set-GlpiToolsChangeActiveProfile, for questions about what the user can reach at all.
 .PARAMETER PageSize
     Number of items per page when -All is used. Default is 500.
 .EXAMPLE
@@ -57,6 +60,9 @@ function Invoke-GlpiToolsRequest {
         [string]$Accept = 'application/json',
 
         [parameter(Mandatory = $false)]
+        [switch]$NoContext,
+
+        [parameter(Mandatory = $false)]
         [ValidateRange(1, 100000)]
         [int]$PageSize = 500
     )
@@ -91,7 +97,7 @@ function Invoke-GlpiToolsRequest {
             responseHeadersVariable = 'ResponseHeaders'
         }
         # entity and profile chosen with Set-GlpiToolsChangeActiveEntities / Set-GlpiToolsChangeActiveProfile
-        $Context = $global:GlpiToolsContext
+        $Context = if ($NoContext) { $null } else { $global:GlpiToolsContext }
         if ($null -ne $Context.EntityId) {
             $params['headers']['GLPI-Entity'] = [string]$Context.EntityId
             $params['headers']['GLPI-Entity-Recursive'] = ([string]([bool]$Context.EntityRecursive)).ToLower()
@@ -148,12 +154,19 @@ function Invoke-GlpiToolsRequest {
 
     if (-not $All) {
         $Page = & $SendPage $Query
+        # file content is returned as one byte array, not enumerated
+        if ($Page.Data -is [byte[]]) {
+            return , $Page.Data
+        }
         return $Page.Data
     }
 
     # read pages until the total reported by Content-Range is reached or a short page arrives
     $Items = [System.Collections.Generic.List[object]]::new()
     $Start = if ($Query -and $Query.ContainsKey('start')) { [int]$Query['start'] } else { 0 }
+    # a limit given by the caller is the page size
+    if ($Query -and $Query.ContainsKey('limit')) { $PageSize = [int]$Query['limit'] }
+    $FirstIdOfPreviousPage = $null
     while ($true) {
         $PageQuery = if ($Query) { $Query.Clone() } else { @{} }
         $PageQuery['start'] = $Start
@@ -162,6 +175,9 @@ function Invoke-GlpiToolsRequest {
 
         $Received = @($Page.Data)
         if ($Received.Count -eq 1 -and $null -eq $Received[0]) { $Received = @() }
+        # a server that ignores start would repeat the same page forever
+        if ($Received.Count -gt 0 -and $null -ne $Received[0].id -and $Received[0].id -eq $FirstIdOfPreviousPage) { break }
+        $FirstIdOfPreviousPage = if ($Received.Count -gt 0) { $Received[0].id } else { $null }
         $Items.AddRange([object[]]$Received)
         $Start += $Received.Count
 

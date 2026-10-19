@@ -52,7 +52,7 @@ function Set-GlpiToolsChangeActiveEntities {
     process {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            $V3Session = Invoke-GlpiToolsRequest -Method Get -Resource '/session'
+            $V3Session = Invoke-GlpiToolsRequest -Method Get -Resource '/session' -NoContext
             if ($V3Session.active_entities.PSObject.Properties.Name -notcontains [string]$EntitiesId) {
                 throw "Entity $EntitiesId is not available for the current profile."
             }

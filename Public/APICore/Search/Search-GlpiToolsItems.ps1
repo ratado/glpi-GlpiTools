@@ -124,8 +124,8 @@ function Search-GlpiToolsItems {
                 }
                 $V3Criteria += @{ Field = $V3Field; Operator = $V3Operator; Value = $SearchValue[$counter]; Link = ($V3Link -replace '\+NOT$', '') }
             }
-            $V3Criteria += @{ Field = 'is_deleted'; Operator = 'equals'; Value = $(if ($SearchInTrash -eq 'Yes') { 1 } else { 0 }); Link = 'AND' }
-            Invoke-GlpiToolsRequest -Method Get -Resource (Get-GlpiToolsV3Route -ItemType $SearchFor) -Query @{ filter = (ConvertTo-GlpiToolsRsql -Criteria $V3Criteria) } -All
+            $V3Required = @{ Field = 'is_deleted'; Operator = 'equals'; Value = $(if ($SearchInTrash -eq 'Yes') { 1 } else { 0 }) }
+            Invoke-GlpiToolsRequest -Method Get -Resource (Get-GlpiToolsV3Route -ItemType $SearchFor) -Query @{ filter = (ConvertTo-GlpiToolsRsql -Criteria $V3Criteria -Required $V3Required) } -All
             return
         }
 

@@ -35,7 +35,7 @@ function Get-GlpiToolsMyProfiles {
     process {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            $V3Session = Invoke-GlpiToolsRequest -Method Get -Resource '/session'
+            $V3Session = Invoke-GlpiToolsRequest -Method Get -Resource '/session' -NoContext
             foreach ($V3Profile in $V3Session.profiles.PSObject.Properties) {
                 [pscustomobject][ordered]@{ 'id' = [int]$V3Profile.Name; 'name' = $V3Profile.Value.name; 'entities' = @($V3Profile.Value.entities) }
             }

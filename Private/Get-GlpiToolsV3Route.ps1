@@ -26,8 +26,12 @@ function Get-GlpiToolsV3Route {
         [string]$ItemType
     )
 
-    $RoutesFile = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'Private/V3Routes.json'
-    $Routes = Get-Content -Path $RoutesFile -Raw | ConvertFrom-Json
+    # the map is read once per session
+    if (-not $script:GlpiToolsV3Routes) {
+        $RoutesFile = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'Private/V3Routes.json'
+        $script:GlpiToolsV3Routes = Get-Content -Path $RoutesFile -Raw | ConvertFrom-Json
+    }
+    $Routes = $script:GlpiToolsV3Routes
 
     $Route = $Routes.PSObject.Properties[$ItemType.ToLower()].Value
     if (-not $Route) {

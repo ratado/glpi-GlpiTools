@@ -102,6 +102,9 @@ function Remove-GlpiToolsItems {
                 $V3Payload = if ($ChoosenParam -contains 'JsonPayload') { ($JsonPayload -join '') | ConvertFrom-Json -AsHashtable } else { $HashtableToRemove }
                 $V3Inputs = if ($V3Payload.ContainsKey('input')) { $V3Payload['input'] } else { $V3Payload }
                 foreach ($V3Input in @($V3Inputs)) {
+                    if ($V3Input['id'] -isnot [int] -and $V3Input['id'] -notmatch '^\d+$') {
+                        throw "Each element to remove needs an integer id."
+                    }
                     Invoke-GlpiToolsRequest -Method Delete -Resource "$V3Route/$($V3Input['id'])" -Query $V3Query
                 }
             }
