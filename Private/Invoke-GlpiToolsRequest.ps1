@@ -16,6 +16,8 @@
     Request body as a hashtable, sent as JSON.
 .PARAMETER All
     Reads every page of a listing and returns all items.
+.PARAMETER Accept
+    Accept header of the request. Default is application/json.
 .PARAMETER PageSize
     Number of items per page when -All is used. Default is 500.
 .EXAMPLE
@@ -52,6 +54,9 @@ function Invoke-GlpiToolsRequest {
         [switch]$All,
 
         [parameter(Mandatory = $false)]
+        [string]$Accept = 'application/json',
+
+        [parameter(Mandatory = $false)]
         [ValidateRange(1, 100000)]
         [int]$PageSize = 500
     )
@@ -80,10 +85,19 @@ function Invoke-GlpiToolsRequest {
             uri                     = $Uri
             headers                 = @{
                 'Authorization'       = "Bearer $((Get-GlpiToolsSessionToken).SessionToken)"
-                'Accept'              = 'application/json'
+                'Accept'              = $Accept
                 'GLPI-API-Version'    = '3.0.0'
             }
             responseHeadersVariable = 'ResponseHeaders'
+        }
+        # entity and profile chosen with Set-GlpiToolsChangeActiveEntities / Set-GlpiToolsChangeActiveProfile
+        $Context = $global:GlpiToolsContext
+        if ($null -ne $Context.EntityId) {
+            $params['headers']['GLPI-Entity'] = [string]$Context.EntityId
+            $params['headers']['GLPI-Entity-Recursive'] = ([string]([bool]$Context.EntityRecursive)).ToLower()
+        }
+        if ($null -ne $Context.ProfileId) {
+            $params['headers']['GLPI-Profile'] = [string]$Context.ProfileId
         }
         if ($Body) {
             $params['body'] = $Body | ConvertTo-Json -Depth 10 -Compress

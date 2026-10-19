@@ -31,6 +31,12 @@ function Get-GlpiToolsActiveProfile {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            (Invoke-GlpiToolsRequest -Method Get -Resource '/session').active_profile
+            return
+        }
+
         $params = @{
             headers = @{
                 'Content-Type'  = 'application/json'

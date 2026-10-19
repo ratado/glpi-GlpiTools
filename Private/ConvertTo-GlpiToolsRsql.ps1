@@ -8,7 +8,7 @@
 .PARAMETER Criteria
     Criteria as hashtables with Field, Operator (default equals) and Value. Optional Link (AND or OR)
     tells how the criterion is joined to the previous one; the default is AND.
-    Operators: equals, notequals, contains, startswith, endswith, lt, le, gt, ge, in, out, isnull, notnull.
+    Operators: equals, notequals, contains, notcontains, startswith, endswith, lt, le, gt, ge, in, out, isnull, notnull.
 .PARAMETER Filter
     Shortcut for equality criteria, joined by AND. Example: @{ name = 'foo'; is_deleted = 0 }.
 .EXAMPLE
@@ -56,7 +56,7 @@ function ConvertTo-GlpiToolsRsql {
 
     $Operators = @{
         equals = '=='; notequals = '!='; lt = '=lt='; le = '=le='; gt = '=gt='; ge = '=ge='
-        contains = '=ilike='; startswith = '=ilike='; endswith = '=ilike='
+        contains = '=ilike='; notcontains = '=notilike='; startswith = '=ilike='; endswith = '=ilike='
         in = '=in='; out = '=out='; isnull = '=isnull='; notnull = '=notnull='
     }
 
@@ -80,7 +80,7 @@ function ConvertTo-GlpiToolsRsql {
                 $List = @($Item.Value) | ForEach-Object { '"' + (([string]$_) -replace '(["\\])', '\$1') + '"' }
                 "$Field$($Operators[$Operator])($($List -join ','))"
             }
-            'contains' { "$Field$($Operators[$Operator])*$(& $FormatValue ([string]$Item.Value))*" }
+            { $_ -in 'contains', 'notcontains' } { "$Field$($Operators[$Operator])*$(& $FormatValue ([string]$Item.Value))*" }
             'startswith' { "$Field$($Operators[$Operator])$(& $FormatValue ([string]$Item.Value))*" }
             'endswith' { "$Field$($Operators[$Operator])*$(& $FormatValue ([string]$Item.Value))" }
             default { "$Field$($Operators[$Operator])$(& $FormatValue ([string]$Item.Value))" }

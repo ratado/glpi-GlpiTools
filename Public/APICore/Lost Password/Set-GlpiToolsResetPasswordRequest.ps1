@@ -33,6 +33,12 @@ function Set-GlpiToolsResetPasswordRequest {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Set-GlpiToolsResetPasswordRequest'
+            return
+        }
+
         $PutPasswordResetReq = @{
             email = $Email
         } 

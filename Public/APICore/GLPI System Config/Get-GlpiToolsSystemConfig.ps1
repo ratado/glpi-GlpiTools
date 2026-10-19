@@ -31,6 +31,17 @@ function Get-GlpiToolsSystemConfig {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            # the settings come as a list of name/value pairs; credentials are not returned
+            $V3Settings = [ordered]@{}
+            foreach ($V3Setting in (Invoke-GlpiToolsRequest -Method Get -Resource '/Setup/Config' -All | Where-Object { $_.context -eq 'core' -and $_.name -notmatch 'passw|secret|token|key' })) {
+                $V3Settings[$V3Setting.name] = $V3Setting.value
+            }
+            [pscustomobject]$V3Settings
+            return
+        }
+
         $params = @{
             headers = @{
                 'Content-Type'  = 'application/json'

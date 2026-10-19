@@ -78,6 +78,22 @@ function Add-GlpiToolsItems {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Route = Get-GlpiToolsV3Route -ItemType $AddTo
+            # the legacy payload is {"input": {...}} or {"input": [{...}, ...]}; each element becomes one request
+            $V3Inputs = if ($ChoosenParam -contains 'JsonPayload') {
+                $V3Payload = ($JsonPayload -join '') | ConvertFrom-Json -AsHashtable
+                if ($V3Payload.ContainsKey('input')) { $V3Payload['input'] } else { $V3Payload }
+            } else {
+                $HashtableToAdd
+            }
+            foreach ($V3Input in @($V3Inputs)) {
+                Invoke-GlpiToolsRequest -Method Post -Resource $V3Route -Body $V3Input
+            }
+            return
+        }
+
 
         switch ($ChoosenParam) {
             HashtableToAdd {

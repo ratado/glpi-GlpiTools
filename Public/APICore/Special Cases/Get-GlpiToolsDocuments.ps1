@@ -76,6 +76,27 @@ function Get-GlpiToolsDocuments {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            if ($ChoosenParam -contains 'All') {
+                Invoke-GlpiToolsRequest -Method Get -Resource '/Management/Document' -All
+            } else {
+                foreach ($DId in $DocumentId) {
+                    try {
+                        if ($RawDocument) {
+                            # the file content, not the document record
+                            Invoke-GlpiToolsRequest -Method Get -Resource "/Management/Document/$DId/Download" -Accept 'application/octet-stream'
+                        } else {
+                            Invoke-GlpiToolsRequest -Method Get -Resource "/Management/Document/$DId"
+                        }
+                    } catch {
+                        Write-Verbose -Message "Document ID = $DId is not found"
+                    }
+                }
+            }
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{

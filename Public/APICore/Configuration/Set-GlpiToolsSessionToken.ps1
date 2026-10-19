@@ -45,6 +45,8 @@ function Set-GlpiToolsSessionToken {
 		
 		if($ResetToken){
 			$global:GlpiToolsSessionToken = $null
+			# the entity and profile chosen for API v3 requests belong to the session
+			$global:GlpiToolsContext = $null
 		}
         else {		
 			$SessionHash = [ordered]@{

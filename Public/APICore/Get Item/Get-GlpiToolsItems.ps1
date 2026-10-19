@@ -98,6 +98,26 @@ function Get-GlpiToolsItems{
     }
 
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            if ($ExtraParameter) {
+                Assert-GlpiToolsV3Supported -Name '-ExtraParameter'
+            }
+            # -SearchText matches the text inside each field, like the legacy searchText
+            $Criteria = @()
+            foreach ($key in $SearchText.Keys) {
+                $Criteria += @{ Field = $key; Operator = 'contains'; Value = $SearchText[$key] }
+            }
+            # the legacy API lists items outside the trash unless -SearchInTrash is used
+            $Criteria += @{ Field = 'is_deleted'; Operator = 'equals'; Value = $(if ($SearchInTrash) { 1 } else { 0 }) }
+            $V3Items = Invoke-GlpiToolsRequest -Method Get -Resource (Get-GlpiToolsV3Route -ItemType $ItemType) -Query @{ filter = (ConvertTo-GlpiToolsRsql -Criteria $Criteria) } -All
+            if ($OnlyId) {
+                $V3Items = $V3Items | Select-Object -Property id
+            }
+            $V3Items
+            return
+        }
+
 
         $SearchTextString = ""
         foreach ($key in $SearchText.Keys) {

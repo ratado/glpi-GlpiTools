@@ -90,6 +90,24 @@ function Remove-GlpiToolsItems {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Route = Get-GlpiToolsV3Route -ItemType $RemoveFrom
+            # the legacy -Purge becomes force=true; without it the item goes to the trash
+            $V3Query = if ($Purge) { @{ force = 'true' } } else { $null }
+            if ($ChoosenParam -contains 'ItemId') {
+                Invoke-GlpiToolsRequest -Method Delete -Resource "$V3Route/$ItemId" -Query $V3Query
+            } else {
+                # the legacy payload carries the ids inside "input"
+                $V3Payload = if ($ChoosenParam -contains 'JsonPayload') { ($JsonPayload -join '') | ConvertFrom-Json -AsHashtable } else { $HashtableToRemove }
+                $V3Inputs = if ($V3Payload.ContainsKey('input')) { $V3Payload['input'] } else { $V3Payload }
+                foreach ($V3Input in @($V3Inputs)) {
+                    Invoke-GlpiToolsRequest -Method Delete -Resource "$V3Route/$($V3Input['id'])" -Query $V3Query
+                }
+            }
+            return
+        }
+
         switch ($ChoosenParam) {
             ItemId {
                 $params = @{

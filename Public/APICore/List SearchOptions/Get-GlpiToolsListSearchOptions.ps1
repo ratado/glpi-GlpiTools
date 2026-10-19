@@ -42,6 +42,12 @@ function Get-GlpiToolsListSearchOptions {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsListSearchOptions'
+            return
+        }
+
         $params = @{
             headers = @{
                 'Content-Type'  = 'application/json'

@@ -40,6 +40,17 @@ function Set-GlpiToolsChangeActiveProfile {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Session = Invoke-GlpiToolsRequest -Method Get -Resource '/session'
+            if ($V3Session.profiles.PSObject.Properties.Name -notcontains [string]$ProfilesId) {
+                throw "Profile $ProfilesId is not available for the current user."
+            }
+            Set-GlpiToolsV3Context -ProfileId $ProfilesId
+            $true
+            return
+        }
+
 
         $PostChangeEntities = @{
             profiles_id = $ProfilesId

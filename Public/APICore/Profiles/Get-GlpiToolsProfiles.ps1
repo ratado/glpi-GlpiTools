@@ -69,6 +69,24 @@ function Get-GlpiToolsProfiles {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            switch ($ChoosenParam) {
+                All { Invoke-GlpiToolsRequest -Method Get -Resource '/Administration/Profile' -All }
+                ProfileId {
+                    foreach ($PId in $ProfileId) {
+                        try {
+                            Invoke-GlpiToolsRequest -Method Get -Resource "/Administration/Profile/$PId"
+                        } catch {
+                            Write-Verbose -Message "Profile ID = $PId is not found"
+                        }
+                    }
+                }
+                ProfileName { Search-GlpiToolsItems -SearchFor Profile -SearchType contains -SearchValue $ProfileName }
+            }
+            return
+        }
+
 
         switch ($ChoosenParam) {
             All { 
