@@ -67,6 +67,11 @@ function Get-GlpiToolsGroupsMembers {
     }
     
     process {
+        # API v3: the group members have no route of their own
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsGroupsMembers'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
