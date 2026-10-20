@@ -83,10 +83,12 @@ function Get-GlpiToolsComputerSoftwareVersions {
     process {
         # API v3: these records are sub-resources of an asset, so the asset is informed with a parameter that only the v3 uses
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            if (-not $PSBoundParameters.ContainsKey('ComputerId')) {
-                throw 'The parameter -ComputerId is required with the GLPI API v3.'
+            Assert-GlpiToolsV3ParameterRequired -Name 'ComputerId' -BoundParameters $PSBoundParameters
+            # the list is read once per call, because this block runs again for each ID received from the pipeline
+            if ($null -eq $GlpiToolsV3ListCache) {
+                $GlpiToolsV3ListCache = @(Invoke-GlpiToolsRequest -Method Get -Resource "/Assets/Computer/$ComputerId/SoftwareInstallation" -All | Where-Object { $_ })
             }
-            $V3Items = @(Invoke-GlpiToolsRequest -Method Get -Resource "/Assets/Computer/$ComputerId/SoftwareInstallation" -All | Where-Object { $_ })
+            $V3Items = $GlpiToolsV3ListCache
             if ($PSCmdlet.ParameterSetName -eq 'ComputerSoftwareVersionId') {
                 # the legacy ID parameter selects records of the list
                 $V3Items = @($V3Items | Where-Object { [string]$_.id -in @($ComputerSoftwareVersionId) })

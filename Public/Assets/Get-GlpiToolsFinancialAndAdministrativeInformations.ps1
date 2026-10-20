@@ -91,16 +91,19 @@ function Get-GlpiToolsFinancialAndAdministrativeInformations {
     process {
         # API v3: these records are sub-resources of an asset, so the asset is informed with a parameter that only the v3 uses
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            if (-not ($PSBoundParameters.ContainsKey('ItemType') -and $PSBoundParameters.ContainsKey('ItemId'))) {
-                throw 'The parameters -ItemType and -ItemId are required with the GLPI API v3.'
+            Assert-GlpiToolsV3ParameterRequired -Name 'ItemType', 'ItemId' -BoundParameters $PSBoundParameters
+            # the record is read once per call, because this block runs again for each ID received from the pipeline
+            if ($null -eq $GlpiToolsV3ListCache) {
+                $V3Fetched = @()
+                try {
+                    $V3Fetched = @(Invoke-GlpiToolsRequest -Method Get -Resource "$(Get-GlpiToolsV3Route -ItemType $ItemType)/$ItemId/Infocom" | Where-Object { $_ })
+                } catch {
+                    # an asset without financial information is answered with 404, which is an empty result
+                    if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
+                }
+                $GlpiToolsV3ListCache = $V3Fetched
             }
-            $V3Items = @()
-            try {
-                $V3Items = @(Invoke-GlpiToolsRequest -Method Get -Resource "$(Get-GlpiToolsV3Route -ItemType $ItemType)/$ItemId/Infocom" | Where-Object { $_ })
-            } catch {
-                # an asset without financial information is answered with 404, which is an empty result
-                if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
-            }
+            $V3Items = $GlpiToolsV3ListCache
             if ($PSCmdlet.ParameterSetName -eq 'FinancialAndAdminstrativeId') {
                 # the legacy ID parameter selects records of the list
                 $V3Items = @($V3Items | Where-Object { [string]$_.id -in @($FinancialAndAdminstrativeId) })
