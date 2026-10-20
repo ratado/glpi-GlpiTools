@@ -72,6 +72,11 @@ function Get-GlpiToolsFinancialAndAdministrativeInformations {
     }
     
     process {
+        # API v3: these records are sub-resources of an asset, which the legacy parameters do not identify
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsFinancialAndAdministrativeInformations'
+        }
+
         switch ($ChoosenParam) {
             All {
                 

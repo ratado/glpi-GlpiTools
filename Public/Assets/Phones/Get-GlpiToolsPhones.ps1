@@ -138,6 +138,40 @@ function Get-GlpiToolsPhones {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            # the parameter set is used because pipeline input is not bound yet in the begin block
+            switch ($PSCmdlet.ParameterSetName) {
+                All {
+                    Invoke-GlpiToolsRequest -Method Get -Resource '/Assets/Phone' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType Phone -Raw
+                }
+                PhoneId {
+                    # the v3 answer already carries the names of the related items; only the extras that exist in the v3 are supported
+                    if ($Parameter -and $Parameter -ne 'ExpandDropdowns') {
+                        Assert-GlpiToolsV3Supported -Name "-Parameter $Parameter"
+                    }
+                    foreach ($V3ItemId in $PhoneId) {
+                        $V3Item = $null
+                        try {
+                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Assets/Phone/$V3ItemId"
+                        } catch {
+                            # only a missing item is skipped; other failures are reported
+                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
+                            Write-Verbose -Message "Phone ID = $V3ItemId is not found"
+                        }
+                        if ($V3Item) {
+                            # the legacy properties are returned, converted to names unless -Raw is used
+                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType Phone -Raw:$Raw
+                        }
+                    }
+                }
+                PhoneName {
+                    Search-GlpiToolsItems -SearchFor Phone -SearchType contains -SearchValue $PhoneName -SearchInTrash $SearchInTrash | ConvertFrom-GlpiToolsV3Item -ItemType Phone -Raw
+                }
+            }
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{

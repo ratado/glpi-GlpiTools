@@ -84,6 +84,7 @@ Describe 'ConvertFrom-GlpiToolsV3Item for the other item types' {
         @{ Type = 'Entity'; Id = 1 }
         @{ Type = 'Group'; Id = 1 }
         @{ Type = 'Location'; Id = 4 }
+        @{ Type = 'Software'; Id = 1 }
     ) {
         $V3 = Get-Content -Path (Join-Path $PSScriptRoot 'Fixtures' "$Type$Id-v3.json") -Raw | ConvertFrom-Json -DateKind String
         $V1 = Get-Content -Path (Join-Path $PSScriptRoot 'Fixtures' "$Type$Id-v1-Raw.json") -Raw | ConvertFrom-Json -DateKind String
