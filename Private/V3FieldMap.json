@@ -1250,5 +1250,15 @@
     { "v3": "comment", "v1": "comment", "kind": "value" },
     { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
     { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "Plugin": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "internal_name", "v1": "directory", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "version", "v1": "version", "kind": "value" },
+    { "v3": "state", "v1": "state", "kind": "value" },
+    { "v3": "author", "v1": "author", "kind": "value" },
+    { "v3": "homepage", "v1": "homepage", "kind": "value" },
+    { "v3": "license", "v1": "license", "kind": "value" }
   ]
 }

@@ -70,6 +70,11 @@ function Get-GlpiToolsAppsStructuresComponentTechnic {
     }
     
     process {
+        # API v3: plugins of third parties have no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsAppsStructuresComponentTechnic'
+        }
+
         switch ($ChoosenParam) {
             All {
                 $params = @{
