@@ -67,6 +67,11 @@ function Get-GlpiToolsDropdownsSoftwareCategory {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsSoftwareCategory'
+        }
+
         switch ($ChoosenParam) {
             All {  
                 $params = @{

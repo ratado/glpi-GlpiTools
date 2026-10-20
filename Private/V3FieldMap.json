@@ -754,5 +754,501 @@
     { "v3": "is_deleted", "v1": "is_deleted", "kind": "bool" },
     { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
     { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "ProjectTaskType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "ProjectType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "RequestType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "is_helpdesk_default", "v1": "is_helpdesk_default", "kind": "bool" },
+    { "v3": "is_followup_default", "v1": "is_followup_default", "kind": "bool" },
+    { "v3": "is_mail_default", "v1": "is_mail_default", "kind": "bool" },
+    { "v3": "is_mailfollowup_default", "v1": "is_mailfollowup_default", "kind": "bool" },
+    { "v3": "is_active", "v1": "is_active", "kind": "bool" },
+    { "v3": "is_visible_ticket", "v1": "is_ticketheader", "kind": "bool" },
+    { "v3": "is_visible_followup", "v1": "is_itilfollowup", "kind": "bool" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "SolutionTemplate": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "entity", "v1": "entities_id", "kind": "dropdown", "named": "completename" },
+    { "v3": "is_recursive", "v1": "is_recursive", "kind": "bool" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "content", "v1": "content", "kind": "value" },
+    { "v3": "type", "v1": "solutiontypes_id", "kind": "dropdown", "named": "id" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "SolutionType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "entity", "v1": "entities_id", "kind": "dropdown", "named": "completename" },
+    { "v3": "is_recursive", "v1": "is_recursive", "kind": "bool" },
+    { "v3": "is_incident", "v1": "is_incident", "kind": "bool" },
+    { "v3": "is_request", "v1": "is_request", "kind": "bool" },
+    { "v3": "is_problem", "v1": "is_problem", "kind": "bool" },
+    { "v3": "is_change", "v1": "is_change", "kind": "bool" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "TaskCategory": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "entity", "v1": "entities_id", "kind": "dropdown", "named": "completename" },
+    { "v3": "is_recursive", "v1": "is_recursive", "kind": "bool" },
+    { "v3": "parent", "v1": "taskcategories_id", "kind": "dropdown", "named": "id" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "completename", "v1": "completename", "kind": "value" },
+    { "v3": "level", "v1": "level", "kind": "value" },
+    { "v3": "is_active", "v1": "is_active", "kind": "bool" },
+    { "v3": "is_helpdesk_visible", "v1": "is_helpdeskvisible", "kind": "bool" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "TaskTemplate": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "entity", "v1": "entities_id", "kind": "dropdown", "named": "completename" },
+    { "v3": "is_recursive", "v1": "is_recursive", "kind": "bool" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "content", "v1": "content", "kind": "value" },
+    { "v3": "category", "v1": "taskcategories_id", "kind": "dropdown", "named": "id" },
+    { "v3": "duration", "v1": "actiontime", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" },
+    { "v3": "state", "v1": "state", "kind": "value" },
+    { "v3": "is_private", "v1": "is_private", "kind": "bool" },
+    { "v3": "user_tech", "v1": "users_id_tech", "kind": "dropdown", "named": "username" },
+    { "v3": "use_current_user", "v1": "use_current_user", "kind": "bool" },
+    { "v3": "group_tech", "v1": "groups_id_tech", "kind": "dropdown", "named": "name" }
+  ],
+  "ITILCategory": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "entity", "v1": "entities_id", "kind": "dropdown", "named": "completename" },
+    { "v3": "is_recursive", "v1": "is_recursive", "kind": "bool" },
+    { "v3": "parent", "v1": "itilcategories_id", "kind": "dropdown", "named": "id" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "completename", "v1": "completename", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "level", "v1": "level", "kind": "value" },
+    { "v3": "user", "v1": "users_id", "kind": "dropdown", "named": "username" },
+    { "v3": "group", "v1": "groups_id", "kind": "dropdown", "named": "name" },
+    { "v3": "code", "v1": "code", "kind": "value" },
+    { "v3": "is_helpdesk_visible", "v1": "is_helpdeskvisible", "kind": "bool" },
+    { "v3": "is_incident_visible", "v1": "is_incident", "kind": "bool" },
+    { "v3": "is_request_visible", "v1": "is_request", "kind": "bool" },
+    { "v3": "is_problem_visible", "v1": "is_problem", "kind": "bool" },
+    { "v3": "is_change_visible", "v1": "is_change", "kind": "bool" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "Calendar": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "entity", "v1": "entities_id", "kind": "dropdown", "named": "completename" },
+    { "v3": "is_recursive", "v1": "is_recursive", "kind": "bool" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "CloseTime": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "entity", "v1": "entities_id", "kind": "dropdown", "named": "completename" },
+    { "v3": "is_recursive", "v1": "is_recursive", "kind": "bool" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_begin", "v1": "begin_date", "kind": "date" },
+    { "v3": "date_end", "v1": "end_date", "kind": "date" },
+    { "v3": "is_perpetual", "v1": "is_perpetual", "kind": "bool" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "DeniedMailContent": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "content", "v1": "content", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "DenyList": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "type", "v1": "type", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "value", "v1": "value", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "Manufacturer": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "State": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "entity", "v1": "entities_id", "kind": "dropdown", "named": "completename" },
+    { "v3": "is_recursive", "v1": "is_recursive", "kind": "bool" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "parent", "v1": "states_id", "kind": "dropdown", "named": "name" },
+    { "v3": "completename", "v1": "completename", "kind": "value" },
+    { "v3": "level", "v1": "level", "kind": "value" },
+    { "v3": "is_visible_helpdesk", "v1": "is_helpdesk_visible", "kind": "bool" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "WifiNetwork": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "entity", "v1": "entities_id", "kind": "dropdown", "named": "completename" },
+    { "v3": "is_recursive", "v1": "is_recursive", "kind": "bool" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "essid", "v1": "essid", "kind": "value" },
+    { "v3": "mode", "v1": "mode", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "BusinessCriticity": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "entity", "v1": "entities_id", "kind": "dropdown", "named": "completename" },
+    { "v3": "is_recursive", "v1": "is_recursive", "kind": "bool" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" },
+    { "v3": "parent", "v1": "businesscriticities_id", "kind": "dropdown", "named": "id" },
+    { "v3": "completename", "v1": "completename", "kind": "value" },
+    { "v3": "level", "v1": "level", "kind": "value" }
+  ],
+  "DocumentCategory": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "parent", "v1": "documentcategories_id", "kind": "dropdown", "named": "id" },
+    { "v3": "completename", "v1": "completename", "kind": "value" },
+    { "v3": "level", "v1": "level", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "DocumentType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "extension", "v1": "ext", "kind": "value" },
+    { "v3": "icon", "v1": "icon", "kind": "value" },
+    { "v3": "mime", "v1": "mime", "kind": "value" },
+    { "v3": "is_uploadable", "v1": "is_uploadable", "kind": "bool" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "ComputerModel": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "product_number", "v1": "product_number", "kind": "value" },
+    { "v3": "weight", "v1": "weight", "kind": "value" },
+    { "v3": "rack_units", "v1": "required_units", "kind": "value" },
+    { "v3": "depth", "v1": "depth", "kind": "decimal" },
+    { "v3": "power_connections", "v1": "power_connections", "kind": "value" },
+    { "v3": "power_consumption", "v1": "power_consumption", "kind": "value" },
+    { "v3": "is_half_rack", "v1": "is_half_rack", "kind": "bool" },
+    { "v3": "picture_front", "v1": "picture_front", "kind": "value" },
+    { "v3": "picture_rear", "v1": "picture_rear", "kind": "value" },
+    { "v3": "pictures", "v1": "pictures", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "EnclosureModel": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "product_number", "v1": "product_number", "kind": "value" },
+    { "v3": "weight", "v1": "weight", "kind": "value" },
+    { "v3": "rack_units", "v1": "required_units", "kind": "value" },
+    { "v3": "depth", "v1": "depth", "kind": "decimal" },
+    { "v3": "power_connections", "v1": "power_connections", "kind": "value" },
+    { "v3": "power_consumption", "v1": "power_consumption", "kind": "value" },
+    { "v3": "is_half_rack", "v1": "is_half_rack", "kind": "bool" },
+    { "v3": "picture_front", "v1": "picture_front", "kind": "value" },
+    { "v3": "picture_rear", "v1": "picture_rear", "kind": "value" },
+    { "v3": "pictures", "v1": "pictures", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "MonitorModel": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "product_number", "v1": "product_number", "kind": "value" },
+    { "v3": "weight", "v1": "weight", "kind": "value" },
+    { "v3": "rack_units", "v1": "required_units", "kind": "value" },
+    { "v3": "depth", "v1": "depth", "kind": "decimal" },
+    { "v3": "power_connections", "v1": "power_connections", "kind": "value" },
+    { "v3": "power_consumption", "v1": "power_consumption", "kind": "value" },
+    { "v3": "is_half_rack", "v1": "is_half_rack", "kind": "bool" },
+    { "v3": "picture_front", "v1": "picture_front", "kind": "value" },
+    { "v3": "picture_rear", "v1": "picture_rear", "kind": "value" },
+    { "v3": "pictures", "v1": "pictures", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "NetworkEquipmentModel": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "product_number", "v1": "product_number", "kind": "value" },
+    { "v3": "weight", "v1": "weight", "kind": "value" },
+    { "v3": "rack_units", "v1": "required_units", "kind": "value" },
+    { "v3": "depth", "v1": "depth", "kind": "decimal" },
+    { "v3": "power_connections", "v1": "power_connections", "kind": "value" },
+    { "v3": "power_consumption", "v1": "power_consumption", "kind": "value" },
+    { "v3": "is_half_rack", "v1": "is_half_rack", "kind": "bool" },
+    { "v3": "picture_front", "v1": "picture_front", "kind": "value" },
+    { "v3": "picture_rear", "v1": "picture_rear", "kind": "value" },
+    { "v3": "pictures", "v1": "pictures", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "PeripheralModel": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "product_number", "v1": "product_number", "kind": "value" },
+    { "v3": "weight", "v1": "weight", "kind": "value" },
+    { "v3": "rack_units", "v1": "required_units", "kind": "value" },
+    { "v3": "depth", "v1": "depth", "kind": "decimal" },
+    { "v3": "power_connections", "v1": "power_connections", "kind": "value" },
+    { "v3": "power_consumption", "v1": "power_consumption", "kind": "value" },
+    { "v3": "is_half_rack", "v1": "is_half_rack", "kind": "bool" },
+    { "v3": "picture_front", "v1": "picture_front", "kind": "value" },
+    { "v3": "picture_rear", "v1": "picture_rear", "kind": "value" },
+    { "v3": "pictures", "v1": "pictures", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "PhoneModel": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "product_number", "v1": "product_number", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" },
+    { "v3": "picture_front", "v1": "picture_front", "kind": "value" },
+    { "v3": "picture_rear", "v1": "picture_rear", "kind": "value" },
+    { "v3": "pictures", "v1": "pictures", "kind": "value" }
+  ],
+  "PrinterModel": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "product_number", "v1": "product_number", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" },
+    { "v3": "picture_front", "v1": "picture_front", "kind": "value" },
+    { "v3": "picture_rear", "v1": "picture_rear", "kind": "value" },
+    { "v3": "pictures", "v1": "pictures", "kind": "value" }
+  ],
+  "Domain": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "entity", "v1": "entities_id", "kind": "dropdown", "named": "completename" },
+    { "v3": "is_recursive", "v1": "is_recursive", "kind": "bool" },
+    { "v3": "type", "v1": "domaintypes_id", "kind": "dropdown", "named": "id" },
+    { "v3": "date_expiration", "v1": "date_expiration", "kind": "value" },
+    { "v3": "date_domain_creation", "v1": "date_domaincreation", "kind": "value" },
+    { "v3": "user", "v1": "users_id", "kind": "dropdown", "named": "username" },
+    { "v3": "user_tech", "v1": "users_id_tech", "kind": "dropdown", "named": "username" },
+    { "v3": "is_deleted", "v1": "is_deleted", "kind": "bool" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "is_template", "v1": "is_template", "kind": "bool" },
+    { "v3": "template_name", "v1": "template_name", "kind": "value" },
+    { "v3": "is_active", "v1": "is_active", "kind": "bool" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" },
+    { "v3": "group_tech", "v1": "groups_id_tech", "kind": "list", "named": "name" },
+    { "v3": "group", "v1": "groups_id", "kind": "list", "named": "name" }
+  ],
+  "Network": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "AutoUpdateSystem": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" }
+  ],
+  "BudgetType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "CartridgeItemType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "CertificateType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "entity", "v1": "entities_id", "kind": "dropdown", "named": "completename" },
+    { "v3": "is_recursive", "v1": "is_recursive", "kind": "bool" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" }
+  ],
+  "ComputerType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "ConsumableItemType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "ContactType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "ContractType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "PeripheralType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "Filesystem": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "LicenseType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" },
+    { "v3": "parent", "v1": "softwarelicensetypes_id", "kind": "dropdown", "named": "id" },
+    { "v3": "level", "v1": "level", "kind": "value" },
+    { "v3": "entity", "v1": "entities_id", "kind": "dropdown", "named": "completename" },
+    { "v3": "is_recursive", "v1": "is_recursive", "kind": "bool" },
+    { "v3": "completename", "v1": "completename", "kind": "value" }
+  ],
+  "LineType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "MonitorType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "NetworkEquipmentType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "PhonePowerSupply": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "PhoneType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "PrinterType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "SupplierType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "UserCategory": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "UserTitle": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "VirtualMachineState": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
+  ],
+  "VirtualMachineType": [
+    { "v3": "id", "v1": "id", "kind": "value" },
+    { "v3": "name", "v1": "name", "kind": "value" },
+    { "v3": "comment", "v1": "comment", "kind": "value" },
+    { "v3": "date_mod", "v1": "date_mod", "kind": "date" },
+    { "v3": "date_creation", "v1": "date_creation", "kind": "date" }
   ]
 }

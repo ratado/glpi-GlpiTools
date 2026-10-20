@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsDeviceSensorModels {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsDeviceSensorModels'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{

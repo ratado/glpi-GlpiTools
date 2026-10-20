@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsNetworkInterfaces {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsNetworkInterfaces'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{

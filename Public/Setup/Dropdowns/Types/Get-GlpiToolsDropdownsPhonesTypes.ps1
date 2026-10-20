@@ -78,6 +78,36 @@ function Get-GlpiToolsDropdownsPhonesTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            # the parameter set is used because pipeline input is not bound yet in the begin block
+            switch ($PSCmdlet.ParameterSetName) {
+                All {
+                    Invoke-GlpiToolsRequest -Method Get -Resource '/Dropdowns/PhoneType' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType PhoneType -Raw
+                }
+                PhoneTypeId {
+                    foreach ($V3ItemId in $PhoneTypeId) {
+                        $V3Item = $null
+                        try {
+                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Dropdowns/PhoneType/$V3ItemId"
+                        } catch {
+                            # only a missing item is skipped; other failures are reported
+                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
+                            Write-Verbose -Message "PhoneType ID = $V3ItemId is not found"
+                        }
+                        if ($V3Item) {
+                            # the legacy properties are returned, converted to names only where the legacy command converts them
+                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType PhoneType -Raw:$Raw
+                        }
+                    }
+                }
+                PhoneTypeName {
+                    Search-GlpiToolsItems -SearchFor phonetype -SearchType contains -SearchValue $PhoneTypeName | ConvertFrom-GlpiToolsV3Item -ItemType PhoneType -Raw
+                }
+            }
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{

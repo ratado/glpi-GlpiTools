@@ -78,6 +78,36 @@ function Get-GlpiToolsDropdownsComputerTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            # the parameter set is used because pipeline input is not bound yet in the begin block
+            switch ($PSCmdlet.ParameterSetName) {
+                All {
+                    Invoke-GlpiToolsRequest -Method Get -Resource '/Dropdowns/ComputerType' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType ComputerType -Raw
+                }
+                ComputerTypeId {
+                    foreach ($V3ItemId in $ComputerTypeId) {
+                        $V3Item = $null
+                        try {
+                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Dropdowns/ComputerType/$V3ItemId"
+                        } catch {
+                            # only a missing item is skipped; other failures are reported
+                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
+                            Write-Verbose -Message "ComputerType ID = $V3ItemId is not found"
+                        }
+                        if ($V3Item) {
+                            # the legacy properties are returned, converted to names only where the legacy command converts them
+                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType ComputerType -Raw
+                        }
+                    }
+                }
+                ComputerTypeName {
+                    Search-GlpiToolsItems -SearchFor ComputerType -SearchType contains -SearchValue $ComputerTypeName | ConvertFrom-GlpiToolsV3Item -ItemType ComputerType -Raw
+                }
+            }
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{

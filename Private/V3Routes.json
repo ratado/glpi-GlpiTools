@@ -81,6 +81,7 @@
   "harddrive": "/Components/HardDrive",
   "harddrivetype": "/Dropdowns/HardDriveType",
   "itilcategory": "/Dropdowns/ITILCategory",
+  "holiday": "/Dropdowns/CloseTime",
   "knowbaseitem": "/Knowledgebase/Article",
   "ldapdirectory": "/Setup/LDAPDirectory",
   "ldapdirectoryreplicate": "/Setup/LDAPDirectoryReplicate",

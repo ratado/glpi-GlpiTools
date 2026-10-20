@@ -78,6 +78,36 @@ function Get-GlpiToolsDropdownsThirdPartyTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            # the parameter set is used because pipeline input is not bound yet in the begin block
+            switch ($PSCmdlet.ParameterSetName) {
+                All {
+                    Invoke-GlpiToolsRequest -Method Get -Resource '/Dropdowns/SupplierType' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType SupplierType -Raw
+                }
+                ThirdPartyTypeId {
+                    foreach ($V3ItemId in $ThirdPartyTypeId) {
+                        $V3Item = $null
+                        try {
+                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Dropdowns/SupplierType/$V3ItemId"
+                        } catch {
+                            # only a missing item is skipped; other failures are reported
+                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
+                            Write-Verbose -Message "SupplierType ID = $V3ItemId is not found"
+                        }
+                        if ($V3Item) {
+                            # the legacy properties are returned, converted to names only where the legacy command converts them
+                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType SupplierType -Raw:$Raw
+                        }
+                    }
+                }
+                ThirdPartyTypeName {
+                    Search-GlpiToolsItems -SearchFor suppliertype -SearchType contains -SearchValue $ThirdPartyTypeName | ConvertFrom-GlpiToolsV3Item -ItemType SupplierType -Raw
+                }
+            }
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
