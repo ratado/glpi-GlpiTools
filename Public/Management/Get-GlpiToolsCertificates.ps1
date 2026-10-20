@@ -78,6 +78,37 @@ function Get-GlpiToolsCertificates {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            # the parameter set is used because pipeline input is not bound yet in the begin block
+            switch ($PSCmdlet.ParameterSetName) {
+                All {
+                    Invoke-GlpiToolsRequest -Method Get -Resource '/Assets/Certificate' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType Certificate -Raw
+                }
+                CertificateId {
+                    # the v3 answer already carries the names of the related items
+                    foreach ($V3ItemId in $CertificateId) {
+                        $V3Item = $null
+                        try {
+                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Assets/Certificate/$V3ItemId"
+                        } catch {
+                            # only a missing item is skipped; other failures are reported
+                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
+                            Write-Verbose -Message "Certificate ID = $V3ItemId is not found"
+                        }
+                        if ($V3Item) {
+                            # the legacy properties are returned, converted to names unless -Raw is used
+                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType Certificate -Raw:$Raw
+                        }
+                    }
+                }
+                CertificateName {
+                    Search-GlpiToolsItems -SearchFor Certificate -SearchType contains -SearchValue $CertificateName | ConvertFrom-GlpiToolsV3Item -ItemType Certificate -Raw
+                }
+            }
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{

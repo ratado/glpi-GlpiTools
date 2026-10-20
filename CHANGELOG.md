@@ -13,6 +13,7 @@ All notable changes to this project are documented in this file.
 - With the REST API v3 configured, `Get-GlpiToolsChanges`, `Get-GlpiToolsProblems` and `Get-GlpiToolsRecurrentTickets` work and return the same properties as the legacy API.
 - With the REST API v3 configured, the asset commands (computers, monitors, network equipment, peripherals, phones, printers, racks, enclosures, PDUs, software, cartridges and consumables) work and return the same properties as the legacy API. `Get-GlpiToolsSoftwareVersions`, `Get-GlpiToolsComputerSoftwareVersions` and `Get-GlpiToolsFinancialAndAdministrativeInformations` have new optional parameters (`-SoftwareId`, `-ComputerId`, `-ItemType` and `-ItemId`) that are required only with the API v3.
 - With the REST API v3 configured, `Get-GlpiToolsEntities`, `Get-GlpiToolsGroups` and `Get-GlpiToolsUsers` work and return the same properties as the legacy API. `Get-GlpiToolsGroupsMembers` is not available in the API v3 and stops with a clear message.
+- With the REST API v3 configured, the management commands (budgets, certificates, contacts, contracts, data centers, lines, software licenses and suppliers) work and return the same properties as the legacy API.
 - Changing the configuration now closes the session that was open on the GLPI server.
 - The configuration file is now readable only by its owner on Linux.
 - Existing configurations keep working as the legacy API, with no changes needed.

@@ -78,6 +78,37 @@ function Get-GlpiToolsSoftwareLicenses {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            # the parameter set is used because pipeline input is not bound yet in the begin block
+            switch ($PSCmdlet.ParameterSetName) {
+                All {
+                    Invoke-GlpiToolsRequest -Method Get -Resource '/Management/License' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType SoftwareLicense -Raw
+                }
+                SoftwareLicenseId {
+                    # the v3 answer already carries the names of the related items
+                    foreach ($V3ItemId in $SoftwareLicenseId) {
+                        $V3Item = $null
+                        try {
+                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Management/License/$V3ItemId"
+                        } catch {
+                            # only a missing item is skipped; other failures are reported
+                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
+                            Write-Verbose -Message "SoftwareLicense ID = $V3ItemId is not found"
+                        }
+                        if ($V3Item) {
+                            # the legacy properties are returned, converted to names unless -Raw is used
+                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType SoftwareLicense -Raw:$Raw
+                        }
+                    }
+                }
+                SoftwareLicenseName {
+                    Search-GlpiToolsItems -SearchFor softwarelicense -SearchType contains -SearchValue $SoftwareLicenseName | ConvertFrom-GlpiToolsV3Item -ItemType SoftwareLicense -Raw
+                }
+            }
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
