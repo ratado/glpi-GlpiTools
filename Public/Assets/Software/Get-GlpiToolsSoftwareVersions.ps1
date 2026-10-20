@@ -85,7 +85,7 @@ function Get-GlpiToolsSoftwareVersions {
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
             Assert-GlpiToolsV3ParameterRequired -Name 'SoftwareId' -BoundParameters $PSBoundParameters
             # the list is read once per call, because this block runs again for each ID received from the pipeline
-            if ($null -eq $GlpiToolsV3ListCache) {
+            if (-not (Get-Variable -Name GlpiToolsV3ListCache -Scope Local -ErrorAction SilentlyContinue)) {
                 $GlpiToolsV3ListCache = @(Invoke-GlpiToolsRequest -Method Get -Resource "/Assets/Software/$SoftwareId/Version" -All | Where-Object { $_ })
             }
             $V3Items = $GlpiToolsV3ListCache

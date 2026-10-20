@@ -1,3 +1,9 @@
+# commands whose v3 branch is characterized; built at discovery time so the tests are generated from it
+$CharacterizedCmdlets = Get-ChildItem -Path (Join-Path $PSScriptRoot '..' 'Public') -Recurse -Filter 'Get-*.ps1' |
+    Where-Object { $_.FullName -notmatch '[\\/]APICore[\\/]' } |
+    Where-Object { (Get-Content -LiteralPath $_.FullName -Raw) -match 'handled through the shared request layer|these records are sub-resources' } |
+    ForEach-Object { $_.BaseName } | Sort-Object
+
 BeforeAll {
     # keep the real config untouched by redirecting the home directory
     $script:OriginalHome = $env:HOME
@@ -26,13 +32,10 @@ BeforeAll {
         '/Administration/User'   = 'User2-v3.json'
     }
 
-    # cmdlets whose v3 branch is characterized: every command that has a v3 branch built on the shared request layer
-    $script:Cmdlets = Get-ChildItem -Path (Join-Path $PSScriptRoot '..' 'Public') -Recurse -Filter 'Get-*.ps1' |
-        Where-Object { $_.FullName -notmatch '[\\/]APICore[\\/]' } |
-        Where-Object { (Get-Content -LiteralPath $_.FullName -Raw) -match 'handled through the shared request layer|these records are sub-resources' } |
-        ForEach-Object { $_.BaseName } | Sort-Object
-
-    # builds the item returned by the mocked request for a route and an id
+    <#
+    .SYNOPSIS
+        Builds the item returned by the mocked request for a route and an id.
+    #>
     function script:New-MockItem {
         param([string]$Route, [int]$Id)
         $base = ($Route -replace '/\d+$', '')
@@ -44,7 +47,10 @@ BeforeAll {
         [pscustomobject]@{ id = $Id; name = "item $Id"; comment = 'c' }
     }
 
-    # runs one scenario and returns what was asked of the API and what the command produced
+    <#
+    .SYNOPSIS
+        Runs one scenario and returns the calls made to the API, the output, the verbose messages and the error.
+    #>
     function script:Invoke-Scenario {
         param([string]$Name, [hashtable]$Params, $Pipeline)
         $global:CharCalls = [System.Collections.Generic.List[string]]::new()
@@ -69,7 +75,10 @@ BeforeAll {
         $result
     }
 
-    # builds the scenarios of a command from its parameter sets
+    <#
+    .SYNOPSIS
+        Builds the scenarios of a command from its parameter sets.
+    #>
     function script:Get-Scenarios {
         param([string]$Name)
         $command = Get-Command $Name
@@ -116,7 +125,10 @@ BeforeAll {
         $list
     }
 
-    # runs every scenario of a command and returns them keyed by scenario name
+    <#
+    .SYNOPSIS
+        Runs every scenario of a command and returns them keyed by scenario name.
+    #>
     function script:Get-CmdletSnapshot {
         param([string]$Name)
         $snap = [ordered]@{}
@@ -171,11 +183,11 @@ Describe 'Characterization of the v3 branch of the read cmdlets' {
         } -ModuleName GlpiTools
     }
 
-    It 'covers the expected number of commands' {
-        $script:Cmdlets.Count | Should -BeGreaterThan 80
+    It 'covers the expected number of commands' -ForEach @(@{ Count = $CharacterizedCmdlets.Count }) {
+        $Count | Should -Be 82
     }
 
-    It '<_> keeps the calls and the output of every scenario' -ForEach (Get-ChildItem -Path (Join-Path $PSScriptRoot '..' 'Public') -Recurse -Filter 'Get-*.ps1' | Where-Object { $_.FullName -notmatch '[\\/]APICore[\\/]' } | Where-Object { (Get-Content -LiteralPath $_.FullName -Raw) -match 'handled through the shared request layer|these records are sub-resources' } | ForEach-Object { $_.BaseName } | Sort-Object) {
+    It '<_> keeps the calls and the output of every scenario' -ForEach $CharacterizedCmdlets {
         $snapshot = Get-CmdletSnapshot -Name $_
         if ($script:UpdateSnapshot) {
             $script:Collected[$_] = $snapshot

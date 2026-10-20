@@ -31,7 +31,7 @@
 .PARAMETER Parameter
     Extra requested with the cmdlet parameter of the same name. Only WithDocuments is acted on here.
 .PARAMETER SupportedParameter
-    Extras that exist in the API v3. When informed, any other extra stops the command with the standard error.
+    Extras that exist in the API v3. Default is ExpandDropdowns; any other extra stops the command with the standard error.
 .EXAMPLE
     PS C:\> Invoke-GlpiToolsV3ItemQuery -ParameterSetName $PSCmdlet.ParameterSetName -Resource '/Assets/Computer' -ItemType Computer -Id $ComputerId -Name $ComputerName -Raw:$Raw
     Lists, reads or searches computers according to the parameter set of the calling cmdlet.
@@ -83,7 +83,7 @@ function Invoke-GlpiToolsV3ItemQuery {
         [string]$Parameter,
 
         [parameter(Mandatory = $false)]
-        [string[]]$SupportedParameter
+        [string[]]$SupportedParameter = @('ExpandDropdowns')
     )
 
     # the active parameter set tells the operation, because pipeline input is not bound yet in the begin block
@@ -98,7 +98,7 @@ function Invoke-GlpiToolsV3ItemQuery {
         }
         '*Id' {
             # the v3 answer already carries the names of the related items; only the extras that exist in the v3 are supported
-            if ($PSBoundParameters.ContainsKey('SupportedParameter') -and $Parameter -and $Parameter -notin $SupportedParameter) {
+            if ($Parameter -and $Parameter -notin $SupportedParameter) {
                 Assert-GlpiToolsV3Supported -Name "-Parameter $Parameter"
             }
             foreach ($V3ItemId in $Id) {

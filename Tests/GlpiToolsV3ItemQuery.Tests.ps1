@@ -76,8 +76,8 @@ Describe 'Invoke-GlpiToolsV3ItemQuery' {
         It 'accepts the supported extras' {
             { Invoke-GlpiToolsV3ItemQuery -ParameterSetName ComputerId -Resource '/Assets/Computer' -ItemType Computer -Id 2 -Parameter ExpandDropdowns -SupportedParameter ExpandDropdowns } | Should -Not -Throw
         }
-        It 'does not check the extra when the command has no list of supported ones' {
-            { Invoke-GlpiToolsV3ItemQuery -ParameterSetName ComputerId -Resource '/Assets/Computer' -ItemType Computer -Id 2 -Parameter WithLogs } | Should -Not -Throw
+        It 'rejects by default any extra other than ExpandDropdowns' {
+            { Invoke-GlpiToolsV3ItemQuery -ParameterSetName ComputerId -Resource '/Assets/Computer' -ItemType Computer -Id 2 -Parameter WithLogs } | Should -Throw '*-Parameter WithLogs is not supported*'
         }
         It 'adds the documents of the timeline with WithDocuments' {
             Mock Invoke-GlpiToolsRequest {
@@ -96,7 +96,7 @@ Describe 'Invoke-GlpiToolsV3ItemQuery' {
                 }
                 [pscustomobject]@{ id = 2 }
             } -ModuleName GlpiTools
-            (Invoke-GlpiToolsV3ItemQuery -ParameterSetName TicketId -Resource '/Assistance/Ticket' -ItemType Ticket -Id 2 -Parameter WithDocuments).Input._documents.Count | Should -Be 0
+            (Invoke-GlpiToolsV3ItemQuery -ParameterSetName TicketId -Resource '/Assistance/Ticket' -ItemType Ticket -Id 2 -Parameter WithDocuments -SupportedParameter WithDocuments).Input._documents.Count | Should -Be 0
             Mock Invoke-GlpiToolsRequest {
                 if ($Resource -like '*/Timeline/Document') {
                     $e = [System.Management.Automation.ErrorRecord]::new([System.Exception]::new('boom'), 'GlpiApi.500', 'InvalidOperation', $null)
@@ -104,7 +104,7 @@ Describe 'Invoke-GlpiToolsV3ItemQuery' {
                 }
                 [pscustomobject]@{ id = 2 }
             } -ModuleName GlpiTools
-            { Invoke-GlpiToolsV3ItemQuery -ParameterSetName TicketId -Resource '/Assistance/Ticket' -ItemType Ticket -Id 2 -Parameter WithDocuments } | Should -Throw '*boom*'
+            { Invoke-GlpiToolsV3ItemQuery -ParameterSetName TicketId -Resource '/Assistance/Ticket' -ItemType Ticket -Id 2 -Parameter WithDocuments -SupportedParameter WithDocuments } | Should -Throw '*boom*'
         }
     }
 

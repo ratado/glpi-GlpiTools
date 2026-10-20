@@ -93,7 +93,7 @@ function Get-GlpiToolsFinancialAndAdministrativeInformations {
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
             Assert-GlpiToolsV3ParameterRequired -Name 'ItemType', 'ItemId' -BoundParameters $PSBoundParameters
             # the record is read once per call, because this block runs again for each ID received from the pipeline
-            if ($null -eq $GlpiToolsV3ListCache) {
+            if (-not (Get-Variable -Name GlpiToolsV3ListCache -Scope Local -ErrorAction SilentlyContinue)) {
                 $V3Fetched = @()
                 try {
                     $V3Fetched = @(Invoke-GlpiToolsRequest -Method Get -Resource "$(Get-GlpiToolsV3Route -ItemType $ItemType)/$ItemId/Infocom" | Where-Object { $_ })
