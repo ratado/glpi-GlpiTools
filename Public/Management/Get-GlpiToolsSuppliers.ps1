@@ -80,32 +80,15 @@ function Get-GlpiToolsSuppliers {
     process {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            # the parameter set is used because pipeline input is not bound yet in the begin block
-            switch ($PSCmdlet.ParameterSetName) {
-                All {
-                    Invoke-GlpiToolsRequest -Method Get -Resource '/Management/Supplier' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType Supplier -Raw
-                }
-                SupplierId {
-                    # the v3 answer already carries the names of the related items
-                    foreach ($V3ItemId in $SupplierId) {
-                        $V3Item = $null
-                        try {
-                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Management/Supplier/$V3ItemId"
-                        } catch {
-                            # only a missing item is skipped; other failures are reported
-                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
-                            Write-Verbose -Message "Supplier ID = $V3ItemId is not found"
-                        }
-                        if ($V3Item) {
-                            # the legacy properties are returned, converted to names unless -Raw is used
-                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType Supplier -Raw:$Raw
-                        }
-                    }
-                }
-                SupplierName {
-                    Search-GlpiToolsItems -SearchFor Supplier -SearchType contains -SearchValue $SupplierName | ConvertFrom-GlpiToolsV3Item -ItemType Supplier -Raw
-                }
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Management/Supplier'
+                ItemType         = 'Supplier'
+                Id               = $SupplierId
+                Name             = $SupplierName
+                Raw              = $Raw
             }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
             return
         }
 
