@@ -140,35 +140,18 @@ function Get-GlpiToolsPeripherals {
     process {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            # the parameter set is used because pipeline input is not bound yet in the begin block
-            switch ($PSCmdlet.ParameterSetName) {
-                All {
-                    Invoke-GlpiToolsRequest -Method Get -Resource '/Assets/Peripheral' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType Peripheral -Raw
-                }
-                PeripheralId {
-                    # the v3 answer already carries the names of the related items; only the extras that exist in the v3 are supported
-                    if ($Parameter -and $Parameter -ne 'ExpandDropdowns') {
-                        Assert-GlpiToolsV3Supported -Name "-Parameter $Parameter"
-                    }
-                    foreach ($V3ItemId in $PeripheralId) {
-                        $V3Item = $null
-                        try {
-                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Assets/Peripheral/$V3ItemId"
-                        } catch {
-                            # only a missing item is skipped; other failures are reported
-                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
-                            Write-Verbose -Message "Peripheral ID = $V3ItemId is not found"
-                        }
-                        if ($V3Item) {
-                            # the legacy properties are returned, converted to names unless -Raw is used
-                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType Peripheral -Raw:$Raw
-                        }
-                    }
-                }
-                PeripheralName {
-                    Search-GlpiToolsItems -SearchFor Peripheral -SearchType contains -SearchValue $PeripheralName -SearchInTrash $SearchInTrash | ConvertFrom-GlpiToolsV3Item -ItemType Peripheral -Raw
-                }
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assets/Peripheral'
+                ItemType         = 'Peripheral'
+                Id               = $PeripheralId
+                Name             = $PeripheralName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns'
             }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
             return
         }
 
