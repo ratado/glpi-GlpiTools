@@ -80,31 +80,16 @@ function Get-GlpiToolsDropdownsContractTypes {
     process {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            # the parameter set is used because pipeline input is not bound yet in the begin block
-            switch ($PSCmdlet.ParameterSetName) {
-                All {
-                    Invoke-GlpiToolsRequest -Method Get -Resource '/Dropdowns/ContractType' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType ContractType -Raw
-                }
-                ContractTypeId {
-                    foreach ($V3ItemId in $ContractTypeId) {
-                        $V3Item = $null
-                        try {
-                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Dropdowns/ContractType/$V3ItemId"
-                        } catch {
-                            # only a missing item is skipped; other failures are reported
-                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
-                            Write-Verbose -Message "ContractType ID = $V3ItemId is not found"
-                        }
-                        if ($V3Item) {
-                            # the legacy properties are returned, converted to names only where the legacy command converts them
-                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType ContractType -Raw:$Raw
-                        }
-                    }
-                }
-                ContractTypeName {
-                    Search-GlpiToolsItems -SearchFor contracttype -SearchType contains -SearchValue $ContractTypeName | ConvertFrom-GlpiToolsV3Item -ItemType ContractType -Raw
-                }
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/ContractType'
+                ItemType         = 'ContractType'
+                SearchFor        = 'contracttype'
+                Id               = $ContractTypeId
+                Name             = $ContractTypeName
+                Raw              = $Raw
             }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
             return
         }
 

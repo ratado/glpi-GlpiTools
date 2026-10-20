@@ -80,31 +80,16 @@ function Get-GlpiToolsDropdownsMonitorTypes {
     process {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            # the parameter set is used because pipeline input is not bound yet in the begin block
-            switch ($PSCmdlet.ParameterSetName) {
-                All {
-                    Invoke-GlpiToolsRequest -Method Get -Resource '/Dropdowns/MonitorType' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType MonitorType -Raw
-                }
-                MonitorTypeId {
-                    foreach ($V3ItemId in $MonitorTypeId) {
-                        $V3Item = $null
-                        try {
-                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Dropdowns/MonitorType/$V3ItemId"
-                        } catch {
-                            # only a missing item is skipped; other failures are reported
-                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
-                            Write-Verbose -Message "MonitorType ID = $V3ItemId is not found"
-                        }
-                        if ($V3Item) {
-                            # the legacy properties are returned, converted to names only where the legacy command converts them
-                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType MonitorType -Raw:$Raw
-                        }
-                    }
-                }
-                MonitorTypeName {
-                    Search-GlpiToolsItems -SearchFor monitortype -SearchType contains -SearchValue $MonitorTypeName | ConvertFrom-GlpiToolsV3Item -ItemType MonitorType -Raw
-                }
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/MonitorType'
+                ItemType         = 'MonitorType'
+                SearchFor        = 'monitortype'
+                Id               = $MonitorTypeId
+                Name             = $MonitorTypeName
+                Raw              = $Raw
             }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
             return
         }
 

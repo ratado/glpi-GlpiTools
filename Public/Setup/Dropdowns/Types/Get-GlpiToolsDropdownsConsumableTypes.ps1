@@ -80,31 +80,16 @@ function Get-GlpiToolsDropdownsConsumableTypes {
     process {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            # the parameter set is used because pipeline input is not bound yet in the begin block
-            switch ($PSCmdlet.ParameterSetName) {
-                All {
-                    Invoke-GlpiToolsRequest -Method Get -Resource '/Dropdowns/ConsumableItemType' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType ConsumableItemType -Raw
-                }
-                ConsumableTypeId {
-                    foreach ($V3ItemId in $ConsumableTypeId) {
-                        $V3Item = $null
-                        try {
-                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Dropdowns/ConsumableItemType/$V3ItemId"
-                        } catch {
-                            # only a missing item is skipped; other failures are reported
-                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
-                            Write-Verbose -Message "ConsumableItemType ID = $V3ItemId is not found"
-                        }
-                        if ($V3Item) {
-                            # the legacy properties are returned, converted to names only where the legacy command converts them
-                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType ConsumableItemType -Raw:$Raw
-                        }
-                    }
-                }
-                ConsumableTypeName {
-                    Search-GlpiToolsItems -SearchFor consumableitemtype -SearchType contains -SearchValue $ConsumableTypeName | ConvertFrom-GlpiToolsV3Item -ItemType ConsumableItemType -Raw
-                }
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/ConsumableItemType'
+                ItemType         = 'ConsumableItemType'
+                SearchFor        = 'consumableitemtype'
+                Id               = $ConsumableTypeId
+                Name             = $ConsumableTypeName
+                Raw              = $Raw
             }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
             return
         }
 

@@ -80,31 +80,16 @@ function Get-GlpiToolsDropdownsDocumentTypes {
     process {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            # the parameter set is used because pipeline input is not bound yet in the begin block
-            switch ($PSCmdlet.ParameterSetName) {
-                All {
-                    Invoke-GlpiToolsRequest -Method Get -Resource '/Dropdowns/DocumentType' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType DocumentType -Raw
-                }
-                DocumentTypeId {
-                    foreach ($V3ItemId in $DocumentTypeId) {
-                        $V3Item = $null
-                        try {
-                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Dropdowns/DocumentType/$V3ItemId"
-                        } catch {
-                            # only a missing item is skipped; other failures are reported
-                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
-                            Write-Verbose -Message "DocumentType ID = $V3ItemId is not found"
-                        }
-                        if ($V3Item) {
-                            # the legacy properties are returned, converted to names only where the legacy command converts them
-                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType DocumentType -Raw:$Raw
-                        }
-                    }
-                }
-                DocumentTypeName {
-                    Search-GlpiToolsItems -SearchFor documenttype -SearchType contains -SearchValue $DocumentTypeName | ConvertFrom-GlpiToolsV3Item -ItemType DocumentType -Raw
-                }
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/DocumentType'
+                ItemType         = 'DocumentType'
+                SearchFor        = 'documenttype'
+                Id               = $DocumentTypeId
+                Name             = $DocumentTypeName
+                Raw              = $Raw
             }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
             return
         }
 

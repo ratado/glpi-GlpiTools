@@ -80,31 +80,16 @@ function Get-GlpiToolsDropdownsProjectTypes {
     process {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            # the parameter set is used because pipeline input is not bound yet in the begin block
-            switch ($PSCmdlet.ParameterSetName) {
-                All {
-                    Invoke-GlpiToolsRequest -Method Get -Resource '/Dropdowns/ProjectType' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType ProjectType -Raw
-                }
-                ProjectTypeId {
-                    foreach ($V3ItemId in $ProjectTypeId) {
-                        $V3Item = $null
-                        try {
-                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Dropdowns/ProjectType/$V3ItemId"
-                        } catch {
-                            # only a missing item is skipped; other failures are reported
-                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
-                            Write-Verbose -Message "ProjectType ID = $V3ItemId is not found"
-                        }
-                        if ($V3Item) {
-                            # the legacy properties are returned, converted to names only where the legacy command converts them
-                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType ProjectType -Raw:$Raw
-                        }
-                    }
-                }
-                ProjectTypeName {
-                    Search-GlpiToolsItems -SearchFor projecttype -SearchType contains -SearchValue $ProjectTypeName | ConvertFrom-GlpiToolsV3Item -ItemType ProjectType -Raw
-                }
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/ProjectType'
+                ItemType         = 'ProjectType'
+                SearchFor        = 'projecttype'
+                Id               = $ProjectTypeId
+                Name             = $ProjectTypeName
+                Raw              = $Raw
             }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
             return
         }
 

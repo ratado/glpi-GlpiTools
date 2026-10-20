@@ -80,31 +80,16 @@ function Get-GlpiToolsDropdownsPrinterModels {
     process {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            # the parameter set is used because pipeline input is not bound yet in the begin block
-            switch ($PSCmdlet.ParameterSetName) {
-                All {
-                    Invoke-GlpiToolsRequest -Method Get -Resource '/Dropdowns/PrinterModel' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType PrinterModel -Raw
-                }
-                PrinterModelId {
-                    foreach ($V3ItemId in $PrinterModelId) {
-                        $V3Item = $null
-                        try {
-                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Dropdowns/PrinterModel/$V3ItemId"
-                        } catch {
-                            # only a missing item is skipped; other failures are reported
-                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
-                            Write-Verbose -Message "PrinterModel ID = $V3ItemId is not found"
-                        }
-                        if ($V3Item) {
-                            # the legacy properties are returned, converted to names only where the legacy command converts them
-                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType PrinterModel -Raw:$Raw
-                        }
-                    }
-                }
-                PrinterModelName {
-                    Search-GlpiToolsItems -SearchFor printermodel -SearchType contains -SearchValue $PrinterModelName | ConvertFrom-GlpiToolsV3Item -ItemType PrinterModel -Raw
-                }
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/PrinterModel'
+                ItemType         = 'PrinterModel'
+                SearchFor        = 'printermodel'
+                Id               = $PrinterModelId
+                Name             = $PrinterModelName
+                Raw              = $Raw
             }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
             return
         }
 
