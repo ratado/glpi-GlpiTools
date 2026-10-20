@@ -12,6 +12,8 @@
 .PARAMETER Raw
     Parameter which you can use with ComputerSoftwareVersionId Parameter.
     ComputerSoftwareVersionId has converted parameters from default, parameter Raw allows not convert this parameters.
+.PARAMETER ComputerId
+    Computer whose installed software is listed. Required with the GLPI API v3, ignored by the legacy API.
 .EXAMPLE
     PS C:\> 326 | Get-GlpiToolsComputerSoftwareVersions
     Function gets ComputerSoftwareVersionId from GLPI from Pipline, and return Computer Software Version object
@@ -53,7 +55,13 @@ function Get-GlpiToolsComputerSoftwareVersions {
         [string[]]$ComputerSoftwareVersionId,
         [parameter(Mandatory = $false,
             ParameterSetName = "ComputerSoftwareVersionId")]
-        [switch]$Raw
+        [switch]$Raw,
+
+        [parameter(Mandatory = $false,
+            ParameterSetName = "All")]
+        [parameter(Mandatory = $false,
+            ParameterSetName = "ComputerSoftwareVersionId")]
+        [int]$ComputerId
     )
     
     begin {
@@ -73,9 +81,18 @@ function Get-GlpiToolsComputerSoftwareVersions {
     }
     
     process {
-        # API v3: these records are sub-resources of an asset, which the legacy parameters do not identify
+        # API v3: these records are sub-resources of an asset, so the asset is informed with a parameter that only the v3 uses
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsComputerSoftwareVersions'
+            if (-not $PSBoundParameters.ContainsKey('ComputerId')) {
+                throw 'The parameter -ComputerId is required with the GLPI API v3.'
+            }
+            $V3Items = @(Invoke-GlpiToolsRequest -Method Get -Resource "/Assets/Computer/$ComputerId/SoftwareInstallation" -All | Where-Object { $_ })
+            if ($PSCmdlet.ParameterSetName -eq 'ComputerSoftwareVersionId') {
+                # the legacy ID parameter selects records of the list
+                $V3Items = @($V3Items | Where-Object { [string]$_.id -in @($ComputerSoftwareVersionId) })
+            }
+            $V3Items | ConvertFrom-GlpiToolsV3Item -ItemType SoftwareInstallation -Raw:$Raw
+            return
         }
 
         switch ($ChoosenParam) {

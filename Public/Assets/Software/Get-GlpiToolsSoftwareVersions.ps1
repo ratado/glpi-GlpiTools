@@ -12,6 +12,8 @@
 .PARAMETER Raw
     Parameter which you can use with SoftwareVersionId Parameter.
     SoftwareVersionId has converted parameters from default, parameter Raw allows not convert this parameters.
+.PARAMETER SoftwareId
+    Software whose versions are listed. Required with the GLPI API v3, ignored by the legacy API.
 .EXAMPLE
     PS C:\> 326 | Get-GlpiToolsSoftwareVersions
     Function gets SoftwareVersionID from GLPI from Pipline, and return Software Version object
@@ -53,7 +55,13 @@ function Get-GlpiToolsSoftwareVersions {
         [string[]]$SoftwareVersionId,
         [parameter(Mandatory = $false,
             ParameterSetName = "SoftwareVersionId")]
-        [switch]$Raw
+        [switch]$Raw,
+
+        [parameter(Mandatory = $false,
+            ParameterSetName = "All")]
+        [parameter(Mandatory = $false,
+            ParameterSetName = "SoftwareVersionId")]
+        [int]$SoftwareId
     )
     
     begin {
@@ -73,9 +81,18 @@ function Get-GlpiToolsSoftwareVersions {
     }
     
     process {
-        # API v3: these records are sub-resources of an asset, which the legacy parameters do not identify
+        # API v3: these records are sub-resources of an asset, so the asset is informed with a parameter that only the v3 uses
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsSoftwareVersions'
+            if (-not $PSBoundParameters.ContainsKey('SoftwareId')) {
+                throw 'The parameter -SoftwareId is required with the GLPI API v3.'
+            }
+            $V3Items = @(Invoke-GlpiToolsRequest -Method Get -Resource "/Assets/Software/$SoftwareId/Version" -All | Where-Object { $_ })
+            if ($PSCmdlet.ParameterSetName -eq 'SoftwareVersionId') {
+                # the legacy ID parameter selects records of the list
+                $V3Items = @($V3Items | Where-Object { [string]$_.id -in @($SoftwareVersionId) })
+            }
+            $V3Items | ConvertFrom-GlpiToolsV3Item -ItemType SoftwareVersion -Raw:$Raw
+            return
         }
 
         switch ($ChoosenParam) {

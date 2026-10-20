@@ -73,12 +73,30 @@ Describe 'Asset cmdlets on API v3' {
         }
     }
 
-    It '<Cmd> has no v3 equivalent' -ForEach @(
-        @{ Cmd = 'Get-GlpiToolsComputerSoftwareVersions' }
-        @{ Cmd = 'Get-GlpiToolsSoftwareVersions' }
-        @{ Cmd = 'Get-GlpiToolsFinancialAndAdministrativeInformations' }
-    ) {
-        { & $Cmd -All } | Should -Throw "*$Cmd is not supported by the GLPI API v3*"
+    Context 'asset sub-resources' {
+        It 'lists the software installed on a computer' {
+            Get-GlpiToolsComputerSoftwareVersions -All -ComputerId 5 | Out-Null
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq '/Assets/Computer/5/SoftwareInstallation' -and $All }
+        }
+        It 'selects records by id inside the computer' {
+            Mock Invoke-GlpiToolsRequest { @([pscustomobject]@{ id = 1 }, [pscustomobject]@{ id = 2 }) } -ModuleName GlpiTools
+            @(Get-GlpiToolsComputerSoftwareVersions -ComputerSoftwareVersionId 2 -ComputerId 5 -Raw).Count | Should -Be 1
+        }
+        It 'lists the versions of a software' {
+            Get-GlpiToolsSoftwareVersions -All -SoftwareId 1 | Out-Null
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq '/Assets/Software/1/Version' -and $All }
+        }
+        It 'gets the financial information of an asset' {
+            Get-GlpiToolsFinancialAndAdministrativeInformations -All -ItemType Pdu -ItemId 3 | Out-Null
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq '/Assets/PDU/3/Infocom' }
+        }
+        It '<Cmd> asks for the asset with the v3' -ForEach @(
+            @{ Cmd = 'Get-GlpiToolsComputerSoftwareVersions'; Message = '*-ComputerId is required*' }
+            @{ Cmd = 'Get-GlpiToolsSoftwareVersions'; Message = '*-SoftwareId is required*' }
+            @{ Cmd = 'Get-GlpiToolsFinancialAndAdministrativeInformations'; Message = '*-ItemType and -ItemId are required*' }
+        ) {
+            { & $Cmd -All } | Should -Throw $Message
+        }
     }
 }
 
@@ -99,5 +117,19 @@ Describe 'Asset cmdlets on the legacy API (regression)' {
         Invoke-WithParams $Cmd @{ $IdParam = 2; Raw = $true } | Out-Null
         Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Uri -like "http://glpi/apirest.php/$Item/?range=*" }
         Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Uri -eq "http://glpi/apirest.php/$Item/2" }
+    }
+}
+
+Describe 'Financial information on API v3' {
+    BeforeEach {
+        Set-GlpiToolsConfig -ApiVersion v3 -PathToGlpi 'https://glpi.example.com' -ClientId c -ClientSecret s -Username u -Password p
+        Set-GlpiToolsSessionToken -SessionToken 'AT' -ExpiresAt ([datetime]::UtcNow.AddHours(1))
+    }
+    It 'returns nothing when the asset has no financial information' {
+        Mock Invoke-GlpiToolsRequest {
+            $e = [System.Management.Automation.ErrorRecord]::new([System.Exception]::new('gone'), 'GlpiApi.404', 'InvalidOperation', $null)
+            $PSCmdlet.ThrowTerminatingError($e)
+        } -ModuleName GlpiTools
+        @(Get-GlpiToolsFinancialAndAdministrativeInformations -All -ItemType Computer -ItemId 5).Count | Should -Be 0
     }
 }

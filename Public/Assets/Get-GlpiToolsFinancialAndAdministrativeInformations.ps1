@@ -12,6 +12,10 @@
 .PARAMETER Raw
     Parameter which you can use with FinancialAndAdminstrativeId Parameter.
     FinancialAndAdminstrativeId has converted parameters from default, parameter Raw allows not convert this parameters.
+.PARAMETER ItemType
+    Asset type of the item. Required with the GLPI API v3, ignored by the legacy API.
+.PARAMETER ItemId
+    ID of the asset. Required with the GLPI API v3, ignored by the legacy API.
 .EXAMPLE
     PS C:\> 326 | Get-GlpiToolsFinancialAndAdministrativeInformations
     Function gets FinancialAndAdminstrativeId from GLPI from Pipline, and return FinancialAndAdminstrative object
@@ -52,7 +56,20 @@ function Get-GlpiToolsFinancialAndAdministrativeInformations {
         [string[]]$FinancialAndAdminstrativeId,
         [parameter(Mandatory = $false,
             ParameterSetName = "FinancialAndAdminstrativeId")]
-        [switch]$Raw
+        [switch]$Raw,
+
+        [parameter(Mandatory = $false,
+            ParameterSetName = "All")]
+        [parameter(Mandatory = $false,
+            ParameterSetName = "FinancialAndAdminstrativeId")]
+        [ValidateSet("Computer", "Monitor", "NetworkEquipment", "Peripheral", "Phone", "Printer", "Software", "Rack", "Enclosure", "Pdu", "CartridgeItem", "ConsumableItem")]
+        [string]$ItemType,
+
+        [parameter(Mandatory = $false,
+            ParameterSetName = "All")]
+        [parameter(Mandatory = $false,
+            ParameterSetName = "FinancialAndAdminstrativeId")]
+        [int]$ItemId
     )
     
     begin {
@@ -72,9 +89,24 @@ function Get-GlpiToolsFinancialAndAdministrativeInformations {
     }
     
     process {
-        # API v3: these records are sub-resources of an asset, which the legacy parameters do not identify
+        # API v3: these records are sub-resources of an asset, so the asset is informed with a parameter that only the v3 uses
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsFinancialAndAdministrativeInformations'
+            if (-not ($PSBoundParameters.ContainsKey('ItemType') -and $PSBoundParameters.ContainsKey('ItemId'))) {
+                throw 'The parameters -ItemType and -ItemId are required with the GLPI API v3.'
+            }
+            $V3Items = @()
+            try {
+                $V3Items = @(Invoke-GlpiToolsRequest -Method Get -Resource "$(Get-GlpiToolsV3Route -ItemType $ItemType)/$ItemId/Infocom" | Where-Object { $_ })
+            } catch {
+                # an asset without financial information is answered with 404, which is an empty result
+                if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
+            }
+            if ($PSCmdlet.ParameterSetName -eq 'FinancialAndAdminstrativeId') {
+                # the legacy ID parameter selects records of the list
+                $V3Items = @($V3Items | Where-Object { [string]$_.id -in @($FinancialAndAdminstrativeId) })
+            }
+            $V3Items | ConvertFrom-GlpiToolsV3Item -ItemType Infocom -Raw:$Raw
+            return
         }
 
         switch ($ChoosenParam) {
