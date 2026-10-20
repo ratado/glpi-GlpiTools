@@ -16,6 +16,7 @@ All notable changes to this project are documented in this file.
 - With the REST API v3 configured, the management commands (budgets, certificates, contacts, contracts, data centers, lines, software licenses and suppliers) work and return the same properties as the legacy API.
 - With the REST API v3 configured, 50 of the `Get-GlpiToolsDropdowns*` commands work (locations, statuses, manufacturers, models, types, categories, templates, calendars, domains and others). The ones for items that the API v3 does not offer (for example operating systems, device components, VLANs and network names) stop with a clear message.
 - With the REST API v3 configured, `Get-GlpiToolsPlugins` works. The commands for the Apps Structures and FusionInventory plugins are not available in the API v3 and stop with a clear message.
+- With the REST API v3, user fields show the login name instead of the full name, and listing hierarchical dropdowns such as locations returns only the main fields; reading one item by ID returns all of them.
 - Changing the configuration now closes the session that was open on the GLPI server.
 - The configuration file is now readable only by its owner on Linux.
 - Existing configurations keep working as the legacy API, with no changes needed.
