@@ -132,46 +132,18 @@ function Get-GlpiToolsTickets {
     process {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            # the parameter set is used because pipeline input is not bound yet in the begin block
-            switch ($PSCmdlet.ParameterSetName) {
-                All {
-                    # the legacy listing leaves the trash out
-                    Invoke-GlpiToolsRequest -Method Get -Resource '/Assistance/Ticket' -Query @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) } -All | ConvertFrom-GlpiToolsV3Item -ItemType Ticket -Raw
-                }
-                TicketId {
-                    # the v3 answer already carries the names of the related items; only the extras that exist in the v3 are supported
-                    if ($Parameter -and $Parameter -notin 'ExpandDropdowns', 'WithDocuments') {
-                        Assert-GlpiToolsV3Supported -Name "-Parameter $Parameter"
-                    }
-                    foreach ($TId in $TicketId) {
-                        $V3Ticket = $null
-                        try {
-                            $V3Ticket = Invoke-GlpiToolsRequest -Method Get -Resource "/Assistance/Ticket/$TId"
-                        } catch {
-                            # only a missing ticket is skipped; other failures are reported
-                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
-                            Write-Verbose -Message "Ticket ID = $TId is not found"
-                        }
-                        if ($V3Ticket) {
-                            if ($Parameter -eq 'WithDocuments') {
-                                $V3Documents = @()
-                                try {
-                                    $V3Documents = @(Invoke-GlpiToolsRequest -Method Get -Resource "/Assistance/Ticket/$TId/Timeline/Document" -All)
-                                } catch {
-                                    # a ticket without readable documents is still returned
-                                    if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
-                                }
-                                $V3Ticket | Add-Member -NotePropertyName '_documents' -NotePropertyValue $V3Documents
-                            }
-                            # the legacy properties are returned, converted to names unless -Raw is used
-                            $V3Ticket | ConvertFrom-GlpiToolsV3Item -ItemType Ticket -Raw:$Raw
-                        }
-                    }
-                }
-                TicketName {
-                    Search-GlpiToolsItems -SearchFor Ticket -SearchType contains -SearchValue $TicketName -SearchInTrash $SearchInTrash | ConvertFrom-GlpiToolsV3Item -ItemType Ticket -Raw
-                }
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assistance/Ticket'
+                ItemType         = 'Ticket'
+                Id               = $TicketId
+                Name             = $TicketName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns', 'WithDocuments'
             }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
             return
         }
 

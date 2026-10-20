@@ -132,35 +132,20 @@ function Get-GlpiToolsRecurrentTickets {
     process {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            # the parameter set is used because pipeline input is not bound yet in the begin block
-            switch ($PSCmdlet.ParameterSetName) {
-                All {
-                    Invoke-GlpiToolsRequest -Method Get -Resource '/Assistance/RecurringTicket' -All | ConvertFrom-GlpiToolsV3Item -ItemType RecurringTicket -Raw
-                }
-                RecurrentTicketId {
-                    # the v3 answer already carries the names of the related items; only the extras that exist in the v3 are supported
-                    if ($Parameter -and $Parameter -notin 'ExpandDropdowns') {
-                        Assert-GlpiToolsV3Supported -Name "-Parameter $Parameter"
-                    }
-                    foreach ($RTId in $RecurrentTicketId) {
-                        $V3Item = $null
-                        try {
-                            $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "/Assistance/RecurringTicket/$RTId"
-                        } catch {
-                            # only a missing item is skipped; other failures are reported
-                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
-                            Write-Verbose -Message "RecurringTicket ID = $RTId is not found"
-                        }
-                        if ($V3Item) {
-                            # the legacy properties are returned, converted to names unless -Raw is used
-                            $V3Item | ConvertFrom-GlpiToolsV3Item -ItemType RecurringTicket -Raw:$Raw
-                        }
-                    }
-                }
-                RecurrentTicketName {
-                    Search-GlpiToolsItems -SearchFor ticketrecurrent -SearchType contains -SearchValue $RecurrentTicketName -SearchInTrash $SearchInTrash | ConvertFrom-GlpiToolsV3Item -ItemType RecurringTicket -Raw
-                }
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assistance/RecurringTicket'
+                ItemType         = 'RecurringTicket'
+                SearchFor        = 'ticketrecurrent'
+                Id               = $RecurrentTicketId
+                Name             = $RecurrentTicketName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                IncludeTrash     = $true
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns'
             }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
             return
         }
 
