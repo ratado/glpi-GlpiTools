@@ -12,7 +12,7 @@
 # RootModule = ''
 
 # Version number of this module.
-ModuleVersion = '1.8.0'
+ModuleVersion = '2.0.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -30,10 +30,10 @@ CompanyName = 'Unknown'
 Copyright = '(c) 2018 Wojciech Pietrzak. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'PowerShell module wrapping Glpi API methods in handy functions'
+Description = 'PowerShell module wrapping the GLPI REST APIs (legacy and v3 of GLPI 12) in handy functions'
 
-# Minimum version of the Windows PowerShell engine required by this module
-PowerShellVersion = '5.0'
+# Minimum version of the PowerShell engine required by this module
+PowerShellVersion = '7.0'
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
@@ -284,7 +284,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        # ReleaseNotes = ''
+        ReleaseNotes = 'Version 2.0.0: support for the GLPI 12 REST API v3 (OAuth), alongside the legacy API; output formats Legacy and Native; PowerShell 7 or later is now required. See CHANGELOG.md.'
 
     } # End of PSData hashtable
 

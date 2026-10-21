@@ -2,30 +2,28 @@
 
 All notable changes to this project are documented in this file.
 
-## Unreleased
+## 2.0.0
 
-- `Set-GlpiToolsConfig` can now be set up for the GLPI 12 REST API v3, using an OAuth client with the user name and password.
-- Added the `-SkipCertificateCheck` option to the configuration, to be used only with self-signed certificates.
-- Starting a session with the REST API v3 now gets an access token from GLPI and renews it automatically before it expires.
-- With the REST API v3 configured, the generic commands (`Get-`, `Add-`, `Update-` and `Remove-GlpiToolsItems`, `Search-GlpiToolsItems`), the entity and profile commands, the system settings and the documents list now work. Commands with no equivalent in the API v3 stop with a clear message.
-- With the REST API v3 configured, the ticket commands work: listing, creating and updating tickets, and adding followups, solutions and tasks. Linking an item to a ticket, `-DisableNotification` and some `-Parameter` options are not available in the API v3 and stop with a clear message.
-- With the REST API v3 configured, `Get-GlpiToolsTickets` returns the same properties and values as the legacy API (IDs with `-Raw`, names without it).
-- With the REST API v3 configured, `Get-GlpiToolsChanges`, `Get-GlpiToolsProblems` and `Get-GlpiToolsRecurrentTickets` work and return the same properties as the legacy API.
-- With the REST API v3 configured, the asset commands (computers, monitors, network equipment, peripherals, phones, printers, racks, enclosures, PDUs, software, cartridges and consumables) work and return the same properties as the legacy API. `Get-GlpiToolsSoftwareVersions`, `Get-GlpiToolsComputerSoftwareVersions` and `Get-GlpiToolsFinancialAndAdministrativeInformations` have new optional parameters (`-SoftwareId`, `-ComputerId`, `-ItemType` and `-ItemId`) that are required only with the API v3.
-- With the REST API v3 configured, `Get-GlpiToolsEntities`, `Get-GlpiToolsGroups` and `Get-GlpiToolsUsers` work and return the same properties as the legacy API. `Get-GlpiToolsGroupsMembers` is not available in the API v3 and stops with a clear message.
-- With the REST API v3 configured, the management commands (budgets, certificates, contacts, contracts, data centers, lines, software licenses and suppliers) work and return the same properties as the legacy API.
-- With the REST API v3 configured, 50 of the `Get-GlpiToolsDropdowns*` commands work (locations, statuses, manufacturers, models, types, categories, templates, calendars, domains and others). The ones for items that the API v3 does not offer (for example operating systems, device components, VLANs and network names) stop with a clear message.
-- With the REST API v3 configured, `Get-GlpiToolsPlugins` works. The commands for the Apps Structures and FusionInventory plugins are not available in the API v3 and stop with a clear message.
-- With the REST API v3, user fields show the login name instead of the full name, and listing hierarchical dropdowns such as locations returns only the main fields; reading one item by ID returns all of them.
-- With the REST API v3 configured, `Get-GlpiToolsProjects`, `Get-GlpiToolsReminders`, `Get-GlpiToolsKnowledgeBase` and `Get-GlpiToolsRssFeeds` work and return the same properties as the legacy API.
-- With the REST API v3 configured, `Add-GlpiToolsItems`, `Update-GlpiToolsItems` and `Get-GlpiToolsItems` accept and return the field names of the legacy API (for example `entities_id`).
-- With the REST API v3 configured, searching by a field that does not exist now stops with a message listing the valid fields, instead of returning every record.
+### New
+
+- The module now works with the REST API v3 of GLPI 12, besides the legacy REST API. You choose which one to use when you set up the module, and the commands, parameters and names stay the same.
+- The REST API v3 is accessed with an OAuth client and the user name and password. The access is renewed automatically while you work, and it is closed when you end the session.
+- Most of the commands now work with the REST API v3: tickets (including followups, solutions and tasks), changes, problems, recurring tickets, assets, users, groups, entities, management items, most dropdowns, plugins list, projects, reminders, the knowledge base and RSS feeds.
+- With the REST API v3, the commands return the same properties and values as the legacy API by default, so existing scripts keep working. IDs come with `-Raw` and names without it, as before.
+- New choice of output format for the REST API v3: `Legacy` (default) keeps the properties of the legacy API, and `Native` returns the data exactly as the REST API v3 sends it. Use `-OutputFormat` in `Set-GlpiToolsConfig`, or change it later with the new `Set-GlpiToolsOutputFormat`, without informing the credentials again.
+- New `-SkipCertificateCheck` option in the configuration, for servers with a self-signed certificate. It is off by default and should be used only in test environments.
+- Commands that have no equivalent in the REST API v3 stop with a clear message instead of failing. This applies to item logs, search options, password recovery, group members, linking an item to a ticket, the Apps Structures and FusionInventory plugins and some dropdowns for components, operating systems and networks.
+- With the REST API v3, searching by a field that does not exist now stops with a message listing the valid fields, instead of returning every record.
 - With the REST API v3, `Get-GlpiToolsDocuments -RawDocument` returns the file content as bytes, so PDFs and images are not damaged.
-- The REST API v3 and the `-SkipCertificateCheck` option require PowerShell 7; the legacy API keeps working on Windows PowerShell 5.1.
-- Reading the configuration is now faster, because it is kept in memory until the file changes.
-- With the REST API v3 configured, the new `-OutputFormat` option of `Set-GlpiToolsConfig` chooses how the commands return data: `Legacy` (default) keeps the properties and values of the legacy API, and `Native` returns the objects exactly as the API v3 sends them. `Set-GlpiToolsOutputFormat` changes it later without informing the credentials again.
+- With the REST API v3, a profile change goes back to the default entities of the new profile, as in the legacy API.
+- Creating a ticket with the REST API v3 reports the error, and still returns the ticket, when the requester or technician cannot be added.
+
+### Changes
+
+- PowerShell 7 or later is now required. Windows PowerShell 5.1 is no longer supported.
+- Reading the configuration is faster, because it is kept in memory until the file changes.
 - Changing the configuration now closes the session that was open on the GLPI server.
-- The configuration file is now readable only by its owner on Linux.
+- On Linux, the configuration file can now be read only by its owner.
 - Existing configurations keep working as the legacy API, with no changes needed.
 
 ## 1.8.0
