@@ -6,7 +6,8 @@
     and show stored values.
 .EXAMPLE
     PS C:\Users\Wojtek> Get-GlpiToolsConfig
-    Running script like that, shows you current config data.
+    Running script like that, shows you current config data, including the API flavour
+    (ApiVersion v1 or v3) and the OAuth fields used by API v3 (null when not in use).
 .INPUTS
     None
 .OUTPUTS
@@ -23,47 +24,46 @@ function Get-GlpiToolsConfig {
     
     begin {
 
-        if ($IsLinux) {
-            $GlpiConfig = @()
-            $ConfigFile = "Configuration.json"
-            $ConfigPath = "$env:HOME/.config/GlpiToolsConfig\"
-            $Config = Join-Path -Path $ConfigPath -ChildPath $ConfigFile
-        } else {
-            $GlpiConfig = @()
-            $ConfigFile = "Configuration.json"
-            $ConfigPath = "$env:LOCALAPPDATA\GlpiToolsConfig\"
-            $Config = Join-Path -Path $ConfigPath -ChildPath $ConfigFile 
-        }
+        $GlpiConfig = @()
+        $Config = Get-GlpiToolsConfigPath
 
     }
     
     process {
 
         if (Test-Path -Path $Config) {
+            # the decrypted object is reused while the file is unchanged; a copy is returned so callers cannot alter the cache
+            $LastWrite = (Get-Item -Path $Config).LastWriteTimeUtc.Ticks
+            $Cached = $script:GlpiToolsConfigCache
+            if ($Cached -and $Cached.Path -eq $Config -and $Cached.LastWrite -eq $LastWrite) {
+                $GlpiConfig += $Cached.Object.PSObject.Copy()
+                return
+            }
+
             $ConfigData = Get-Content $Config | ConvertFrom-Json
         
-            $AppTokenSS = ConvertTo-SecureString $ConfigData.AppToken
-            $UserTokenSS = ConvertTo-SecureString $ConfigData.UserToken
-            $PathToGlpiSS = ConvertTo-SecureString $ConfigData.PathToGlpi
+            $AppTokenDecrypt = ConvertFrom-GlpiConfigSecret -Value $ConfigData.AppToken
+            $UserTokenDecrypt = ConvertFrom-GlpiConfigSecret -Value $ConfigData.UserToken
+            $PathToGlpiDecrypt = ConvertFrom-GlpiConfigSecret -Value $ConfigData.PathToGlpi
 
-            if ($IsLinux) {
-                $AppTokenDecrypt = [System.Runtime.InteropServices.marshal]::PtrToStringUni([System.Runtime.InteropServices.marshal]::SecureStringToGlobalAllocUnicode($AppTokenSS))
-                $UserTokenDecrypt = [System.Runtime.InteropServices.marshal]::PtrToStringUni([System.Runtime.InteropServices.marshal]::SecureStringToGlobalAllocUnicode($UserTokenSS))
-                $PathToGlpiDecrypt = [System.Runtime.InteropServices.marshal]::PtrToStringUni([System.Runtime.InteropServices.marshal]::SecureStringToGlobalAllocUnicode($PathToGlpiSS))
-            } else {
-                $AppTokenDecrypt = [System.Runtime.InteropServices.marshal]::PtrToStringAuto([System.Runtime.InteropServices.marshal]::SecureStringToBSTR($AppTokenSS))
-                $UserTokenDecrypt = [System.Runtime.InteropServices.marshal]::PtrToStringAuto([System.Runtime.InteropServices.marshal]::SecureStringToBSTR($UserTokenSS))
-                $PathToGlpiDecrypt = [System.Runtime.InteropServices.marshal]::PtrToStringAuto([System.Runtime.InteropServices.marshal]::SecureStringToBSTR($PathToGlpiSS))
-            }
-            
             $ConfigHash = [ordered]@{
                 'AppToken' = $AppTokenDecrypt
                 'UserToken' = $UserTokenDecrypt
                 'PathToGlpi' = $PathToGlpiDecrypt
+                'ApiVersion' = $(if ($ConfigData.ApiVersion) { $ConfigData.ApiVersion } else { 'v1' })
+                'AuthMode' = $ConfigData.AuthMode
+                'ClientId' = ConvertFrom-GlpiConfigSecret -Value $ConfigData.ClientId
+                'ClientSecret' = ConvertFrom-GlpiConfigSecret -Value $ConfigData.ClientSecret
+                'Username' = ConvertFrom-GlpiConfigSecret -Value $ConfigData.Username
+                'Password' = ConvertFrom-GlpiConfigSecret -Value $ConfigData.Password
+                'Scope' = $ConfigData.Scope
+                'SkipCertificateCheck' = [bool]$ConfigData.SkipCertificateCheck
+                'OutputFormat' = $(if ($ConfigData.OutputFormat -eq 'Native') { 'Native' } else { 'Legacy' })
             }
 
             $object = New-Object -TypeName PSCustomObject -Property $ConfigHash
-            $GlpiConfig += $object 
+            $script:GlpiToolsConfigCache = @{ Path = $Config; LastWrite = $LastWrite; Object = $object }
+            $GlpiConfig += $object.PSObject.Copy()
             
         }
         else {

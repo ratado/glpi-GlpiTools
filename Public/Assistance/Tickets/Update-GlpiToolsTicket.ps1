@@ -197,6 +197,36 @@ function Update-GlpiToolsTicket {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Body = @{}
+            # the numeric values of -Type are not converted by the legacy setup, so they are read here
+            # the values are translated here, not in the begin block, so that pipeline input by property name is honoured
+            if ($PSBoundParameters['Type']) { $V3Body['type'] = ConvertTo-GlpiToolsV3EnumId -Kind Type -Value $Type }
+            if ($PSBoundParameters['Urgency']) { $V3Body['urgency'] = ConvertTo-GlpiToolsV3EnumId -Kind Level -Value $urgency }
+            if ($PSBoundParameters['Impact']) { $V3Body['impact'] = ConvertTo-GlpiToolsV3EnumId -Kind Level -Value $impact }
+            if ($PSBoundParameters['Priority']) { $V3Body['priority'] = ConvertTo-GlpiToolsV3EnumId -Kind Level -Value $priority }
+            if ($PSBoundParameters['Status']) { $V3Body['status'] = @{ id = $status } }
+            if ($Validation -and $PSBoundParameters['Validation']) { $V3Body['global_validation'] = ConvertTo-GlpiToolsV3EnumId -Kind Validation -Value $Validation }
+            if ($PSBoundParameters['itilcategories_id']) { $V3Body['category'] = @{ id = $itilcategories_id } }
+            if ($PSBoundParameters['name']) { $V3Body['name'] = $name }
+            if ($PSBoundParameters['content']) { $V3Body['content'] = $content }
+            if ($V3Body.Count -gt 0) {
+                $V3Ticket = Invoke-GlpiToolsRequest -Method Patch -Resource "/Assistance/Ticket/$ticket_id" -Body $V3Body
+            } else {
+                $V3Ticket = [pscustomobject]@{ id = $ticket_id }
+            }
+            # a requester or technician is added to the ticket team
+            if ($PSBoundParameters['requester_id']) {
+                Add-GlpiToolsV3TeamMember -Resource "/Assistance/Ticket/$ticket_id" -Role requester -UserId $requester_id
+            }
+            if ($PSBoundParameters['technician_id']) {
+                Add-GlpiToolsV3TeamMember -Resource "/Assistance/Ticket/$ticket_id" -Role assigned -UserId $technician_id
+            }
+            $V3Ticket
+            return
+        }
+
 
         $hashNewTicket = @{
         }
@@ -251,7 +281,7 @@ function Update-GlpiToolsTicket {
 
         Try {
             Write-Verbose "Invoking API to update the ticket"
-            $GlpiTicket = Invoke-RestMethod @params -ErrorAction Stop 
+            $GlpiTicket = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop 
 
             If ($GlpiTicket -match "</body>") {
                 $GLPITicket = $GlpiTicket.split(">")[-1] | ConvertFrom-JSON

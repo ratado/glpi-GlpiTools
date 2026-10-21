@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsCalendars {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/Calendar'
+                ItemType         = 'Calendar'
+                SearchFor        = 'calendar'
+                Id               = $CalendarId
+                Name             = $CalendarName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsCalendars {
                     uri     = "$($PathToGlpi)/calendar/?range=0-9999999999999"
                 }
                 
-                $CalendarsAll = Invoke-RestMethod @params -Verbose:$false
+                $CalendarsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Calendar in $CalendarsAll) {
                     $CalendarHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsCalendars {
                     }
 
                     Try {
-                        $Calendar = Invoke-RestMethod @params -ErrorAction Stop
+                        $Calendar = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $CalendarHash = [ordered]@{ }

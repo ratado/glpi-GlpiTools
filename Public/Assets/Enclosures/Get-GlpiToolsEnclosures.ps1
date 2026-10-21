@@ -138,6 +138,23 @@ function Get-GlpiToolsEnclosures {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assets/Enclosure'
+                ItemType         = 'Enclosure'
+                Id               = $EnclosureId
+                Name             = $EnclosureName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns'
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -150,7 +167,7 @@ function Get-GlpiToolsEnclosures {
                     uri     = "$($PathToGlpi)/Enclosure/?range=0-9999999999999"
                 }
                 
-                $GlpiEnclosureAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiEnclosureAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiEnclosure in $GlpiEnclosureAll) {
                     $EnclosureHash = [ordered]@{ }
@@ -178,7 +195,7 @@ function Get-GlpiToolsEnclosures {
                     }
 
                     Try {
-                        $GlpiEnclosure = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiEnclosure = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $EnclosureHash = [ordered]@{ }

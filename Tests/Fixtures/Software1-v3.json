@@ -1,0 +1,27 @@
+{
+  "id": 1,
+  "name": "IBGEINV-QA-SW",
+  "comment": null,
+  "is_recursive": false,
+  "is_helpdesk_visible": true,
+  "is_deleted": false,
+  "is_update": false,
+  "is_valid": true,
+  "date_creation": "2026-10-07T11:33:00-03:00",
+  "date_mod": "2026-10-07T11:33:00-03:00",
+  "is_template": false,
+  "template_name": null,
+  "ticket_tco": 0,
+  "entity": {
+    "id": 0,
+    "name": "Entidade raiz"
+  },
+  "location": null,
+  "category": null,
+  "manufacturer": null,
+  "parent": null,
+  "user": null,
+  "group": [],
+  "user_tech": null,
+  "group_tech": []
+}

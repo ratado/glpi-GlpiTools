@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsPhonesPowerSupplyTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/PhonePowerSupply'
+                ItemType         = 'PhonePowerSupply'
+                SearchFor        = 'phonepowersupply'
+                Id               = $PhonePowerSupplyTypeId
+                Name             = $PhonePowerSupplyTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsPhonesPowerSupplyTypes {
                     uri     = "$($PathToGlpi)/phonepowersupply/?range=0-9999999999999"
                 }
                 
-                $PhonesPowerSupplyTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $PhonesPowerSupplyTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($PhonePowerSupplyType in $PhonesPowerSupplyTypesAll) {
                     $PhonePowerSupplyTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsPhonesPowerSupplyTypes {
                     }
 
                     Try {
-                        $PhonePowerSupplyType = Invoke-RestMethod @params -ErrorAction Stop
+                        $PhonePowerSupplyType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PhonePowerSupplyTypeHash = [ordered]@{ }

@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsProjectStates {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsProjectStates'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsProjectStates {
                     uri     = "$($PathToGlpi)/projectstate/?range=0-9999999999999"
                 }
                 
-                $ProjectStatesAll = Invoke-RestMethod @params -Verbose:$false
+                $ProjectStatesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($ProjectState in $ProjectStatesAll) {
                     $ProjectStateHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsProjectStates {
                     }
 
                     Try {
-                        $ProjectState = Invoke-RestMethod @params -ErrorAction Stop
+                        $ProjectState = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ProjectStateHash = [ordered]@{ }

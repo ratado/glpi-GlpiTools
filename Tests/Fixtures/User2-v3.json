@@ -1,0 +1,38 @@
+{
+    "id": 2,
+    "username": "glpi",
+    "realname": null,
+    "firstname": null,
+    "middlename": null,
+    "phone": null,
+    "phone2": null,
+    "mobile": null,
+    "comment": null,
+    "is_active": true,
+    "is_deleted": false,
+    "picture": null,
+    "date_password_change": null,
+    "authtype": 1,
+    "last_login": "2026-10-19T17:42:31-03:00",
+    "date_creation": null,
+    "date_mod": "2026-10-19T10:35:06-03:00",
+    "date_sync": null,
+    "registration_number": null,
+    "begin_date": null,
+    "end_date": null,
+    "nickname": null,
+    "substitution_start_date": null,
+    "substitution_end_date": null,
+    "emails": [],
+    "location": null,
+    "default_profile": {
+        "id": 4,
+        "name": "Super-Admin"
+    },
+    "default_entity": {
+        "id": 0,
+        "name": "Entidade raiz"
+    },
+    "title": null,
+    "category": null
+}

@@ -66,6 +66,20 @@ function Get-GlpiToolsKnowledgeBase {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Knowledgebase/Article'
+                ItemType         = 'KnowbaseItem'
+                Id               = $KnowledgeBaseId
+                Raw              = $Raw
+                RequiredCriteria = @()  # this type has no trash
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -78,7 +92,7 @@ function Get-GlpiToolsKnowledgeBase {
                     uri     = "$($PathToGlpi)/knowbaseitem/?range=0-9999999999999"
                 }
                 
-                $KnowledgeBaseAll = Invoke-RestMethod @params -Verbose:$false
+                $KnowledgeBaseAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($KnowledgeBase in $KnowledgeBaseAll) {
                     $KnowledgeBaseHash = [ordered]@{ }
@@ -106,7 +120,7 @@ function Get-GlpiToolsKnowledgeBase {
                     }
 
                     Try {
-                        $KnowledgeBase = Invoke-RestMethod @params -ErrorAction Stop
+                        $KnowledgeBase = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $KnowledgeBaseHash = [ordered]@{ }

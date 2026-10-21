@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsRackModels {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsRackModels'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsRackModels {
                     uri     = "$($PathToGlpi)/rackmodel/?range=0-9999999999999"
                 }
                 
-                $RackModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $RackModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($RackModel in $RackModelsAll) {
                     $RackModelHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsRackModels {
                     }
 
                     Try {
-                        $RackModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $RackModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $RackModelHash = [ordered]@{ }

@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsTicketCategories {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/ITILCategory'
+                ItemType         = 'ITILCategory'
+                SearchFor        = 'Itilcategory'
+                Id               = $TicketCategoriesId
+                Name             = $TicketCategoriesName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsTicketCategories {
                     uri     = "$($PathToGlpi)/itilcategory/?range=0-9999999999999"
                 }
                 
-                $TicketCategoriesAll = Invoke-RestMethod @params -Verbose:$false
+                $TicketCategoriesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($TicketCategories in $TicketCategoriesAll) {
                     $TicketCategoriesHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsTicketCategories {
                     }
 
                     Try {
-                        $TicketCategories = Invoke-RestMethod @params -ErrorAction Stop
+                        $TicketCategories = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $TicketCategoriesHash = [ordered]@{ }

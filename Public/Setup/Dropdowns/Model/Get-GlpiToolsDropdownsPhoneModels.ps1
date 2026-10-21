@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsPhoneModels {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/PhoneModel'
+                ItemType         = 'PhoneModel'
+                SearchFor        = 'phonemodel'
+                Id               = $PhoneModelId
+                Name             = $PhoneModelName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsPhoneModels {
                     uri     = "$($PathToGlpi)/phonemodel/?range=0-9999999999999"
                 }
                 
-                $PhoneModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $PhoneModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($PhoneModel in $PhoneModelsAll) {
                     $PhoneModelHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsPhoneModels {
                     }
 
                     Try {
-                        $PhoneModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $PhoneModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PhoneModelHash = [ordered]@{ }

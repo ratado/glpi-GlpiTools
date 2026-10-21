@@ -138,6 +138,23 @@ function Get-GlpiToolsPeripherals {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assets/Peripheral'
+                ItemType         = 'Peripheral'
+                Id               = $PeripheralId
+                Name             = $PeripheralName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns'
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -150,7 +167,7 @@ function Get-GlpiToolsPeripherals {
                     uri     = "$($PathToGlpi)/Peripheral/?range=0-9999999999999"
                 }
                 
-                $GlpiPeripheralAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiPeripheralAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiPeripheral in $GlpiPeripheralAll) {
                     $PeripheralHash = [ordered]@{ }
@@ -178,7 +195,7 @@ function Get-GlpiToolsPeripherals {
                     }
 
                     Try {
-                        $GlpiPeripheral = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiPeripheral = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PeripheralHash = [ordered]@{ }

@@ -50,6 +50,17 @@ function Set-GlpiToolsChangeActiveEntities {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Session = Invoke-GlpiToolsRequest -Method Get -Resource '/session' -NoContext
+            if ($V3Session.active_entities.PSObject.Properties.Name -notcontains [string]$EntitiesId) {
+                throw "Entity $EntitiesId is not available for the current profile."
+            }
+            Set-GlpiToolsV3Context -EntityId $EntitiesId -EntityRecursive ([bool]$IsRecursive)
+            $true
+            return
+        }
+
 
         if ($IsRecursive) {
             $IsRecursiveState = "true"
@@ -76,7 +87,7 @@ function Set-GlpiToolsChangeActiveEntities {
             uri     = "$($PathToGlpi)/changeActiveEntities"
             body    = ([System.Text.Encoding]::UTF8.GetBytes($Upload))
         }
-        Invoke-RestMethod @params
+        Invoke-GlpiToolsRequestApi -Params $params
     }
     
     end {

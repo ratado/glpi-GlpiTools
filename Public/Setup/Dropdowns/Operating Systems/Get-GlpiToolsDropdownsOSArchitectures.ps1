@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsOSArchitectures {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsOSArchitectures'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsOSArchitectures {
                     uri     = "$($PathToGlpi)/operatingsystemarchitecture/?range=0-9999999999999"
                 }
                 
-                $OSArchitectureAll = Invoke-RestMethod @params -Verbose:$false
+                $OSArchitectureAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($OSArchitecture in $OSArchitectureAll) {
                     $OSArchitectureHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsOSArchitectures {
                     }
 
                     Try {
-                        $OSArchitecture = Invoke-RestMethod @params -ErrorAction Stop
+                        $OSArchitecture = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $OSArchitectureHash = [ordered]@{ }

@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsDocumentHeadings {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/DocumentCategory'
+                ItemType         = 'DocumentCategory'
+                SearchFor        = 'documentcategory'
+                Id               = $DocumentHeadingId
+                Name             = $DocumentHeadingName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsDocumentHeadings {
                     uri     = "$($PathToGlpi)/documentcategory/?range=0-9999999999999"
                 }
                 
-                $DocumentHeadingsAll = Invoke-RestMethod @params -Verbose:$false
+                $DocumentHeadingsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DocumentHeading in $DocumentHeadingsAll) {
                     $DocumentHeadingHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsDocumentHeadings {
                     }
 
                     Try {
-                        $DocumentHeading = Invoke-RestMethod @params -ErrorAction Stop
+                        $DocumentHeading = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DocumentHeadingHash = [ordered]@{ }

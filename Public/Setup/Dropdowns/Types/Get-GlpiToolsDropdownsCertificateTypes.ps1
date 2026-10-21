@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsCertificateTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/CertificateType'
+                ItemType         = 'CertificateType'
+                SearchFor        = 'certificatetype'
+                Id               = $CertificateTypeId
+                Name             = $CertificateTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsCertificateTypes {
                     uri     = "$($PathToGlpi)/certificatetype/?range=0-9999999999999"
                 }
                 
-                $CertificateTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $CertificateTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($CertificateType in $CertificateTypesAll) {
                     $CertificateTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsCertificateTypes {
                     }
 
                     Try {
-                        $CertificateType = Invoke-RestMethod @params -ErrorAction Stop
+                        $CertificateType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $CertificateTypeHash = [ordered]@{ }

@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsGenericDeviceTypes {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsGenericDeviceTypes'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsGenericDeviceTypes {
                     uri     = "$($PathToGlpi)/DeviceGenericType/?range=0-9999999999999"
                 }
                 
-                $GenericDeviceTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $GenericDeviceTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GenericDeviceType in $GenericDeviceTypesAll) {
                     $GenericDeviceTypeHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsGenericDeviceTypes {
                     }
 
                     Try {
-                        $GenericDeviceType = Invoke-RestMethod @params -ErrorAction Stop
+                        $GenericDeviceType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $GenericDeviceTypeHash = [ordered]@{ }

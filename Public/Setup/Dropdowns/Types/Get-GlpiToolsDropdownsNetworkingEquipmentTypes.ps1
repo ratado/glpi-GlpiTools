@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsNetworkingEquipmentTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/NetworkEquipmentType'
+                ItemType         = 'NetworkEquipmentType'
+                SearchFor        = 'networkequipmenttype'
+                Id               = $NetworkingEquipmentTypeId
+                Name             = $NetworkingEquipmentTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsNetworkingEquipmentTypes {
                     uri     = "$($PathToGlpi)/networkequipmenttype/?range=0-9999999999999"
                 }
                 
-                $NetworkingEquipmentTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $NetworkingEquipmentTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($NetworkingEquipmentType in $NetworkingEquipmentTypesAll) {
                     $NetworkingEquipmentTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsNetworkingEquipmentTypes {
                     }
 
                     Try {
-                        $NetworkingEquipmentType = Invoke-RestMethod @params -ErrorAction Stop
+                        $NetworkingEquipmentType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $NetworkingEquipmentTypeHash = [ordered]@{ }

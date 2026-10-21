@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsPrinterTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/PrinterType'
+                ItemType         = 'PrinterType'
+                SearchFor        = 'printertype'
+                Id               = $PrinterTypeId
+                Name             = $PrinterTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsPrinterTypes {
                     uri     = "$($PathToGlpi)/printertype/?range=0-9999999999999"
                 }
                 
-                $PrinterTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $PrinterTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($PrinterType in $PrinterTypesAll) {
                     $PrinterTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsPrinterTypes {
                     }
 
                     Try {
-                        $PrinterType = Invoke-RestMethod @params -ErrorAction Stop
+                        $PrinterType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PrinterTypeHash = [ordered]@{ }

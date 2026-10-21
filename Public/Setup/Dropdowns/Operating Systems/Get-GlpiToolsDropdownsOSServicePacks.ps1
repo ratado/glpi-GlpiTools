@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsOSServicePacks {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsOSServicePacks'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsOSServicePacks {
                     uri     = "$($PathToGlpi)/OperatingSystemServicePack/?range=0-9999999999999"
                 }
                 
-                $OSServicePacksAll = Invoke-RestMethod @params -Verbose:$false
+                $OSServicePacksAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($OSServicePack in $OSServicePacksAll) {
                     $OSServicePackHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsOSServicePacks {
                     }
 
                     Try {
-                        $OSServicePack = Invoke-RestMethod @params -ErrorAction Stop
+                        $OSServicePack = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $OSServicePackHash = [ordered]@{ }

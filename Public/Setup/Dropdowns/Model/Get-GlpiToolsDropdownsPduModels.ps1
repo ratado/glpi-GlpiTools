@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsPduModels {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsPduModels'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsPduModels {
                     uri     = "$($PathToGlpi)/pdumodel/?range=0-9999999999999"
                 }
                 
-                $PduModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $PduModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($PduModel in $PduModelsAll) {
                     $PduModelHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsPduModels {
                     }
 
                     Try {
-                        $PduModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $PduModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PduModelHash = [ordered]@{ }

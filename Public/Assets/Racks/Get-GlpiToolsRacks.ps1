@@ -138,6 +138,23 @@ function Get-GlpiToolsRacks {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assets/Rack'
+                ItemType         = 'Rack'
+                Id               = $RackId
+                Name             = $RackName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns'
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -150,7 +167,7 @@ function Get-GlpiToolsRacks {
                     uri     = "$($PathToGlpi)/Rack/?range=0-9999999999999"
                 }
                 
-                $GlpiRackAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiRackAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiRack in $GlpiRackAll) {
                     $RackHash = [ordered]@{ }
@@ -178,7 +195,7 @@ function Get-GlpiToolsRacks {
                     }
 
                     Try {
-                        $GlpiRack = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiRack = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $RackHash = [ordered]@{ }

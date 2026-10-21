@@ -138,6 +138,23 @@ function Get-GlpiToolsPdus {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assets/PDU'
+                ItemType         = 'Pdu'
+                Id               = $PduId
+                Name             = $PduName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns'
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -150,7 +167,7 @@ function Get-GlpiToolsPdus {
                     uri     = "$($PathToGlpi)/Pdu/?range=0-9999999999999"
                 }
                 
-                $GlpiPduAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiPduAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiPdu in $GlpiPduAll) {
                     $PduHash = [ordered]@{ }
@@ -178,7 +195,7 @@ function Get-GlpiToolsPdus {
                     }
 
                     Try {
-                        $GlpiPdu = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiPdu = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $PduHash = [ordered]@{ }

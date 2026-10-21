@@ -92,6 +92,12 @@ function Add-GlpiToolsTicketItem {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Add-GlpiToolsTicketItem'
+            return
+        }
+
 
         Try {
             Write-Verbose "Invoking API to add Item with id $($Item_id) of type $item_type to ticket $ticket_id"
@@ -117,7 +123,7 @@ function Add-GlpiToolsTicketItem {
                 body    = ([System.Text.Encoding]::UTF8.GetBytes($Upload))
             }
 
-            $GlpiTicketAddItem = Invoke-RestMethod @params -ErrorAction Stop
+            $GlpiTicketAddItem = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
             Write-Verbose $GlpiTicketAddItem
 
             If ($GlpiTicketAddItem -match "</body>") {

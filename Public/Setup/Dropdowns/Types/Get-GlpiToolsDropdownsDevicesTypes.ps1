@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsDevicesTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/PeripheralType'
+                ItemType         = 'PeripheralType'
+                SearchFor        = 'peripheraltype'
+                Id               = $DeviceTypeId
+                Name             = $DeviceTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsDevicesTypes {
                     uri     = "$($PathToGlpi)/peripheraltype/?range=0-9999999999999"
                 }
                 
-                $DevicesTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $DevicesTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DeviceType in $DevicesTypesAll) {
                     $DeviceTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsDevicesTypes {
                     }
 
                     Try {
-                        $DeviceType = Invoke-RestMethod @params -ErrorAction Stop
+                        $DeviceType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DeviceTypeHash = [ordered]@{ }

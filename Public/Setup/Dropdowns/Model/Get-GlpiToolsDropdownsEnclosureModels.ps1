@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsEnclosureModels {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/EnclosureModel'
+                ItemType         = 'EnclosureModel'
+                SearchFor        = 'enclosuremodel'
+                Id               = $EnclosureModelId
+                Name             = $EnclosureModelName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsEnclosureModels {
                     uri     = "$($PathToGlpi)/enclosuremodel/?range=0-9999999999999"
                 }
                 
-                $EnclosureModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $EnclosureModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($EnclosureModel in $EnclosureModelsAll) {
                     $EnclosureModelHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsEnclosureModels {
                     }
 
                     Try {
-                        $EnclosureModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $EnclosureModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $EnclosureModelHash = [ordered]@{ }

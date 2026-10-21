@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsDeviceMotherboardModels {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsDeviceMotherboardModels'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsDeviceMotherboardModels {
                     uri     = "$($PathToGlpi)/DeviceMotherBoardModel/?range=0-9999999999999"
                 }
                 
-                $DeviceMotherboardModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $DeviceMotherboardModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DeviceMotherboardModel in $DeviceMotherboardModelsAll) {
                     $DeviceMotherboardModelHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsDeviceMotherboardModels {
                     }
 
                     Try {
-                        $DeviceMotherboardModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $DeviceMotherboardModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DeviceMotherboardModelHash = [ordered]@{ }

@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsStatesOfTheVirtualMachine {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/VirtualMachineState'
+                ItemType         = 'VirtualMachineState'
+                SearchFor        = 'virtualmachinestate'
+                Id               = $StateOfTheVirtualMachineId
+                Name             = $StateOfTheVirtualMachineName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsStatesOfTheVirtualMachine {
                     uri     = "$($PathToGlpi)/virtualmachinestate/?range=0-9999999999999"
                 }
                 
-                $StatesOfTheVirtualMachineAll = Invoke-RestMethod @params -Verbose:$false
+                $StatesOfTheVirtualMachineAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($StateOfTheVirtualMachine in $StatesOfTheVirtualMachineAll) {
                     $StateOfTheVirtualMachineHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsStatesOfTheVirtualMachine {
                     }
 
                     Try {
-                        $StateOfTheVirtualMachine = Invoke-RestMethod @params -ErrorAction Stop
+                        $StateOfTheVirtualMachine = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $StateOfTheVirtualMachineHash = [ordered]@{ }

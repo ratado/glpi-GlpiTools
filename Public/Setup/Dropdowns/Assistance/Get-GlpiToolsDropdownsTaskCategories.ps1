@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsTaskCategories {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/TaskCategory'
+                ItemType         = 'TaskCategory'
+                SearchFor        = 'taskcategory'
+                Id               = $TaskCategoryId
+                Name             = $TaskCategoryName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsTaskCategories {
                     uri     = "$($PathToGlpi)/taskcategory/?range=0-9999999999999"
                 }
                 
-                $TaskCategoriesAll = Invoke-RestMethod @params -Verbose:$false
+                $TaskCategoriesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($TaskCategory in $TaskCategoriesAll) {
                     $TaskCategoryHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsTaskCategories {
                     }
 
                     Try {
-                        $TaskCategory = Invoke-RestMethod @params -ErrorAction Stop
+                        $TaskCategory = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $TaskCategoryHash = [ordered]@{ }

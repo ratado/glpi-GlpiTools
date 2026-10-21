@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsSolutionTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/SolutionType'
+                ItemType         = 'SolutionType'
+                SearchFor        = 'solutiontype'
+                Id               = $SolutionTypesId
+                Name             = $SolutionTypesName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsSolutionTypes {
                     uri     = "$($PathToGlpi)/solutiontype/?range=0-9999999999999"
                 }
                 
-                $SolutionTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $SolutionTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($SolutionType in $SolutionTypesAll) {
                     $SolutionTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsSolutionTypes {
                     }
 
                     Try {
-                        $SolutionType = Invoke-RestMethod @params -ErrorAction Stop
+                        $SolutionType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $SolutionTypeHash = [ordered]@{ }

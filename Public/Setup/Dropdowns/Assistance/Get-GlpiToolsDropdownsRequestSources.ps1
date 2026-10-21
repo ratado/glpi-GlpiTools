@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsRequestSources {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/RequestType'
+                ItemType         = 'RequestType'
+                SearchFor        = 'requesttype'
+                Id               = $RequestSourceId
+                Name             = $RequestSourceName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsRequestSources {
                     uri     = "$($PathToGlpi)/requesttype/?range=0-9999999999999"
                 }
                 
-                $RequestSourcesAll = Invoke-RestMethod @params -Verbose:$false
+                $RequestSourcesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($RequestSource in $RequestSourcesAll) {
                     $RequestSourceHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsRequestSources {
                     }
 
                     Try {
-                        $RequestSource = Invoke-RestMethod @params -ErrorAction Stop
+                        $RequestSource = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $RequestSourceHash = [ordered]@{ }

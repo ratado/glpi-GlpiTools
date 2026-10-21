@@ -78,6 +78,20 @@ function Get-GlpiToolsDropdownsManufacturers {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/Manufacturer'
+                ItemType         = 'Manufacturer'
+                Id               = $ManufacturerId
+                Name             = $ManufacturerName
+                AlwaysRaw        = $true
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +104,7 @@ function Get-GlpiToolsDropdownsManufacturers {
                     uri     = "$($PathToGlpi)/Manufacturer/?range=0-9999999999999"
                 }
                 
-                $GlpiManufacturerAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiManufacturerAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($ManufacturerModel in $GlpiManufacturerAll) {
                     $ManufacturerHash = [ordered]@{ }
@@ -118,7 +132,7 @@ function Get-GlpiToolsDropdownsManufacturers {
                     }
 
                     Try {
-                        $ManufacturerModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $ManufacturerModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ManufacturerHash = [ordered]@{ }

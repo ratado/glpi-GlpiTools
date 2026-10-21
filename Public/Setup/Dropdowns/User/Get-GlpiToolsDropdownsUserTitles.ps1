@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsUserTitles {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Administration/UserTitle'
+                ItemType         = 'UserTitle'
+                SearchFor        = 'Usertitle'
+                Id               = $UserTitleId
+                Name             = $UserTitleName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsUserTitles {
                     uri     = "$($PathToGlpi)/UserTitle/?range=0-9999999999999"
                 }
                 
-                $UserTitlesAll = Invoke-RestMethod @params -Verbose:$false
+                $UserTitlesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($UserTitle in $UserTitlesAll) {
                     $UserTitleHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsUserTitles {
                     }
 
                     Try {
-                        $UserTitle = Invoke-RestMethod @params -ErrorAction Stop
+                        $UserTitle = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $UserTitleHash = [ordered]@{ }

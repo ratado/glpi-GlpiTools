@@ -114,6 +114,23 @@ function Get-GlpiToolsSoftware {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assets/Software'
+                ItemType         = 'Software'
+                Id               = $SoftwareId
+                Name             = $SoftwareName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns'
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -126,7 +143,7 @@ function Get-GlpiToolsSoftware {
                     uri     = "$($PathToGlpi)/Software/?range=0-99999999999"
                 }
                 
-                $GlpiSoftwareAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiSoftwareAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiSoftware in $GlpiSoftwareAll) {
                     $SoftwareHash = [ordered]@{ }
@@ -154,7 +171,7 @@ function Get-GlpiToolsSoftware {
                     }
 
                     Try {
-                        $GlpiSoftware = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiSoftware = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $SoftwareHash = [ordered]@{ }

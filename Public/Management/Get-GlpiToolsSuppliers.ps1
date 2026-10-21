@@ -78,6 +78,20 @@ function Get-GlpiToolsSuppliers {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Management/Supplier'
+                ItemType         = 'Supplier'
+                Id               = $SupplierId
+                Name             = $SupplierName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +104,7 @@ function Get-GlpiToolsSuppliers {
                     uri     = "$($PathToGlpi)/Supplier/?range=0-9999999999999"
                 }
                 
-                $SuppliersAll = Invoke-RestMethod @params -Verbose:$false
+                $SuppliersAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Supplier in $SuppliersAll) {
                     $SupplierHash = [ordered]@{ }
@@ -118,7 +132,7 @@ function Get-GlpiToolsSuppliers {
                     }
 
                     Try {
-                        $Supplier = Invoke-RestMethod @params -ErrorAction Stop
+                        $Supplier = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $SupplierHash = [ordered]@{ }

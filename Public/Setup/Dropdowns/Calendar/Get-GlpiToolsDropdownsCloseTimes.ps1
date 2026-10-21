@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsCloseTimes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/CloseTime'
+                ItemType         = 'CloseTime'
+                SearchFor        = 'holiday'
+                Id               = $CloseTimeId
+                Name             = $CloseTimeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsCloseTimes {
                     uri     = "$($PathToGlpi)/holiday/?range=0-9999999999999"
                 }
                 
-                $CloseTimesAll = Invoke-RestMethod @params -Verbose:$false
+                $CloseTimesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($CloseTime in $CloseTimesAll) {
                     $CloseTimeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsCloseTimes {
                     }
 
                     Try {
-                        $CloseTime = Invoke-RestMethod @params -ErrorAction Stop
+                        $CloseTime = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $CloseTimeHash = [ordered]@{ }

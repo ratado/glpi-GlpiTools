@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsLicenseTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/LicenseType'
+                ItemType         = 'LicenseType'
+                SearchFor        = 'softwarelicensetype'
+                Id               = $LicenseTypeId
+                Name             = $LicenseTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsLicenseTypes {
                     uri     = "$($PathToGlpi)/softwarelicensetype/?range=0-9999999999999"
                 }
                 
-                $LicenseTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $LicenseTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($LicenseType in $LicenseTypesAll) {
                     $LicenseTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsLicenseTypes {
                     }
 
                     Try {
-                        $LicenseType = Invoke-RestMethod @params -ErrorAction Stop
+                        $LicenseType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $LicenseTypeHash = [ordered]@{ }

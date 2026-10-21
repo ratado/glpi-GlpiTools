@@ -90,6 +90,27 @@ function Remove-GlpiToolsItems {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Route = Get-GlpiToolsV3Route -ItemType $RemoveFrom
+            # the legacy -Purge becomes force=true; without it the item goes to the trash
+            $V3Query = if ($Purge) { @{ force = 'true' } } else { $null }
+            if ($ChoosenParam -contains 'ItemId') {
+                Invoke-GlpiToolsRequest -Method Delete -Resource "$V3Route/$ItemId" -Query $V3Query
+            } else {
+                # the legacy payload carries the ids inside "input"
+                $V3Payload = if ($ChoosenParam -contains 'JsonPayload') { ($JsonPayload -join '') | ConvertFrom-Json -AsHashtable } else { $HashtableToRemove }
+                $V3Inputs = if ($V3Payload.ContainsKey('input')) { $V3Payload['input'] } else { $V3Payload }
+                foreach ($V3Input in @($V3Inputs)) {
+                    if ($V3Input['id'] -isnot [int] -and $V3Input['id'] -notmatch '^\d+$') {
+                        throw "Each element to remove needs an integer id."
+                    }
+                    Invoke-GlpiToolsRequest -Method Delete -Resource "$V3Route/$($V3Input['id'])" -Query $V3Query
+                }
+            }
+            return
+        }
+
         switch ($ChoosenParam) {
             ItemId {
                 $params = @{
@@ -101,7 +122,7 @@ function Remove-GlpiToolsItems {
                     method  = 'delete'
                     uri     = "$($PathToGlpi)/$($RemoveFrom)/$($ItemId)$($PurgeValue)"
                 }
-                Invoke-RestMethod @params
+                Invoke-GlpiToolsRequestApi -Params $params
             }
             HashtableToRemove {
                 $GlpiRemove = $HashtableToRemove | ConvertTo-Json
@@ -118,7 +139,7 @@ function Remove-GlpiToolsItems {
                     uri     = "$($PathToGlpi)/$($RemoveFrom)/"
                     body    = ([System.Text.Encoding]::UTF8.GetBytes($Remove))
                 }
-                Invoke-RestMethod @params
+                Invoke-GlpiToolsRequestApi -Params $params
             }
             JsonPayload {
                 $params = @{
@@ -131,7 +152,7 @@ function Remove-GlpiToolsItems {
                     uri     = "$($PathToGlpi)/$($RemoveFrom)/"
                     body    = ([System.Text.Encoding]::UTF8.GetBytes($JsonPayload))
                 }
-                Invoke-RestMethod @params
+                Invoke-GlpiToolsRequestApi -Params $params
             }
             Default { Write-Verbose "You didn't specified any parameter, choose from one available" }
         }

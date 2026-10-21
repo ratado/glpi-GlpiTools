@@ -3,6 +3,7 @@
     Function which init API session.
 .DESCRIPTION
     Function gets nesessery information from Config file, then initialize session, and return object with session_token property.
+    With API v3 it requests an OAuth access token (password grant) instead and keeps it, with its expiry, as the session.
 .EXAMPLE
     PS C:\Users\Wojtek> Set-GlpiToolsInitSession
     Run command like that and you will initiate session with API GLPI
@@ -28,6 +29,12 @@ function Set-GlpiToolsInitSession {
     }
     
     process {
+        # API v3: OAuth password grant, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $SessionToken = Update-GlpiToolsAccessToken -NewSession
+            return
+        }
+
         $params = @{
             headers = @{
                 'Content-Type'  = 'application/json'
@@ -37,7 +44,7 @@ function Set-GlpiToolsInitSession {
             method  = 'get'
             uri     = "$($PathToGlpi)/initSession/" 
         }
-        $InitSession = Invoke-RestMethod @params
+        $InitSession = Invoke-GlpiToolsRequestApi -Params $params
         
         $SessionHash = [ordered]@{
             'SessionToken' = $InitSession.session_token

@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsDeviceMemoryModels {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsDeviceMemoryModels'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsDeviceMemoryModels {
                     uri     = "$($PathToGlpi)/DeviceMemoryModel/?range=0-9999999999999"
                 }
                 
-                $DeviceMemoryModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $DeviceMemoryModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DeviceMemoryModel in $DeviceMemoryModelsAll) {
                     $DeviceMemoryModelHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsDeviceMemoryModels {
                     }
 
                     Try {
-                        $DeviceMemoryModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $DeviceMemoryModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DeviceMemoryModelHash = [ordered]@{ }

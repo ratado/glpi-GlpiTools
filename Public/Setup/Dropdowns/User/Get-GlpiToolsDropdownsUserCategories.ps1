@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsUserCategories {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Administration/UserCategory'
+                ItemType         = 'UserCategory'
+                SearchFor        = 'Usercategory'
+                Id               = $UserCategoryId
+                Name             = $UserCategoryName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsUserCategories {
                     uri     = "$($PathToGlpi)/UserCategory/?range=0-9999999999999"
                 }
                 
-                $UserCategoriesAll = Invoke-RestMethod @params -Verbose:$false
+                $UserCategoriesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($UserCategory in $UserCategoriesAll) {
                     $UserCategoryHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsUserCategories {
                     }
 
                     Try {
-                        $UserCategory = Invoke-RestMethod @params -ErrorAction Stop
+                        $UserCategory = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $UserCategoryHash = [ordered]@{ }

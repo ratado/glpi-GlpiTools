@@ -130,6 +130,23 @@ function Get-GlpiToolsTickets {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assistance/Ticket'
+                ItemType         = 'Ticket'
+                Id               = $TicketId
+                Name             = $TicketName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns', 'WithDocuments'
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -142,7 +159,7 @@ function Get-GlpiToolsTickets {
                     uri     = "$($PathToGlpi)/Ticket/?range=0-9999999999999"
                 }
                 
-                $GlpiTicketAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiTicketAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiTicket in $GlpiTicketAll) {
                     $TicketHash = [ordered]@{ }
@@ -170,7 +187,7 @@ function Get-GlpiToolsTickets {
                     }
 
                     Try {
-                        $GlpiTicket = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiTicket = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $TicketHash = [ordered]@{ }

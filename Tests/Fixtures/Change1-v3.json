@@ -1,0 +1,73 @@
+{
+    "id": 1,
+    "name": "Atualizar sistema IPP Coleta",
+    "content": "<div id=\"mudanca_descricao_completo\">\n<div style=\"text-align: center; width: 75%; margin: 0 auto 25px; padding: 5px 0 10px; border-bottom: dashed 1px gray;\"><span style=\"color: #ff0000; font-weight: bold;\">Por favor, n\u00e3o apagar os campos abaixo. Preencha as informa\u00e7\u00f5es solicitadas.<\/span><\/div>\n<p><strong>Favor informar,<\/strong><\/p>\n<p><span style=\"color: #ff0000;\">*<\/span>Tipo de localiza\u00e7\u00e3o (remoto ou presencial):<span id=\"mudanca_tipo_localizacao\" style=\"font-style: italic; font-weight: bold;\"> remoto\/presencial<\/span><br><span style=\"color: #ff0000;\">*<\/span>Localiza\u00e7\u00e3o presencial (complexo, andar,...):<span id=\"mudanca_localizacao_presencial\" style=\"font-style: italic; font-weight: bold;\"> Horto<\/span><br><span style=\"color: #ff0000;\">*<\/span>Lota\u00e7\u00e3o (coordena\u00e7\u00e3o\/ger\u00eancia):<span id=\"mudanca_lotacao\" style=\"font-style: italic; font-weight: bold;\">\u00a0 COADS\/GEAR<\/span><br><span style=\"color: #ff0000;\">*<\/span>Contato (Teams, e-mail ou telefone):<span id=\"mudanca_contato\" style=\"font-style: italic; font-weight: bold;\"> teams<\/span><\/p>\n<div style=\"margin: 40px auto 25px; width: 100%;\">\n<table style=\"border-collapse: collapse; width: 100%; border-width: 1px; background-color: #008b8b;\" border=\"1\"><colgroup><col style=\"width: 99.8783%;\"><\/colgroup>\n<tbody>\n<tr>\n<td style=\"text-align: center;\"><span style=\"color: #ffffff;\"><strong>DESCRI\u00c7\u00c3O DA MUDAN\u00c7A<\/strong><\/span><\/td>\n<\/tr>\n<\/tbody>\n<\/table>\n<\/div>\n<div id=\"mudanca_descricao\">\n<p>Solicito atualiza\u00e7\u00e3o do sistema IPP Coleta para corre\u00e7\u00e3o de erros e melhorias no sistema solicitados pelo usu\u00e1rio. O usu\u00e1rio j\u00e1 foi avisado. Nenhum documento anexado.<\/p>\n<p>Segue abaixo o link do tfs para aprova\u00e7\u00e3o nos ambientes de produ\u00e7\u00e3o<\/p>\n<p><a href=\"https:\/\/tfs.ibge.gov.br\/tfs\/ECO_ADM\/GESEC.IPP\/_releaseProgress?_a=release-pipeline-progress&amp;releaseId=626\" target=\"_blank\" rel=\"noopener\">https:\/\/tfs.ibge.gov.br\/tfs\/ECO_ADM\/GESEC.IPP\/_releaseProgress?_a=release-pipeline-progress&amp;releaseId=626<\/a><\/p>\n<p>Obrigado.<\/p>\n<\/div>\nNenhum documento anexado<\/div>\n<table style=\"border-collapse: collapse; width: 100%; border-width: 1px; background-color: #888888; margin-top: 20px;\" border=\"1\"><colgroup><col style=\"width: 99.8783%;\"><\/colgroup>\n<tbody>\n<tr>\n<td style=\"text-align: center;\"><span style=\"color: #ffffff;\"><strong>INFORMA\u00c7\u00d5ES ADICIONAIS<\/strong><\/span><\/td>\n<\/tr>\n<\/tbody>\n<\/table>\n<div id=\"accordion-form-mudanca\" class=\"accordion\">\n<div class=\"accordion-item\">\n<h2 class=\"accordion-header\"><a class=\"accordion-button btn btn-light\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapseOne\" aria-expanded=\"true\" aria-controls=\"collapseOne\"> Geral <\/a><\/h2>\n<div id=\"collapseOne\" class=\"accordion-collapse collapse show\" data-bs-parent=\"#accordion-form-mudanca\">\n<div id=\"form-answer-geral\" class=\"accordion-body\">\n<div class=\"container\">\n<div class=\"row\">\n<div id=\"form-answer-geral-q-tipo-mudanca\" class=\"col-4 p-2\"><strong>Tipo de mudan\u00e7a<\/strong><\/div>\n<div id=\"form-answer-geral-a-tipo-mudanca\" class=\"col-8 p-2\">Emergencial<\/div>\n<\/div>\n<div class=\"row\">\n<div id=\"form-answer-geral-q-data-inicial\" class=\"col-4 p-2\"><strong>Data inicial prevista<\/strong><\/div>\n<div id=\"form-answer-geral-a-data-inicial\" class=\"col-8 p-2\">28-09-2026 10:00<\/div>\n<\/div>\n<div class=\"row\">\n<div id=\"form-answer-geral-q-data-conclusao\" class=\"col-4 p-2\"><strong>Data prevista para conclus\u00e3o<\/strong><\/div>\n<div id=\"form-answer-geral-a-data-conclusao\" class=\"col-8 p-2\">28-09-2026 10:10<\/div>\n<\/div>\n<div class=\"row d-none\">\n<div id=\"form-answer-geral-q-executada\" class=\"col-4 p-2\"><strong>Mudan\u00e7a j\u00e1 executada?<\/strong><\/div>\n<div id=\"form-answer-geral-a-executada\" class=\"col-8 p-2\">N\u00e3o<\/div>\n<\/div>\n<div class=\"row\">\n<div id=\"form-answer-geral-q-supervisor\" class=\"col-4 p-2\"><strong>Supervisor da mudan\u00e7a<\/strong><\/div>\n<div id=\"form-answer-geral-a-supervisor\" class=\"col-8 p-2\"><br>Sergio Jorge de Carvalho Junior 2340838<br>Andrea Moreira Torres 1362117<br>Leonardo Lemgruber Boechat Rodrigues 2404287<\/div>\n<\/div>\n<div class=\"row\">\n<div id=\"form-answer-geral-q-sugestao-responsavel\" class=\"col-4 p-2\"><strong>Sugest\u00e3o de respons\u00e1vel<\/strong><\/div>\n<div id=\"form-answer-geral-a-sugestao-responsavel\" class=\"col-8 p-2\"><br>Jose Antonio Goncalves Martins 2404255<\/div>\n<\/div>\n<div class=\"row\">\n<div id=\"form-answer-geral-q-sugestao-tecnicos\" class=\"col-4 p-2\"><strong>Sugest\u00e3o de t\u00e9cnicos<\/strong><\/div>\n<div id=\"form-answer-geral-a-sugestao-tecnicos\" class=\"col-8 p-2\"><br>Leonardo Lemgruber Boechat Rodrigues 2404287<\/div>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<div class=\"accordion-item\">\n<h2 class=\"accordion-header\"><a class=\"accordion-button collapsed btn btn-light\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapseTwo\" aria-expanded=\"true\" aria-controls=\"collapseTwo\"> Avalia\u00e7\u00e3o de Risco <\/a><\/h2>\n<div id=\"collapseTwo\" class=\"accordion-collapse collapse\" data-bs-parent=\"#accordion-form-mudanca\">\n<div id=\"form-answer-risco\" class=\"accordion-body\">\n<div class=\"container\">\n<div class=\"row\">\n<div id=\"form-answer-risco-q-descricao-nao-realizacao\" class=\"col-4 p-2\"><strong>Descri\u00e7\u00e3o dos riscos envolvidos com a n\u00e3o realiza\u00e7\u00e3o da mudan\u00e7a<\/strong><\/div>\n<div id=\"form-answer-risco-a-descricao-nao-realizacao\" class=\"col-8 p-2\">\n<p>Nenhum risco previsto<\/p>\n<\/div>\n<\/div>\n<div class=\"row\">\n<div id=\"form-answer-risco-q-descricao-implementacao\" class=\"col-4 p-2\"><strong>Descri\u00e7\u00e3o dos riscos envolvidos durante a implementa\u00e7\u00e3o da mudan\u00e7a<\/strong><\/div>\n<div id=\"form-answer-risco-a-descricao-implementacao\" class=\"col-8 p-2\">\n<p>Indisponibilidade do AzureDevops.<br><br><\/p>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<div class=\"accordion-item\">\n<h2 class=\"accordion-header\"><a class=\"accordion-button collapsed btn btn-light\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapseThree\" aria-expanded=\"false\" aria-controls=\"collapseThree\"> Planejamento da mudan\u00e7a <\/a><\/h2>\n<div id=\"collapseThree\" class=\"accordion-collapse collapse\" data-bs-parent=\"#accordion-form-mudanca\">\n<div id=\"form-answer-planejamento\" class=\"accordion-body\">\n<div class=\"container\">\n<div class=\"row\">\n<div id=\"form-answer-planejamento-q-solucao-tecnica\" class=\"col-4 p-2\"><strong>Solu\u00e7\u00e3o t\u00e9cnica proposta<\/strong><\/div>\n<div id=\"form-answer-planejamento-a-solucao-tecnica\" class=\"col-8 p-2\">\n<p>Corre\u00e7\u00e3o e melhoria solicitada pelo usu\u00e1rio<\/p>\n<\/div>\n<\/div>\n<div class=\"row\">\n<div id=\"form-answer-planejamento-q-plano-execucao\" class=\"col-4 p-2\"><strong>Plano de Execu\u00e7\u00e3o<\/strong><\/div>\n<div id=\"form-answer-planejamento-a-plano-execucao\" class=\"col-8 p-2\">\n<div style=\"text-align: center; width: 75%; margin: 0 auto 25px; padding: 5px 0 10px; border-bottom: dashed 1px gray;\"><span style=\"color: #ff0000; font-weight: bold;\">Preencha na tabela abaixo as tarefas que deseja criar para o Plano de Execu\u00e7\u00e3o.<\/span><\/div>\n<h4>Lista de Tarefas<\/h4>\n<table style=\"border-collapse: collapse; width: 99.9389%; margin: 10px auto 20px; border: 1px solid #dfdcdc;\"><colgroup><col style=\"width: 15%; text-align: center; border: 1px solid #dfdcdc;\"><col style=\"width: 74.9389%;\"><\/colgroup>\n<thead>\n<tr>\n<th style=\"text-align: center;\"><strong>Identifica\u00e7\u00e3o<\/strong><\/th>\n<th style=\"text-align: center;\"><strong>Descri\u00e7\u00e3o<\/strong><\/th>\n<\/tr>\n<\/thead>\n<tbody>\n<tr>\n<td style=\"text-align: center; font-weight: bold;\">Tarefa 1<\/td>\n<td>Realizar deploy do sistema conforme descrito no chamado.<\/td>\n<\/tr>\n<\/tbody>\n<\/table>\n<h4>Observa\u00e7\u00f5es adicionais<\/h4>\n<p>\u00a0<\/p>\n<\/div>\n<\/div>\n<div class=\"row\">\n<div id=\"form-answer-planejamento-q-plano-teste\" class=\"col-4 p-2\"><strong>Plano de Teste<\/strong><\/div>\n<div id=\"form-answer-planejamento-a-plano-teste\" class=\"col-8 p-2\">\n<div style=\"text-align: center; width: 75%; margin: 0 auto 25px; padding: 5px 0 10px; border-bottom: dashed 1px gray;\"><span style=\"color: #ff0000; font-weight: bold;\">Preencha na tabela abaixo as tarefas que deseja criar para o Plano de Teste.<\/span><\/div>\n<h4>Lista de Tarefas<\/h4>\n<table style=\"border-collapse: collapse; width: 99.9389%; margin: 10px auto 20px; border: 1px solid rgb(223, 220, 220); height: 105.795px;\"><colgroup><col style=\"width: 15%; text-align: center; border: 1px solid #dfdcdc;\"><col style=\"width: 74.9389%;\"><\/colgroup>\n<thead>\n<tr style=\"height: 22.8977px;\">\n<th style=\"text-align: center;\"><strong>Identifica\u00e7\u00e3o<\/strong><\/th>\n<th style=\"text-align: center;\"><strong>Descri\u00e7\u00e3o<\/strong><\/th>\n<\/tr>\n<\/thead>\n<tbody>\n<tr style=\"height: 82.8977px;\">\n<td style=\"text-align: center; font-weight: bold;\">Tarefa 1<\/td>\n<td>Verificar a disponibilidade do sistema e se a vers\u00e3o foi atualizada.<\/td>\n<\/tr>\n<\/tbody>\n<\/table>\n<h4>Observa\u00e7\u00f5es adicionais<\/h4>\n<p>\u00a0<\/p>\n<\/div>\n<\/div>\n<div class=\"row\">\n<div id=\"form-answer-planejamento-q-plano-retorno\" class=\"col-4 p-2\"><strong>Plano de Retorno<\/strong><\/div>\n<div id=\"form-answer-planejamento-a-plano-retorno\" class=\"col-8 p-2\">\n<h4>\u00a0<\/h4>\n<p>\u00a0<\/p>\n<\/div>\n<\/div>\n<div class=\"row\">\n<div id=\"form-answer-planejamento-q-indisponibilidades-previstas\" class=\"col-4 p-2\"><strong>Indisponibilidades previstas<\/strong><\/div>\n<div id=\"form-answer-planejamento-a-indisponibilidades-previstas\" class=\"col-8 p-2\">\n<p>Nenhuma.<\/p>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<div class=\"accordion-item\">\n<h2 class=\"accordion-header\"><a class=\"accordion-button collapsed btn btn-light\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapseFour\" aria-expanded=\"true\" aria-controls=\"collapseFour\">Itens envolvidos<\/a><\/h2>\n<div id=\"collapseFour\" class=\"accordion-collapse collapse\" data-bs-parent=\"#accordion-form-mudanca\">\n<div id=\"form-answer-itens\" class=\"accordion-body\">\n<div class=\"container p-2\">\n<div id=\"form-answer-itens-a-todos\">\n<table class=\"table table-info table-striped\">\n<thead>\n<tr>\n<th>ID<\/th>\n<th>Tipo de item<\/th>\n<th>Nome do item<\/th>\n<\/tr>\n<\/thead>\n<tbody>\n<tr>\n<td>1124<\/td>\n<td>Sistema Institucional<\/td>\n<td>IPP Coleta - \u00cdndice de Pre\u00e7os ao Produtor [coleta]<\/td>\n<\/tr>\n<\/tbody>\n<\/table>\n<\/div>\n<div id=\"form-answer-itens-a-todos-json\" style=\"display: none;\">[{\"id\":1124,\"itemtype\":\"PluginArchiswSwcomponent\",\"name\":\"IPP Coleta - \\u00cdndice de Pre\\u00e7os ao Produtor [coleta]\",\"itemtype_name\":\"Sistema Institucional\"}]<\/div>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<div class=\"accordion-item\">\n<h2 class=\"accordion-header\"><a class=\"accordion-button collapsed btn btn-light\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapseFive\" aria-expanded=\"false\" aria-controls=\"collapseFive\"> Coment\u00e1rios ou observa\u00e7\u00f5es<\/a><\/h2>\n<div id=\"collapseFive\" class=\"accordion-collapse collapse\" data-bs-parent=\"#accordion-form-mudanca\">\n<div id=\"form-answer-comentarios\" class=\"accordion-body\">\n<div class=\"container\">\n<div>\n<h4>\u00a0<\/h4>\n<\/div>\n<div class=\"row\">\n<div id=\"form-answer-comentario\" class=\"col-12 p-2\">\n<p>Nenhum coment\u00e1rio adicional.<\/p>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<\/div>\n<\/div>",
+    "is_deleted": false,
+    "urgency": 3,
+    "impact": 3,
+    "priority": 3,
+    "actiontime": 0,
+    "begin_waiting_date": null,
+    "waiting_duration": 0,
+    "resolution_duration": 0,
+    "close_duration": 0,
+    "resolution_date": null,
+    "date_creation": "2026-09-24T10:34:50-03:00",
+    "date_mod": "2026-09-24T12:03:16-03:00",
+    "date": "2026-09-24T10:34:50-03:00",
+    "date_solve": null,
+    "date_close": null,
+    "global_validation": 1,
+    "status": {
+        "id": 7,
+        "name": "Aceito"
+    },
+    "user_recipient": {
+        "id": 2,
+        "username": "glpi"
+    },
+    "user_editor": {
+        "id": 2,
+        "username": "glpi"
+    },
+    "category": {
+        "id": 4,
+        "name": "Troca\/recupera\u00e7\u00e3o de senha"
+    },
+    "location": null,
+    "entity": {
+        "id": 1,
+        "name": "IBGE",
+        "completename": "Entidade raiz > IBGE"
+    },
+    "costs": [],
+    "team": [
+        {
+            "_type": "UserTeamMember",
+            "id": 1,
+            "role": "requester",
+            "user": {
+                "id": 2,
+                "username": "glpi"
+            }
+        },
+        {
+            "_type": "UserTeamMember",
+            "id": 2,
+            "role": "assigned",
+            "user": {
+                "id": 2,
+                "username": "glpi"
+            }
+        },
+        {
+            "_type": "UserTeamMember",
+            "id": 3,
+            "role": "assigned",
+            "user": {
+                "id": 4,
+                "username": "tech"
+            }
+        }
+    ]
+}

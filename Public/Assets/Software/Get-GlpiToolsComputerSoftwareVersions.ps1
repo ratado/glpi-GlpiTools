@@ -12,6 +12,8 @@
 .PARAMETER Raw
     Parameter which you can use with ComputerSoftwareVersionId Parameter.
     ComputerSoftwareVersionId has converted parameters from default, parameter Raw allows not convert this parameters.
+.PARAMETER ComputerId
+    Computer whose installed software is listed. Required with the GLPI API v3, ignored by the legacy API.
 .EXAMPLE
     PS C:\> 326 | Get-GlpiToolsComputerSoftwareVersions
     Function gets ComputerSoftwareVersionId from GLPI from Pipline, and return Computer Software Version object
@@ -53,7 +55,13 @@ function Get-GlpiToolsComputerSoftwareVersions {
         [string[]]$ComputerSoftwareVersionId,
         [parameter(Mandatory = $false,
             ParameterSetName = "ComputerSoftwareVersionId")]
-        [switch]$Raw
+        [switch]$Raw,
+
+        [parameter(Mandatory = $false,
+            ParameterSetName = "All")]
+        [parameter(Mandatory = $false,
+            ParameterSetName = "ComputerSoftwareVersionId")]
+        [int]$ComputerId
     )
     
     begin {
@@ -73,6 +81,19 @@ function Get-GlpiToolsComputerSoftwareVersions {
     }
     
     process {
+        # API v3: these records are sub-resources of an asset, so the asset is informed with a parameter that only the v3 uses
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3ParameterRequired -Name 'ComputerId' -BoundParameters $PSBoundParameters
+            # the list is read once per call, because this block runs again for each ID received from the pipeline
+            $V3Items = Get-GlpiToolsV3CachedList -Resource "/Assets/Computer/$ComputerId/SoftwareInstallation" -All
+            if ($PSCmdlet.ParameterSetName -eq 'ComputerSoftwareVersionId') {
+                # the legacy ID parameter selects records of the list
+                $V3Items = @($V3Items | Where-Object { [string]$_.id -in @($ComputerSoftwareVersionId) })
+            }
+            $V3Items | ConvertFrom-GlpiToolsV3Item -ItemType SoftwareInstallation -Raw:$Raw
+            return
+        }
+
         switch ($ChoosenParam) {
             All {
                 
@@ -86,7 +107,7 @@ function Get-GlpiToolsComputerSoftwareVersions {
                     uri     = "$($PathToGlpi)/Computer_SoftwareVersion/?range=0-9999999999999"
                 }
                 
-                $GlpiComputerSoftwareVersionAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiComputerSoftwareVersionAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiComputerSoftwareVersion in $GlpiComputerSoftwareVersionAll) {
                     $ComputerSoftwareVersionHash = [ordered]@{ }
@@ -115,7 +136,7 @@ function Get-GlpiToolsComputerSoftwareVersions {
                     }
 
                     Try {
-                        $GlpiComputerSoftwareVersion = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiComputerSoftwareVersion = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ComputerSoftwareVersionHash = [ordered]@{ }

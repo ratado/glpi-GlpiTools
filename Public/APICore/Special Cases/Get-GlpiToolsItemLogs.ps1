@@ -61,6 +61,12 @@ function Get-GlpiToolsItemLogs {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsItemLogs'
+            return
+        }
+
         $params = @{
             headers = @{
                 'Content-Type'  = 'application/json'
@@ -71,7 +77,7 @@ function Get-GlpiToolsItemLogs {
             uri     = "$($PathToGlpi)/$($LogsFor)/$($ItemId)/Log?range=0-9999999999999"
         }
         
-        $GlpiLogAll = Invoke-RestMethod @params -Verbose:$false
+        $GlpiLogAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
         foreach ($GlpiLog in $GlpiLogAll) {
             $LogHash = [ordered]@{ }

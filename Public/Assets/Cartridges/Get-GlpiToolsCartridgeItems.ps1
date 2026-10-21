@@ -138,6 +138,23 @@ function Get-GlpiToolsCartridgeItems {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assets/Cartridge'
+                ItemType         = 'CartridgeItem'
+                Id               = $CartridgeItemId
+                Name             = $CartridgeItemName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns'
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -150,7 +167,7 @@ function Get-GlpiToolsCartridgeItems {
                     uri     = "$($PathToGlpi)/CartridgeItem/?range=0-9999999999999"
                 }
                 
-                $GlpiCartridgeItemAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiCartridgeItemAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiCartridgeItem in $GlpiCartridgeItemAll) {
                     $CartridgeItemHash = [ordered]@{ }
@@ -178,7 +195,7 @@ function Get-GlpiToolsCartridgeItems {
                     }
 
                     Try {
-                        $GlpiCartridgeItem = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiCartridgeItem = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $CartridgeItemHash = [ordered]@{ }

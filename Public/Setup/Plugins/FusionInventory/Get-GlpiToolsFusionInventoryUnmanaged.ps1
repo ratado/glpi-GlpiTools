@@ -42,6 +42,11 @@ function Get-GlpiToolsFusionInventoryUnmanaged {
     }
     
     process {
+        # API v3: plugins of third parties have no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsFusionInventoryUnmanaged'
+        }
+
         $params = @{
             headers = @{
                 'Content-Type'  = 'application/json'
@@ -51,7 +56,7 @@ function Get-GlpiToolsFusionInventoryUnmanaged {
             method  = 'get'
             uri     = "$($PathToGlpi)/PluginFusioninventoryUnmanaged/?range=0-999999999" 
         }
-        $AllFusionUnmanaged = Invoke-RestMethod @params
+        $AllFusionUnmanaged = Invoke-GlpiToolsRequestApi -Params $params
 
         foreach ($FusionUnmanaged in $AllFusionUnmanaged) {
             $FusionHash = [ordered]@{ }

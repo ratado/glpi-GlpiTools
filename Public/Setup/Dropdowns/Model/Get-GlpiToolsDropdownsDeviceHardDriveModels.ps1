@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsDeviceHardDriveModels {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsDeviceHardDriveModels'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsDeviceHardDriveModels {
                     uri     = "$($PathToGlpi)/DeviceHardDriveModel/?range=0-9999999999999"
                 }
                 
-                $DeviceHardDriveModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $DeviceHardDriveModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DeviceHardDriveModel in $DeviceHardDriveModelsAll) {
                     $DeviceHardDriveModelHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsDeviceHardDriveModels {
                     }
 
                     Try {
-                        $DeviceHardDriveModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $DeviceHardDriveModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DeviceHardDriveModelHash = [ordered]@{ }

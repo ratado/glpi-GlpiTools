@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsThirdPartyTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/SupplierType'
+                ItemType         = 'SupplierType'
+                SearchFor        = 'suppliertype'
+                Id               = $ThirdPartyTypeId
+                Name             = $ThirdPartyTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsThirdPartyTypes {
                     uri     = "$($PathToGlpi)/suppliertype/?range=0-9999999999999"
                 }
                 
-                $ThirdPartyTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $ThirdPartyTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($ThirdPartyType in $ThirdPartyTypesAll) {
                     $ThirdPartyTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsThirdPartyTypes {
                     }
 
                     Try {
-                        $ThirdPartyType = Invoke-RestMethod @params -ErrorAction Stop
+                        $ThirdPartyType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ThirdPartyTypeHash = [ordered]@{ }

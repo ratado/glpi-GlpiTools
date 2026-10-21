@@ -1,0 +1,28 @@
+{
+    "id": 1,
+    "name": "Redes",
+    "comment": "",
+    "completename": "Redes",
+    "level": 1,
+    "code": "",
+    "ldap_field": null,
+    "ldap_value": null,
+    "ldap_group_dn": null,
+    "maybe_requester": true,
+    "maybe_observer": true,
+    "maybe_assigned": true,
+    "maybe_assigned_task": true,
+    "maybe_notified": true,
+    "may_contain_items": true,
+    "may_contain_users": true,
+    "maybe_manager": true,
+    "recursive_membership": false,
+    "mfa_enforced": false,
+    "date_creation": "2026-08-31T17:40:01-03:00",
+    "date_mod": "2026-08-31T17:40:01-03:00",
+    "parent": null,
+    "entity": {
+        "id": 0,
+        "name": "Entidade raiz"
+    }
+}

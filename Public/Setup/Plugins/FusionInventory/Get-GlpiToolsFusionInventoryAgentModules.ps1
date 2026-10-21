@@ -42,6 +42,11 @@ function Get-GlpiToolsFusionInventoryAgentModules {
     }
     
     process {
+        # API v3: plugins of third parties have no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsFusionInventoryAgentModules'
+        }
+
         $params = @{
             headers = @{
                 'Content-Type'  = 'application/json'
@@ -51,7 +56,7 @@ function Get-GlpiToolsFusionInventoryAgentModules {
             method  = 'get'
             uri     = "$($PathToGlpi)/PluginFusioninventoryAgentModule/?range=0-999999999" 
         }
-        $AllFusionAgentModules = Invoke-RestMethod @params
+        $AllFusionAgentModules = Invoke-GlpiToolsRequestApi -Params $params
 
         foreach ($FusionAgentModule in $AllFusionAgentModules) {
             $FusionHash = [ordered]@{ }

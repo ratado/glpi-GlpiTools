@@ -67,6 +67,11 @@ function Get-GlpiToolsDropdownsSoftwareCategory {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsSoftwareCategory'
+        }
+
         switch ($ChoosenParam) {
             All {  
                 $params = @{
@@ -79,7 +84,7 @@ function Get-GlpiToolsDropdownsSoftwareCategory {
                     uri     = "$($PathToGlpi)/SoftwareCategory/?range=0-99999999999"
                 }
                 
-                $GlpiSoftwareCategoryAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiSoftwareCategoryAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiSoftwareCategory in $GlpiSoftwareCategoryAll) {
                     $SoftwareCategoryHash = [ordered]@{ }
@@ -106,7 +111,7 @@ function Get-GlpiToolsDropdownsSoftwareCategory {
                         uri     = "$($PathToGlpi)/SoftwareCategory/$($SCId)"
                     }
                     Try {
-                        $GlpiSoftwareCategory = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiSoftwareCategory = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
                         
                         $SoftwareCategoryHash = [ordered]@{ }
                         $SoftwareCategoryProperties = $GlpiSoftwareCategory.PSObject.Properties | Select-Object -Property Name, Value 

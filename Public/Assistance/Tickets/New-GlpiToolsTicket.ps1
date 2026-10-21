@@ -203,12 +203,13 @@ function New-GlpiToolsTicket {
     begin {
 
         If ($null -ne $PSBoundParameters['Item_id'] -and $null -eq $PSBoundParameters['Item_type']) {
-            Write-Warning "[INVALID PARAMETERS] If item_id is specified, item_type needs to be specified accordingly"
-            Exit
+            # a terminating error stops only this command, unlike Exit that closes the whole PowerShell session
+            $Text = "[INVALID PARAMETERS] If item_id is specified, item_type needs to be specified accordingly"
+            $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new([System.ArgumentException]::new($Text), 'GlpiTools.InvalidParameters', [System.Management.Automation.ErrorCategory]::InvalidArgument, $PSBoundParameters['Item_id']))
         }
         If ($PSBoundParameters['Type'] -ne 'Request' -and $PSBoundParameters['ApprovalRequired']) {
-            Write-Warning "[INVALID PARAMETERS] Approval required specified but type is not a request."
-            Exit
+            $Text = "[INVALID PARAMETERS] Approval required specified but type is not a request."
+            $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new([System.ArgumentException]::new($Text), 'GlpiTools.InvalidParameters', [System.Management.Automation.ErrorCategory]::InvalidArgument, $PSBoundParameters['Type']))
         }
 
 
@@ -258,6 +259,40 @@ function New-GlpiToolsTicket {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            # these options have no counterpart in the v3; they are refused before anything is created
+            if ($PSBoundParameters['Item_id'] -or $PSBoundParameters['Item_type']) {
+                Assert-GlpiToolsV3Supported -Name '-item_id/-item_type'
+            }
+            if ($DisableNotification) {
+                Assert-GlpiToolsV3Supported -Name '-DisableNotification'
+            }
+            # the values are translated here, not in the begin block, so that pipeline input by property name is honoured
+            $V3Body = @{ name = $name; content = $content; type = (ConvertTo-GlpiToolsV3EnumId -Kind Type -Value $Type) }
+            if ($PSBoundParameters['Urgency']) { $V3Body['urgency'] = ConvertTo-GlpiToolsV3EnumId -Kind Level -Value $urgency }
+            if ($PSBoundParameters['Impact']) { $V3Body['impact'] = ConvertTo-GlpiToolsV3EnumId -Kind Level -Value $impact }
+            if ($PSBoundParameters['Priority']) { $V3Body['priority'] = ConvertTo-GlpiToolsV3EnumId -Kind Level -Value $priority }
+            if ($PSBoundParameters['Type'] -eq 'Request' -and $PSBoundParameters['ApprovalRequired']) { $V3Body['global_validation'] = 2 }
+            if ($PSBoundParameters['itilcategories_id']) { $V3Body['category'] = @{ id = $itilcategories_id } }
+            if ($PSBoundParameters['requesttypes_id']) { $V3Body['request_type'] = @{ id = $requesttypes_id } }
+            $V3Ticket = Invoke-GlpiToolsRequest -Method Post -Resource '/Assistance/Ticket' -Body $V3Body
+            # a requester or technician becomes a member of the ticket team
+            # the ticket already exists at this point, so a failure here is reported with its id and the ticket is still returned
+            try {
+                if ($PSBoundParameters['requester_id']) {
+                    Add-GlpiToolsV3TeamMember -Resource "/Assistance/Ticket/$($V3Ticket.id)" -Role requester -UserId $requester_id
+                }
+                if ($PSBoundParameters['technician_id']) {
+                    Add-GlpiToolsV3TeamMember -Resource "/Assistance/Ticket/$($V3Ticket.id)" -Role assigned -UserId $technician_id
+                }
+            } catch {
+                Write-Error -Message "Ticket $($V3Ticket.id) was created, but its team could not be completed: $($_.Exception.Message)"
+            }
+            $V3Ticket
+            return
+        }
+
 
         $hashNewTicket = @{
             name                = $name
@@ -324,7 +359,7 @@ function New-GlpiToolsTicket {
 
         Try {
             Write-Verbose "Invoking API to create new ticket"
-            $GlpiTicket = Invoke-RestMethod @params -ErrorAction Stop
+            $GlpiTicket = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
             If ($GlpiTicket -match "</body>") {
                 $GLPITicket = $GlpiTicket.split(">")[-1] | ConvertFrom-JSON
@@ -355,7 +390,7 @@ function New-GlpiToolsTicket {
                     body    = ([System.Text.Encoding]::UTF8.GetBytes($Upload))
                 }
 
-                $GlpiTicketAddRequester = Invoke-RestMethod @params -ErrorAction Stop
+                $GlpiTicketAddRequester = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
                 Write-Verbose $GlpiTicketAddRequester
 
             }
@@ -387,7 +422,7 @@ function New-GlpiToolsTicket {
                         body    = ([System.Text.Encoding]::UTF8.GetBytes($Upload))
                     }
 
-                    $GlpiTicketAddItem = Invoke-RestMethod @params -ErrorAction Stop
+                    $GlpiTicketAddItem = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
                     Write-Verbose $GlpiTicketAddItem
 
                     If ($GlpiTicketAddItem -match "</body>") {

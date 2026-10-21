@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsComputerModels {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/ComputerModel'
+                ItemType         = 'ComputerModel'
+                SearchFor        = 'Computermodel'
+                Id               = $ComputerModelsId
+                Name             = $ComputerModelsName
+                AlwaysRaw        = $true
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsComputerModels {
                     uri     = "$($PathToGlpi)/ComputerModel/?range=0-9999999999999"
                 }
                 
-                $GlpiComputerModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiComputerModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiComputerModel in $GlpiComputerModelsAll) {
                     $ComputerModelHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsComputerModels {
                     }
 
                     Try {
-                        $GlpiComputerModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiComputerModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ComputerModelHash = [ordered]@{ }

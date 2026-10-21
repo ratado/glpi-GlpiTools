@@ -78,6 +78,20 @@ function Get-GlpiToolsDropdownsLocations {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/Location'
+                ItemType         = 'Location'
+                Id               = $LocationsId
+                Name             = $LocationsName
+                AlwaysRaw        = $true
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +104,7 @@ function Get-GlpiToolsDropdownsLocations {
                     uri     = "$($PathToGlpi)/Location/?range=0-9999999999999"
                 }
                 
-                $GlpiLocationsAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiLocationsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($LocationModel in $GlpiLocationsAll) {
                     $LocationHash = [ordered]@{ }
@@ -118,7 +132,7 @@ function Get-GlpiToolsDropdownsLocations {
                     }
 
                     Try {
-                        $LocationModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $LocationModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $LocationHash = [ordered]@{ }

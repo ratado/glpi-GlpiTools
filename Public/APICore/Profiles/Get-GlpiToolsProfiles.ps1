@@ -69,6 +69,27 @@ function Get-GlpiToolsProfiles {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            # the parameter set is read here because ids from the pipeline are not bound yet in the begin block
+            switch ($PSCmdlet.ParameterSetName) {
+                All { Invoke-GlpiToolsRequest -Method Get -Resource '/Administration/Profile' -All }
+                ProfileId {
+                    foreach ($PId in $ProfileId) {
+                        try {
+                            Invoke-GlpiToolsRequest -Method Get -Resource "/Administration/Profile/$PId"
+                        } catch {
+                            # only a missing profile is skipped; other failures are reported
+                            if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
+                            Write-Verbose -Message "Profile ID = $PId is not found"
+                        }
+                    }
+                }
+                ProfileName { Search-GlpiToolsItems -SearchFor Profile -SearchType contains -SearchValue $ProfileName }
+            }
+            return
+        }
+
 
         switch ($ChoosenParam) {
             All { 
@@ -82,7 +103,7 @@ function Get-GlpiToolsProfiles {
                     uri     = "$($PathToGlpi)/Profile/?range=0-9999999999999"
                 }
                 
-                $GlpiProfileAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiProfileAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiProfile in $GlpiProfileAll) {
                     $ProfileHash = [ordered]@{ }
@@ -110,7 +131,7 @@ function Get-GlpiToolsProfiles {
                     }
 
                     Try {
-                        $GlpiProfile = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiProfile = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ProfileHash = [ordered]@{ }

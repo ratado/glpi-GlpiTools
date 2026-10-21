@@ -65,6 +65,12 @@ function Add-GlpiToolsTicketSolution {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Invoke-GlpiToolsRequest -Method Post -Resource "/Assistance/Ticket/$ticket_id/Timeline/Solution" -Body @{ content = $content; type = @{ id = $solutiontype_id } }
+            return
+        }
+
 
         $hashNewTicket = @{
             content           = $content
@@ -91,7 +97,7 @@ function Add-GlpiToolsTicketSolution {
 
         Try {
             Write-Verbose "Invoking API to add ticket followup"
-            $GlpiTicket = Invoke-RestMethod @params -ErrorAction Stop
+            $GlpiTicket = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
             If ($GlpiTicket -match "</body>") {
                 $GLPITicket = $GlpiTicket.split(">")[-1] | ConvertFrom-JSON

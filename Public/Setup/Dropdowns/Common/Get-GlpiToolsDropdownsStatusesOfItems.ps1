@@ -84,6 +84,20 @@ function Get-GlpiToolsDropdownsStatusesOfItems {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/State'
+                ItemType         = 'State'
+                Id               = $StatesId
+                Name             = $StatesName
+                AlwaysRaw        = $true
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All {
                 $params = @{
@@ -96,7 +110,7 @@ function Get-GlpiToolsDropdownsStatusesOfItems {
                     uri     = "$($PathToGlpi)/State/?range=0-9999999999999"
                 }
                 
-                $GlpiStatesAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiStatesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiStates in $GlpiStatesAll) {
                     $StatesHash = [ordered]@{ }
@@ -124,7 +138,7 @@ function Get-GlpiToolsDropdownsStatusesOfItems {
                     }
 
                     Try {
-                        $GlpiStates = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiStates = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $StatesHash = [ordered]@{ }

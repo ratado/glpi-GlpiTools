@@ -3,6 +3,7 @@
     Function which kill API session.
 .DESCRIPTION
     Function gets nesessery information from Config file, and Function Set-GlpiToolsInitSession, then kill session.
+    With API v3 the access token is only discarded from the module session.
 .PARAMETER SessionToken
     This parameter have to be passed from Set-GlpiToolsInitSession
 .EXAMPLE
@@ -28,6 +29,12 @@ function Set-GlpiToolsKillSession {
     
     begin {
 
+        # API v3 has no killSession: the token is only discarded locally
+        $IsApiV3 = (Get-GlpiToolsApiVersion) -eq 'v3'
+        if ($IsApiV3) {
+            return
+        }
+
         $AppToken = Get-GlpiToolsConfig | Select-Object -ExpandProperty AppToken
         $PathToGlpi = Get-GlpiToolsConfig | Select-Object -ExpandProperty PathToGlpi
 		if($null -eq $PSBoundParameters['SessionToken']) {
@@ -37,6 +44,10 @@ function Set-GlpiToolsKillSession {
     }
     
     process {
+        if ($IsApiV3) {
+            return
+        }
+
         $params = @{
             headers = @{
                 'Content-Type'  = 'application/json'
@@ -46,7 +57,7 @@ function Set-GlpiToolsKillSession {
             method  = 'get'
             uri     = "$($PathToGlpi)/killSession/" 
         }
-        Invoke-RestMethod @params | Out-Null
+        Invoke-GlpiToolsRequestApi -Params $params | Out-Null
     }
     
     end {

@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsNetworkNames {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsNetworkNames'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsNetworkNames {
                     uri     = "$($PathToGlpi)/networkname/?range=0-9999999999999"
                 }
                 
-                $NetworkNamesAll = Invoke-RestMethod @params -Verbose:$false
+                $NetworkNamesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($NetworkName in $NetworkNamesAll) {
                     $NetworkNameHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsNetworkNames {
                     }
 
                     Try {
-                        $NetworkName = Invoke-RestMethod @params -ErrorAction Stop
+                        $NetworkName = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $NetworkNameHash = [ordered]@{ }

@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsOSEditions {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsOSEditions'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsOSEditions {
                     uri     = "$($PathToGlpi)/operatingsystemedition/?range=0-9999999999999"
                 }
                 
-                $OSEditionsAll = Invoke-RestMethod @params -Verbose:$false
+                $OSEditionsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($OSEdition in $OSEditionsAll) {
                     $OSEditionHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsOSEditions {
                     }
 
                     Try {
-                        $OSEdition = Invoke-RestMethod @params -ErrorAction Stop
+                        $OSEdition = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $OSEditionHash = [ordered]@{ }

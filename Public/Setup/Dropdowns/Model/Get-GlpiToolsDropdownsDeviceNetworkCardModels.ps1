@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsDeviceNetworkCardModels {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsDeviceNetworkCardModels'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsDeviceNetworkCardModels {
                     uri     = "$($PathToGlpi)/DeviceNetworkCardModel/?range=0-9999999999999"
                 }
                 
-                $DeviceNetworkCardModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $DeviceNetworkCardModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DeviceNetworkCardModel in $DeviceNetworkCardModelsAll) {
                     $DeviceNetworkCardModelHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsDeviceNetworkCardModels {
                     }
 
                     Try {
-                        $DeviceNetworkCardModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $DeviceNetworkCardModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DeviceNetworkCardModelHash = [ordered]@{ }

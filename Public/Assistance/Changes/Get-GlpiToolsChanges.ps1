@@ -130,6 +130,23 @@ function Get-GlpiToolsChanges {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assistance/Change'
+                ItemType         = 'Change'
+                Id               = $ChangeId
+                Name             = $ChangeName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns', 'WithDocuments'
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -142,7 +159,7 @@ function Get-GlpiToolsChanges {
                     uri     = "$($PathToGlpi)/Change/?range=0-9999999999999"
                 }
                 
-                $GlpiChangeAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiChangeAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiChange in $GlpiChangeAll) {
                     $ChangeHash = [ordered]@{ }
@@ -170,7 +187,7 @@ function Get-GlpiToolsChanges {
                     }
 
                     Try {
-                        $GlpiChange = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiChange = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ChangeHash = [ordered]@{ }

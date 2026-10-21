@@ -100,10 +100,35 @@ function Search-GlpiToolsItems {
             $Trash = 0
         }
         
-        $ListSearchOptions = Get-GlpiToolsListSearchOptions -ListOptionsFor $SearchFor
+        # API v3 has no search options list, the properties are used directly
+        if ((Get-GlpiToolsApiVersion) -ne 'v3') {
+            $ListSearchOptions = Get-GlpiToolsListSearchOptions -ListOptionsFor $SearchFor
+        }
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            # the legacy numeric search options 1 and 2 are the name and the id; others must be given as property names
+            $V3Criteria = @()
+            for ($counter = 0; $counter -lt $SearchField.Count; $counter++) {
+                $V3Field = [string]$SearchField[$counter]
+                if ($V3Field -eq '1') { $V3Field = 'name' }
+                elseif ($V3Field -eq '2') { $V3Field = 'id' }
+                elseif ($V3Field -match '^\d+$') { throw "Search option $V3Field cannot be translated to the GLPI API v3, use the property name in -SearchField." }
+                $V3Link = if ($counter -gt 0) { [string]$SearchLink[$counter - 1] } else { 'AND' }
+                $V3Operator = [string]$SearchType[$counter]
+                if ($V3Link -like '*+NOT') {
+                    # a negated link becomes the opposite operator
+                    $V3Operator = switch ($V3Operator) { 'contains' { 'notcontains' } 'equals' { 'notequals' } 'notequals' { 'equals' } }
+                }
+                $V3Criteria += @{ Field = $V3Field; Operator = $V3Operator; Value = $SearchValue[$counter]; Link = ($V3Link -replace '\+NOT$', '') }
+            }
+            $V3Required = @{ Field = 'is_deleted'; Operator = 'equals'; Value = $(if ($SearchInTrash -eq 'Yes') { 1 } else { 0 }) }
+            Invoke-GlpiToolsRequest -Method Get -Resource (Get-GlpiToolsV3Route -ItemType $SearchFor) -Query @{ filter = (ConvertTo-GlpiToolsRsql -Criteria $V3Criteria -Required $V3Required -ItemType $SearchFor) } -All
+            return
+        }
+
         $SearchCounter = $SearchField.Count   
         for ($counter = 0; $counter -lt $SearchCounter; $counter++) {
             if ($counter -eq ($SearchCounter - 1)) {
@@ -123,7 +148,7 @@ function Search-GlpiToolsItems {
             uri     = "$($PathToGlpi)/search/$($SearchFor)?is_deleted=$($Trash)&as_map=0$SearchPath&search=Search&itemtype=$($SearchFor)&range=0-9999999999999"
         }
             
-        $SearchResult = Invoke-RestMethod @params
+        $SearchResult = Invoke-GlpiToolsRequestApi -Params $params
         
         try {
             $SearchResults = $SearchResult | Select-Object -ExpandProperty data -ErrorAction Stop

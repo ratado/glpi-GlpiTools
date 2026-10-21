@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsBussinessCriticities {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/BusinessCriticity'
+                ItemType         = 'BusinessCriticity'
+                SearchFor        = 'businesscriticity'
+                Id               = $BussinessCriticityId
+                Name             = $BussinessCriticityName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsBussinessCriticities {
                     uri     = "$($PathToGlpi)/businesscriticity/?range=0-9999999999999"
                 }
                 
-                $BussinessCriticitiesAll = Invoke-RestMethod @params -Verbose:$false
+                $BussinessCriticitiesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($BussinessCriticity in $BussinessCriticitiesAll) {
                     $BussinessCriticityHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsBussinessCriticities {
                     }
 
                     Try {
-                        $BussinessCriticity = Invoke-RestMethod @params -ErrorAction Stop
+                        $BussinessCriticity = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $BussinessCriticityHash = [ordered]@{ }

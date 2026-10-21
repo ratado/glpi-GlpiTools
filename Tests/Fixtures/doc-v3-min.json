@@ -1,0 +1,28 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/Assistance/Ticket": { "get": { "responses": { "200": { "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Ticket" } } } } } } } },
+    "/Tools/RSSFeed": { "get": { "responses": { "200": { "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/RSSFeed" } } } } } } } },
+    "/Tools/Reminder/{id}": { "get": { "responses": { "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Reminder" } } } } } } }
+  },
+  "components": {
+    "schemas": {
+      "Ticket": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "is_deleted": { "type": "boolean" },
+          "entity": { "type": "object", "x-itemtype": "Entity", "properties": { "id": { "type": "integer" }, "name": { "type": "string" } }, "x-full-schema": "Entity" },
+          "category": { "type": "object", "x-itemtype": "ITILCategory", "x-full-schema": "ITILCategory" }
+        }
+      },
+      "RSSFeed": {
+        "type": "object",
+        "properties": { "id": { "type": "integer" }, "url": { "type": "string" } }
+      },
+      "Entity": { "type": "object", "properties": { "id": { "type": "integer" }, "name": { "type": "string" }, "completename": { "type": "string" } } },
+      "ITILCategory": { "type": "object", "properties": { "id": { "type": "integer" }, "name": { "type": "string" } } }
+    }
+  }
+}

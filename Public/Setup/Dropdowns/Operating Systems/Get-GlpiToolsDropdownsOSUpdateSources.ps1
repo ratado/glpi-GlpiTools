@@ -73,6 +73,21 @@ function Get-GlpiToolsDropdownsOSUpdateSources {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/AutoUpdateSystem'
+                ItemType         = 'AutoUpdateSystem'
+                SearchFor        = 'Autoupdatesystem'
+                Id               = $UpdateSourcesId
+                Name             = $UpdateSourcesName
+                AlwaysRaw        = $true
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -85,7 +100,7 @@ function Get-GlpiToolsDropdownsOSUpdateSources {
                     uri     = "$($PathToGlpi)/autoupdatesystem/?range=0-9999999999999"
                 }
                 
-                $GlpiUpdateSourcesAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiUpdateSourcesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiUpdateSources in $GlpiUpdateSourcesAll) {
                     $UpdateSourcesHash = [ordered]@{ }
@@ -113,7 +128,7 @@ function Get-GlpiToolsDropdownsOSUpdateSources {
                     }
 
                     Try {
-                        $GlpiUpdateSources = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiUpdateSources = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         
                         $UpdateSourcesHash = [ordered]@{ }

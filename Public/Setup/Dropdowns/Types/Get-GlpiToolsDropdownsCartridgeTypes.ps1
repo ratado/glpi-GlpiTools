@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsCartridgeTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/CartridgeItemType'
+                ItemType         = 'CartridgeItemType'
+                SearchFor        = 'cartridgeitemtype'
+                Id               = $CartridgeTypeId
+                Name             = $CartridgeTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsCartridgeTypes {
                     uri     = "$($PathToGlpi)/cartridgeitemtype/?range=0-9999999999999"
                 }
                 
-                $CartridgeTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $CartridgeTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($CartridgeType in $CartridgeTypesAll) {
                     $CartridgeTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsCartridgeTypes {
                     }
 
                     Try {
-                        $CartridgeType = Invoke-RestMethod @params -ErrorAction Stop
+                        $CartridgeType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $CartridgeTypeHash = [ordered]@{ }

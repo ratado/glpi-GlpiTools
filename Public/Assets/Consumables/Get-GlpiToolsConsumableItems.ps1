@@ -138,6 +138,23 @@ function Get-GlpiToolsConsumableItems {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assets/Consumable'
+                ItemType         = 'ConsumableItem'
+                Id               = $ConsumableItemId
+                Name             = $ConsumableItemName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns'
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -150,7 +167,7 @@ function Get-GlpiToolsConsumableItems {
                     uri     = "$($PathToGlpi)/ConsumableItem/?range=0-9999999999999"
                 }
                 
-                $GlpiConsumableItemAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiConsumableItemAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiConsumableItem in $GlpiConsumableItemAll) {
                     $ConsumableItemHash = [ordered]@{ }
@@ -178,7 +195,7 @@ function Get-GlpiToolsConsumableItems {
                     }
 
                     Try {
-                        $GlpiConsumableItem = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiConsumableItem = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ConsumableItemHash = [ordered]@{ }

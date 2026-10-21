@@ -78,6 +78,21 @@ function Get-GlpiToolsSoftwareLicenses {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Management/License'
+                ItemType         = 'SoftwareLicense'
+                SearchFor        = 'softwarelicense'
+                Id               = $SoftwareLicenseId
+                Name             = $SoftwareLicenseName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsSoftwareLicenses {
                     uri     = "$($PathToGlpi)/softwarelicense/?range=0-9999999999999"
                 }
                 
-                $SoftwareLicensesAll = Invoke-RestMethod @params -Verbose:$false
+                $SoftwareLicensesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($SoftwareLicense in $SoftwareLicensesAll) {
                     $SoftwareLicenseHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsSoftwareLicenses {
                     }
 
                     Try {
-                        $SoftwareLicense = Invoke-RestMethod @params -ErrorAction Stop
+                        $SoftwareLicense = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $SoftwareLicenseHash = [ordered]@{ }

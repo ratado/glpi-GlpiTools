@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsSolutionTemplates {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/SolutionTemplate'
+                ItemType         = 'SolutionTemplate'
+                SearchFor        = 'solutiontemplate'
+                Id               = $SolutionTemplateId
+                Name             = $SolutionTemplateName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsSolutionTemplates {
                     uri     = "$($PathToGlpi)/solutiontemplate/?range=0-9999999999999"
                 }
                 
-                $SolutionTemplatesAll = Invoke-RestMethod @params -Verbose:$false
+                $SolutionTemplatesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($SolutionTemplate in $SolutionTemplatesAll) {
                     $SolutionTemplateHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsSolutionTemplates {
                     }
 
                     Try {
-                        $SolutionTemplate = Invoke-RestMethod @params -ErrorAction Stop
+                        $SolutionTemplate = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $SolutionTemplateHash = [ordered]@{ }

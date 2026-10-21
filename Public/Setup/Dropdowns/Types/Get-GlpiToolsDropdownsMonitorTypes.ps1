@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsMonitorTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/MonitorType'
+                ItemType         = 'MonitorType'
+                SearchFor        = 'monitortype'
+                Id               = $MonitorTypeId
+                Name             = $MonitorTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsMonitorTypes {
                     uri     = "$($PathToGlpi)/monitortype/?range=0-9999999999999"
                 }
                 
-                $MonitorTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $MonitorTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($MonitorType in $MonitorTypesAll) {
                     $MonitorTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsMonitorTypes {
                     }
 
                     Try {
-                        $MonitorType = Invoke-RestMethod @params -ErrorAction Stop
+                        $MonitorType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $MonitorTypeHash = [ordered]@{ }

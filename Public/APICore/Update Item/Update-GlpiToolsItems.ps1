@@ -84,6 +84,27 @@ function Update-GlpiToolsItems {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Route = Get-GlpiToolsV3Route -ItemType $UpdateTo
+            if ($ChoosenParam -contains 'JsonPayload') {
+                # the legacy payload carries the id inside each element of "input"
+                $V3Payload = ($JsonPayload -join '') | ConvertFrom-Json -AsHashtable
+                $V3Inputs = if ($V3Payload.ContainsKey('input')) { $V3Payload['input'] } else { $V3Payload }
+                foreach ($V3Input in @($V3Inputs)) {
+                    $V3Id = $V3Input['id']
+                    if ($V3Id -isnot [int] -and $V3Id -notmatch '^\d+$') {
+                        throw "Each element to update needs an integer id."
+                    }
+                    $V3Input.Remove('id')
+                    Invoke-GlpiToolsRequest -Method Patch -Resource "$V3Route/$V3Id" -Body (ConvertTo-GlpiToolsV3Input -ItemType $UpdateTo -InputObject $V3Input)
+                }
+            } else {
+                Invoke-GlpiToolsRequest -Method Patch -Resource "$V3Route/$ItemId" -Body (ConvertTo-GlpiToolsV3Input -ItemType $UpdateTo -InputObject $ItemsHashtableWithoutId)
+            }
+            return
+        }
+
         switch ($ChoosenParam) {
             JsonPayload {
                 $params = @{
@@ -96,7 +117,7 @@ function Update-GlpiToolsItems {
                     uri     = "$($PathToGlpi)/$($UpdateTo)/"
                     body    = ([System.Text.Encoding]::UTF8.GetBytes($JsonPayload))
                 }
-                Invoke-RestMethod @params
+                Invoke-GlpiToolsRequestApi -Params $params
             }
             ItemId {
                 $GlpiUpload = $ItemsHashtableWithoutId | ConvertTo-Json
@@ -113,7 +134,7 @@ function Update-GlpiToolsItems {
                     uri     = "$($PathToGlpi)/$($UpdateTo)/$($ItemId)"
                     body    = ([System.Text.Encoding]::UTF8.GetBytes($Upload))
                 }
-                Invoke-RestMethod @params
+                Invoke-GlpiToolsRequestApi -Params $params
             }
             Default { Write-Verbose "You didn't specified any parameter, choose from one available" }
         }

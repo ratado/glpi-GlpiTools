@@ -78,6 +78,20 @@ function Get-GlpiToolsContracts {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Management/Contract'
+                ItemType         = 'Contract'
+                Id               = $ContractId
+                Name             = $ContractName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +104,7 @@ function Get-GlpiToolsContracts {
                     uri     = "$($PathToGlpi)/Contract/?range=0-9999999999999"
                 }
                 
-                $ContractsAll = Invoke-RestMethod @params -Verbose:$false
+                $ContractsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Contract in $ContractsAll) {
                     $ContractHash = [ordered]@{ }
@@ -118,7 +132,7 @@ function Get-GlpiToolsContracts {
                     }
 
                     Try {
-                        $Contract = Invoke-RestMethod @params -ErrorAction Stop
+                        $Contract = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ContractHash = [ordered]@{ }

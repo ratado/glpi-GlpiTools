@@ -78,6 +78,23 @@ function Add-GlpiToolsItems {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Route = Get-GlpiToolsV3Route -ItemType $AddTo
+            # the legacy payload is {"input": {...}} or {"input": [{...}, ...]}; each element becomes one request
+            $V3Inputs = if ($ChoosenParam -contains 'JsonPayload') {
+                $V3Payload = ($JsonPayload -join '') | ConvertFrom-Json -AsHashtable
+                if ($V3Payload.ContainsKey('input')) { $V3Payload['input'] } else { $V3Payload }
+            } else {
+                $HashtableToAdd
+            }
+            foreach ($V3Input in @($V3Inputs)) {
+                # legacy field names (entities_id = 1) are converted to the v3 form (entity = @{ id = 1 })
+                Invoke-GlpiToolsRequest -Method Post -Resource $V3Route -Body (ConvertTo-GlpiToolsV3Input -ItemType $AddTo -InputObject $V3Input)
+            }
+            return
+        }
+
 
         switch ($ChoosenParam) {
             HashtableToAdd {
@@ -95,7 +112,7 @@ function Add-GlpiToolsItems {
                     uri     = "$($PathToGlpi)/$($AddTo)/"
                     body    = ([System.Text.Encoding]::UTF8.GetBytes($Upload))
                 }
-                Invoke-RestMethod @params
+                Invoke-GlpiToolsRequestApi -Params $params
             }
             JsonPayload {
                 $params = @{
@@ -108,7 +125,7 @@ function Add-GlpiToolsItems {
                     uri     = "$($PathToGlpi)/$($AddTo)/"
                     body    = ([System.Text.Encoding]::UTF8.GetBytes($JsonPayload))
                 }
-                Invoke-RestMethod @params
+                Invoke-GlpiToolsRequestApi -Params $params
             }
             Default { Write-Verbose "You didn't specified any parameter, choose from one available" }
         }

@@ -76,6 +76,11 @@ function Get-GlpiToolsAppsStructuresComponent {
     }
     
     process {
+        # API v3: plugins of third parties have no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsAppsStructuresComponent'
+        }
+
         switch ($ChoosenParam) {
             All {
                 $params = @{
@@ -87,7 +92,7 @@ function Get-GlpiToolsAppsStructuresComponent {
                     method  = 'get'
                     uri     = "$($PathToGlpi)/PluginArchiswSwcomponent/?range=0-999999999" 
                 }
-                $AllComponents = Invoke-RestMethod @params
+                $AllComponents = Invoke-GlpiToolsRequestApi -Params $params
  
                 foreach ($Component in $AllComponents) {
                     $Hash = [ordered]@{ }
@@ -115,7 +120,7 @@ function Get-GlpiToolsAppsStructuresComponent {
                     }
 
                     Try {
-                        $GlpiComponent = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiComponent = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ComponentHash = [ordered]@{ }

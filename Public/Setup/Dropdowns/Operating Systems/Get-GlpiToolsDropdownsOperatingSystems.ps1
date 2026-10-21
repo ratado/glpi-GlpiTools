@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsOperatingSystems {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsOperatingSystems'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsOperatingSystems {
                     uri     = "$($PathToGlpi)/OperatingSystem/?range=0-9999999999999"
                 }
                 
-                $OperatingSystemsAll = Invoke-RestMethod @params -Verbose:$false
+                $OperatingSystemsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($OperatingSystem in $OperatingSystemsAll) {
                     $OperatingSystemHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsOperatingSystems {
                     }
 
                     Try {
-                        $OperatingSystem = Invoke-RestMethod @params -ErrorAction Stop
+                        $OperatingSystem = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $OperatingSystemHash = [ordered]@{ }

@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsOSKernelVersions {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsOSKernelVersions'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsOSKernelVersions {
                     uri     = "$($PathToGlpi)/Operatingsystemkernelversion/?range=0-9999999999999"
                 }
                 
-                $OSKernelVersionsAll = Invoke-RestMethod @params -Verbose:$false
+                $OSKernelVersionsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($OSKernelVersion in $OSKernelVersionsAll) {
                     $OSKernelVersionHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsOSKernelVersions {
                     }
 
                     Try {
-                        $OSKernelVersion = Invoke-RestMethod @params -ErrorAction Stop
+                        $OSKernelVersion = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $OSKernelVersionHash = [ordered]@{ }

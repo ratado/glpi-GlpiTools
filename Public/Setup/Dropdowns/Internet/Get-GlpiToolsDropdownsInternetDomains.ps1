@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsInternetDomains {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsInternetDomains'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsInternetDomains {
                     uri     = "$($PathToGlpi)/fqdn/?range=0-9999999999999"
                 }
                 
-                $InternetDomainsAll = Invoke-RestMethod @params -Verbose:$false
+                $InternetDomainsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($InternetDomain in $InternetDomainsAll) {
                     $InternetDomainHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsInternetDomains {
                     }
 
                     Try {
-                        $InternetDomain = Invoke-RestMethod @params -ErrorAction Stop
+                        $InternetDomain = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $InternetDomainHash = [ordered]@{ }

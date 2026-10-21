@@ -130,6 +130,23 @@ function Get-GlpiToolsMonitors {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assets/Monitor'
+                ItemType         = 'Monitor'
+                Id               = $MonitorId
+                Name             = $MonitorName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns'
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -142,7 +159,7 @@ function Get-GlpiToolsMonitors {
                     uri     = "$($PathToGlpi)/Monitor/?range=0-9999999999999"
                 }
                 
-                $GlpiMonitorAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiMonitorAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiMonitor in $GlpiMonitorAll) {
                     $MonitorHash = [ordered]@{ }
@@ -170,7 +187,7 @@ function Get-GlpiToolsMonitors {
                     }
 
                     Try {
-                        $GlpiMonitor = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiMonitor = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $MonitorHash = [ordered]@{ }

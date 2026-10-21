@@ -130,6 +130,25 @@ function Get-GlpiToolsRecurrentTickets {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assistance/RecurringTicket'
+                ItemType         = 'RecurringTicket'
+                SearchFor        = 'ticketrecurrent'
+                Id               = $RecurrentTicketId
+                Name             = $RecurrentTicketName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                RequiredCriteria = @()  # this type has no trash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns'
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -142,7 +161,7 @@ function Get-GlpiToolsRecurrentTickets {
                     uri     = "$($PathToGlpi)/ticketrecurrent/?range=0-9999999999999"
                 }
                 
-                $GlpiRecurrentTicketAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiRecurrentTicketAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiRecurrentTicket in $GlpiRecurrentTicketAll) {
                     $RecurrentTicketHash = [ordered]@{ }
@@ -170,7 +189,7 @@ function Get-GlpiToolsRecurrentTickets {
                     }
 
                     Try {
-                        $GlpiRecurrentTicket = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiRecurrentTicket = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $RecurrentTicketHash = [ordered]@{ }

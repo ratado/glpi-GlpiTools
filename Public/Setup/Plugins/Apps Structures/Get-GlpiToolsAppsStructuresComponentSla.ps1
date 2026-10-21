@@ -71,6 +71,11 @@ function Get-GlpiToolsAppsStructuresComponentSla {
     }
     
     process {
+        # API v3: plugins of third parties have no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsAppsStructuresComponentSla'
+        }
+
         switch ($ChoosenParam) {
             All {
                 $params = @{
@@ -83,7 +88,7 @@ function Get-GlpiToolsAppsStructuresComponentSla {
                     uri     = "$($PathToGlpi)/PluginArchiswSwcomponentSla/?range=0-9999999999999"
                 }
                 
-                $GlpiComponentSlaAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiComponentSlaAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
         
                 foreach ($GlpiComponentSla in $GlpiComponentSlaAll) {
                     $ComponentSlaHash = [ordered]@{ }
@@ -111,7 +116,7 @@ function Get-GlpiToolsAppsStructuresComponentSla {
                     }
                     
                     try {
-                        $GlpiComponentSlaAll = Invoke-RestMethod @params -Verbose:$false
+                        $GlpiComponentSlaAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
             
                         foreach ($GlpiComponentSla in $GlpiComponentSlaAll) {
                             $ComponentSlaHash = [ordered]@{ }

@@ -1,0 +1,27 @@
+{
+    "id": 4,
+    "name": "IBGE",
+    "completename": "IBGE",
+    "code": null,
+    "alias": null,
+    "comment": "Funda\u00e7\u00e3o Instituto Brasileiro de Geografia e Estat\u00edstica - Decreto 11.177\/2022 (Estatuto) e RCD 12\/2026",
+    "is_recursive": true,
+    "level": 1,
+    "room": "",
+    "building": "Centro",
+    "address": "Avenida Franklin Roosevelt, 166",
+    "town": "Rio de Janeiro",
+    "postcode": "20021-120",
+    "state": "RJ",
+    "country": null,
+    "latitude": "-22.909494444444",
+    "longitude": "-43.170075",
+    "altitude": null,
+    "date_creation": "2026-10-05T15:30:28-03:00",
+    "date_mod": "2026-10-05T15:30:28-03:00",
+    "entity": {
+        "id": 0,
+        "name": "Entidade raiz"
+    },
+    "parent": null
+}

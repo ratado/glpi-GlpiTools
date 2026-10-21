@@ -98,6 +98,40 @@ function Get-GlpiToolsItems{
     }
 
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            if ($ExtraParameter) {
+                Assert-GlpiToolsV3Supported -Name '-ExtraParameter'
+            }
+            # -SearchText matches the text inside each field, like the legacy searchText
+            $Criteria = @()
+            foreach ($key in $SearchText.Keys) {
+                # the legacy text is a regular expression: the anchors ^ and $ select equals, starts with or ends with
+                $V3Text = [string]$SearchText[$key]
+                $V3Operator = 'contains'
+                if ($V3Text -match '^\^(.*)\$$') { $V3Operator = 'equals'; $V3Text = $Matches[1] }
+                elseif ($V3Text -match '^\^(.*)$') { $V3Operator = 'startswith'; $V3Text = $Matches[1] }
+                elseif ($V3Text -match '^(.*)\$$') { $V3Operator = 'endswith'; $V3Text = $Matches[1] }
+                $Criteria += @{ Field = (ConvertTo-GlpiToolsV3FieldName -ItemType $ItemType -Name $key); Operator = $V3Operator; Value = $V3Text }
+            }
+            # the legacy API lists items outside the trash unless -SearchInTrash is used
+            $V3Required = @{ Field = 'is_deleted'; Operator = 'equals'; Value = $(if ($SearchInTrash) { 1 } else { 0 }) }
+            $V3Items = Invoke-GlpiToolsRequest -Method Get -Resource (Get-GlpiToolsV3Route -ItemType $ItemType) -Query @{ filter = (ConvertTo-GlpiToolsRsql -Criteria $Criteria -Required $V3Required -ItemType $ItemType) } -All
+            if ($OnlyId) {
+                $V3Items | Select-Object -Property id
+                return
+            }
+            # like the legacy command, several results are returned raw; a type without a map keeps the v3 format
+            if (Get-GlpiToolsV3FieldMap -ItemType $ItemType) {
+                if (-not $Raw -and (@($V3Items).Count -gt 1) -and (Get-GlpiToolsOutputFormat) -eq 'Legacy') { Write-Warning "RAW forced because more than 1 result" }
+                $V3Items | ConvertFrom-GlpiToolsV3Item -ItemType $ItemType -Raw:($Raw -or (@($V3Items).Count -gt 1))
+            } else {
+                Write-Verbose -Message "There is no field map for '$ItemType'; the v3 format is returned."
+                $V3Items
+            }
+            return
+        }
+
 
         $SearchTextString = ""
         foreach ($key in $SearchText.Keys) {
@@ -114,7 +148,7 @@ function Get-GlpiToolsItems{
             uri     = "$($PathToGlpi)/$($ItemType)/?range=0-9999999999999$($SearchTextString)$($IsDeletedString)$($OnlyIdString)$($ExtraParameter)"
         }
 
-        $GlpiObjectAll = Invoke-RestMethod @params -Verbose:$false
+        $GlpiObjectAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
         if (-not $Raw -and (@($GlpiObjectAll).count -gt 1)) {Write-Warning "RAW forced because more than 1 result"}
 
         foreach ($GlpiObject in $GlpiObjectAll) {

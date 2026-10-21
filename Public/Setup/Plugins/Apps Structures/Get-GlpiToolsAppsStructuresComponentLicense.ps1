@@ -71,6 +71,11 @@ function Get-GlpiToolsAppsStructuresComponentLicense {
     }
     
     process {
+        # API v3: plugins of third parties have no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsAppsStructuresComponentLicense'
+        }
+
         switch ($ChoosenParam) {
             All {
                 $params = @{
@@ -83,7 +88,7 @@ function Get-GlpiToolsAppsStructuresComponentLicense {
                     uri     = "$($PathToGlpi)/PluginArchiswSwcomponentLicense/?range=0-9999999999999"
                 }
                 
-                $GlpiComponentLicenseAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiComponentLicenseAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
         
                 foreach ($GlpiComponentLicense in $GlpiComponentLicenseAll) {
                     $ComponentLicenseHash = [ordered]@{ }
@@ -111,7 +116,7 @@ function Get-GlpiToolsAppsStructuresComponentLicense {
                     }
                     
                     try {
-                        $GlpiComponentLicenseAll = Invoke-RestMethod @params -Verbose:$false
+                        $GlpiComponentLicenseAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
             
                         foreach ($GlpiComponentLicense in $GlpiComponentLicenseAll) {
                             $ComponentLicenseHash = [ordered]@{ }

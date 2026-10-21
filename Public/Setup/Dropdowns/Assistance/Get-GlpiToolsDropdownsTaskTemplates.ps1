@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsTaskTemplates {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/TaskTemplate'
+                ItemType         = 'TaskTemplate'
+                SearchFor        = 'tasktemplate'
+                Id               = $TaskTemplateId
+                Name             = $TaskTemplateName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsTaskTemplates {
                     uri     = "$($PathToGlpi)/tasktemplate/?range=0-9999999999999"
                 }
                 
-                $TaskTemplateAll = Invoke-RestMethod @params -Verbose:$false
+                $TaskTemplateAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($TaskTemplate in $TaskTemplateAll) {
                     $TaskTemplateHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsTaskTemplates {
                     }
 
                     Try {
-                        $TaskTemplate = Invoke-RestMethod @params -ErrorAction Stop
+                        $TaskTemplate = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $TaskTemplateHash = [ordered]@{ }

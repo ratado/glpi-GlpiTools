@@ -78,6 +78,11 @@ function Get-GlpiToolsDropdownsDeviceCaseModels {
     }
     
     process {
+        # API v3: this dropdown has no route
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Get-GlpiToolsDropdownsDeviceCaseModels'
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +95,7 @@ function Get-GlpiToolsDropdownsDeviceCaseModels {
                     uri     = "$($PathToGlpi)/devicecasemodel/?range=0-9999999999999"
                 }
                 
-                $DeviceCaseModelsAll = Invoke-RestMethod @params -Verbose:$false
+                $DeviceCaseModelsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DeviceCaseModel in $DeviceCaseModelsAll) {
                     $DeviceCaseModelHash = [ordered]@{ }
@@ -118,7 +123,7 @@ function Get-GlpiToolsDropdownsDeviceCaseModels {
                     }
 
                     Try {
-                        $DeviceCaseModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $DeviceCaseModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DeviceCaseModelHash = [ordered]@{ }

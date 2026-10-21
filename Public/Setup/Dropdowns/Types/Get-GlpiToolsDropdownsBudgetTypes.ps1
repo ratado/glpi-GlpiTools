@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsBudgetTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/BudgetType'
+                ItemType         = 'BudgetType'
+                SearchFor        = 'Budgettype'
+                Id               = $BudgetTypeId
+                Name             = $BudgetTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsBudgetTypes {
                     uri     = "$($PathToGlpi)/Budgettype/?range=0-9999999999999"
                 }
                 
-                $BudgetTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $BudgetTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($BudgetType in $BudgetTypesAll) {
                     $BudgetTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsBudgetTypes {
                     }
 
                     Try {
-                        $BudgetType = Invoke-RestMethod @params -ErrorAction Stop
+                        $BudgetType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $BudgetTypeHash = [ordered]@{ }

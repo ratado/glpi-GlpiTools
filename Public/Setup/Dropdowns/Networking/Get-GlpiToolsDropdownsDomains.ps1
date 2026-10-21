@@ -78,6 +78,20 @@ function Get-GlpiToolsDropdownsDomains {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Management/Domain'
+                ItemType         = 'Domain'
+                Id               = $DomainId
+                Name             = $DomainName
+                AlwaysRaw        = $true
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +104,7 @@ function Get-GlpiToolsDropdownsDomains {
                     uri     = "$($PathToGlpi)/Domain/?range=0-9999999999999"
                 }
                 
-                $GlpiDomainAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiDomainAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DomainModel in $GlpiDomainAll) {
                     $DomainHash = [ordered]@{ }
@@ -118,7 +132,7 @@ function Get-GlpiToolsDropdownsDomains {
                     }
 
                     Try {
-                        $DomainModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $DomainModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DomainHash = [ordered]@{ }

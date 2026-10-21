@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsWifiNetworks {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/WifiNetwork'
+                ItemType         = 'WifiNetwork'
+                SearchFor        = 'wifinetwork'
+                Id               = $WifiNetworkId
+                Name             = $WifiNetworkName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsWifiNetworks {
                     uri     = "$($PathToGlpi)/wifinetwork/?range=0-9999999999999"
                 }
                 
-                $WifiNetworksAll = Invoke-RestMethod @params -Verbose:$false
+                $WifiNetworksAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($WifiNetwork in $WifiNetworksAll) {
                     $WifiNetworkHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsWifiNetworks {
                     }
 
                     Try {
-                        $WifiNetwork = Invoke-RestMethod @params -ErrorAction Stop
+                        $WifiNetwork = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $WifiNetworkHash = [ordered]@{ }

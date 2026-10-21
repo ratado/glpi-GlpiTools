@@ -130,6 +130,23 @@ function Get-GlpiToolsProblems {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assistance/Problem'
+                ItemType         = 'Problem'
+                Id               = $ProblemId
+                Name             = $ProblemName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns', 'WithDocuments'
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -142,7 +159,7 @@ function Get-GlpiToolsProblems {
                     uri     = "$($PathToGlpi)/Problem/?range=0-9999999999999"
                 }
                 
-                $GlpiProblemAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiProblemAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiProblem in $GlpiProblemAll) {
                     $ProblemHash = [ordered]@{ }
@@ -170,7 +187,7 @@ function Get-GlpiToolsProblems {
                     }
 
                     Try {
-                        $GlpiProblem = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiProblem = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ProblemHash = [ordered]@{ }

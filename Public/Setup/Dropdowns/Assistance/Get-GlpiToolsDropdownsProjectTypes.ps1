@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsProjectTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/ProjectType'
+                ItemType         = 'ProjectType'
+                SearchFor        = 'projecttype'
+                Id               = $ProjectTypeId
+                Name             = $ProjectTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsProjectTypes {
                     uri     = "$($PathToGlpi)/projecttype/?range=0-9999999999999"
                 }
                 
-                $ProjectTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $ProjectTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($ProjectType in $ProjectTypesAll) {
                     $ProjectTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsProjectTypes {
                     }
 
                     Try {
-                        $ProjectType = Invoke-RestMethod @params -ErrorAction Stop
+                        $ProjectType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ProjectTypeHash = [ordered]@{ }

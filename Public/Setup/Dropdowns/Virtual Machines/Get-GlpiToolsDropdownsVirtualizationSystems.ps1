@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsVirtualizationSystems {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/VirtualMachineType'
+                ItemType         = 'VirtualMachineType'
+                SearchFor        = 'virtualmachinetype'
+                Id               = $VirtualizationSystemId
+                Name             = $VirtualizationSystemName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsVirtualizationSystems {
                     uri     = "$($PathToGlpi)/virtualmachinetype/?range=0-9999999999999"
                 }
                 
-                $VirtualizationSystemsAll = Invoke-RestMethod @params -Verbose:$false
+                $VirtualizationSystemsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($VirtualizationSystem in $VirtualizationSystemsAll) {
                     $VirtualizationSystemHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsVirtualizationSystems {
                     }
 
                     Try {
-                        $VirtualizationSystem = Invoke-RestMethod @params -ErrorAction Stop
+                        $VirtualizationSystem = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $VirtualizationSystemHash = [ordered]@{ }

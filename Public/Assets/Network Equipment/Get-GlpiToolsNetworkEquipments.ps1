@@ -134,6 +134,23 @@ function Get-GlpiToolsNetworkEquipments {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assets/NetworkEquipment'
+                ItemType         = 'NetworkEquipment'
+                Id               = $NetworkEquipmentId
+                Name             = $NetworkEquipmentName
+                Raw              = $Raw
+                SearchInTrash    = $SearchInTrash
+                Parameter        = $Parameter
+                SupportedParameter = 'ExpandDropdowns'
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -146,7 +163,7 @@ function Get-GlpiToolsNetworkEquipments {
                     uri     = "$($PathToGlpi)/NetworkEquipment/?range=0-9999999999999"
                 }
                 
-                $GlpiNetworkEquipmentAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiNetworkEquipmentAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($GlpiNetworkEquipment in $GlpiNetworkEquipmentAll) {
                     $NetworkEquipmentHash = [ordered]@{ }
@@ -174,7 +191,7 @@ function Get-GlpiToolsNetworkEquipments {
                     }
 
                     Try {
-                        $GlpiNetworkEquipment = Invoke-RestMethod @params -ErrorAction Stop
+                        $GlpiNetworkEquipment = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $NetworkEquipmentHash = [ordered]@{ }

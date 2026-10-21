@@ -78,6 +78,20 @@ function Get-GlpiToolsCertificates {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Assets/Certificate'
+                ItemType         = 'Certificate'
+                Id               = $CertificateId
+                Name             = $CertificateName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +104,7 @@ function Get-GlpiToolsCertificates {
                     uri     = "$($PathToGlpi)/Certificate/?range=0-9999999999999"
                 }
                 
-                $CertificatesAll = Invoke-RestMethod @params -Verbose:$false
+                $CertificatesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Certificate in $CertificatesAll) {
                     $CertificateHash = [ordered]@{ }
@@ -118,7 +132,7 @@ function Get-GlpiToolsCertificates {
                     }
 
                     Try {
-                        $Certificate = Invoke-RestMethod @params -ErrorAction Stop
+                        $Certificate = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $CertificateHash = [ordered]@{ }

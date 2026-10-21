@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsFileSystemsTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/Filesystem'
+                ItemType         = 'Filesystem'
+                SearchFor        = 'filesystem'
+                Id               = $FileSystemTypeId
+                Name             = $FileSystemTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsFileSystemsTypes {
                     uri     = "$($PathToGlpi)/filesystem/?range=0-9999999999999"
                 }
                 
-                $FileSystemsTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $FileSystemsTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($FileSystemType in $FileSystemsTypesAll) {
                     $FileSystemTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsFileSystemsTypes {
                     }
 
                     Try {
-                        $FileSystemType = Invoke-RestMethod @params -ErrorAction Stop
+                        $FileSystemType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $FileSystemTypeHash = [ordered]@{ }

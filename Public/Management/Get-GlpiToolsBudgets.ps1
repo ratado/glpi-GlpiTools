@@ -78,6 +78,21 @@ function Get-GlpiToolsBudgets {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Management/Budget'
+                ItemType         = 'Budget'
+                SearchFor        = 'budget'
+                Id               = $BudgetId
+                Name             = $BudgetName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsBudgets {
                     uri     = "$($PathToGlpi)/budget/?range=0-9999999999999"
                 }
                 
-                $BudgetsAll = Invoke-RestMethod @params -Verbose:$false
+                $BudgetsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Budget in $BudgetsAll) {
                     $BudgetHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsBudgets {
                     }
 
                     Try {
-                        $Budget = Invoke-RestMethod @params -ErrorAction Stop
+                        $Budget = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $BudgetHash = [ordered]@{ }

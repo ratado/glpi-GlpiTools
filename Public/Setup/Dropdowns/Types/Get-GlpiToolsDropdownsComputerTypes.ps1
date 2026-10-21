@@ -78,6 +78,20 @@ function Get-GlpiToolsDropdownsComputerTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/ComputerType'
+                ItemType         = 'ComputerType'
+                Id               = $ComputerTypeId
+                Name             = $ComputerTypeName
+                AlwaysRaw        = $true
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +104,7 @@ function Get-GlpiToolsDropdownsComputerTypes {
                     uri     = "$($PathToGlpi)/ComputerType/?range=0-9999999999999"
                 }
                 
-                $GlpiComputerTypeAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiComputerTypeAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($ComputerTypeModel in $GlpiComputerTypeAll) {
                     $ComputerTypeHash = [ordered]@{ }
@@ -118,7 +132,7 @@ function Get-GlpiToolsDropdownsComputerTypes {
                     }
 
                     Try {
-                        $ComputerTypeModel = Invoke-RestMethod @params -ErrorAction Stop
+                        $ComputerTypeModel = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ComputerTypeHash = [ordered]@{ }

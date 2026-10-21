@@ -93,6 +93,20 @@ function Update-GlpiToolsTicketTask {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Body = @{}
+            if ($PSBoundParameters.ContainsKey('content')) { $V3Body['content'] = $content }
+            if ($PSBoundParameters['Status']) { $V3Body['state'] = ConvertTo-GlpiToolsV3EnumId -Kind TaskState -Value $Status }
+            if ($PSBoundParameters.ContainsKey('duration')) { $V3Body['duration'] = $duration }
+            if ($V3Body.Count -eq 0) {
+                Write-Warning 'Nothing to update: give -content, -Status or -duration.'
+                return
+            }
+            Invoke-GlpiToolsRequest -Method Patch -Resource "/Assistance/Ticket/$ticket_id/Timeline/Task/$task_id" -Body $V3Body
+            return
+        }
+
 
         $hashUpdateTask = @{
             id         = $task_id
@@ -132,7 +146,7 @@ function Update-GlpiToolsTicketTask {
 
         Try {
             Write-Verbose "Invoking API to add ticket task"
-            $GlpiTicket = Invoke-RestMethod @params -ErrorAction Stop
+            $GlpiTicket = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
             If ($GlpiTicket -match "</body>") {
                 $GLPITicket = $GlpiTicket.split(">")[-1] | ConvertFrom-JSON

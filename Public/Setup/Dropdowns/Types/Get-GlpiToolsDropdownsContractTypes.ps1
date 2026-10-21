@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsContractTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/ContractType'
+                ItemType         = 'ContractType'
+                SearchFor        = 'contracttype'
+                Id               = $ContractTypeId
+                Name             = $ContractTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsContractTypes {
                     uri     = "$($PathToGlpi)/contracttype/?range=0-9999999999999"
                 }
                 
-                $ContractTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $ContractTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($ContractType in $ContractTypesAll) {
                     $ContractTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsContractTypes {
                     }
 
                     Try {
-                        $ContractType = Invoke-RestMethod @params -ErrorAction Stop
+                        $ContractType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ContractTypeHash = [ordered]@{ }

@@ -78,6 +78,20 @@ function Get-GlpiToolsDataCenters {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Management/DataCenter'
+                ItemType         = 'DataCenter'
+                Id               = $DataCenterId
+                Name             = $DataCenterName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +104,7 @@ function Get-GlpiToolsDataCenters {
                     uri     = "$($PathToGlpi)/DataCenter/?range=0-9999999999999"
                 }
                 
-                $DataCentersAll = Invoke-RestMethod @params -Verbose:$false
+                $DataCentersAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DataCenter in $DataCentersAll) {
                     $DataCenterHash = [ordered]@{ }
@@ -118,7 +132,7 @@ function Get-GlpiToolsDataCenters {
                     }
 
                     Try {
-                        $DataCenter = Invoke-RestMethod @params -ErrorAction Stop
+                        $DataCenter = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DataCenterHash = [ordered]@{ }

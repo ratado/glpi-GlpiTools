@@ -78,6 +78,20 @@ function Get-GlpiToolsContacts {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Management/Contact'
+                ItemType         = 'Contact'
+                Id               = $ContactId
+                Name             = $ContactName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +104,7 @@ function Get-GlpiToolsContacts {
                     uri     = "$($PathToGlpi)/Contact/?range=0-9999999999999"
                 }
                 
-                $ContactsAll = Invoke-RestMethod @params -Verbose:$false
+                $ContactsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Contact in $ContactsAll) {
                     $ContactHash = [ordered]@{ }
@@ -118,7 +132,7 @@ function Get-GlpiToolsContacts {
                     }
 
                     Try {
-                        $Contact = Invoke-RestMethod @params -ErrorAction Stop
+                        $Contact = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ContactHash = [ordered]@{ }

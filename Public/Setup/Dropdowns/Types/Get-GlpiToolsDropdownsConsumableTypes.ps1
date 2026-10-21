@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsConsumableTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/ConsumableItemType'
+                ItemType         = 'ConsumableItemType'
+                SearchFor        = 'consumableitemtype'
+                Id               = $ConsumableTypeId
+                Name             = $ConsumableTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsConsumableTypes {
                     uri     = "$($PathToGlpi)/consumableitemtype/?range=0-9999999999999"
                 }
                 
-                $ConsumableTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $ConsumableTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($ConsumableType in $ConsumableTypesAll) {
                     $ConsumableTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsConsumableTypes {
                     }
 
                     Try {
-                        $ConsumableType = Invoke-RestMethod @params -ErrorAction Stop
+                        $ConsumableType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $ConsumableTypeHash = [ordered]@{ }

@@ -78,6 +78,20 @@ function Get-GlpiToolsLines {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Management/Line'
+                ItemType         = 'Line'
+                Id               = $LineId
+                Name             = $LineName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +104,7 @@ function Get-GlpiToolsLines {
                     uri     = "$($PathToGlpi)/Line/?range=0-9999999999999"
                 }
                 
-                $LinesAll = Invoke-RestMethod @params -Verbose:$false
+                $LinesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Line in $LinesAll) {
                     $LineHash = [ordered]@{ }
@@ -118,7 +132,7 @@ function Get-GlpiToolsLines {
                     }
 
                     Try {
-                        $Line = Invoke-RestMethod @params -ErrorAction Stop
+                        $Line = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $LineHash = [ordered]@{ }

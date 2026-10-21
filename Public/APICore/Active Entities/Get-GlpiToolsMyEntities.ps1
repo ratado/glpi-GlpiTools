@@ -37,6 +37,28 @@ function Get-GlpiToolsMyEntities {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            if ($IsRecursive) {
+                # every entity of the tree the user can see
+                $V3Flatten = {
+                    param($Nodes)
+                    foreach ($Node in $Nodes) {
+                        [pscustomobject][ordered]@{ 'id' = $Node.key; 'name' = $Node.label }
+                        & $V3Flatten $Node.children
+                    }
+                }
+                & $V3Flatten (Invoke-GlpiToolsRequest -Method Get -Resource '/Session/EntityTree' -NoContext)
+            } else {
+                # only the entities directly assigned to the profiles of the user
+                $V3Session = Invoke-GlpiToolsRequest -Method Get -Resource '/session' -NoContext
+                $V3Session.profiles.PSObject.Properties.Value.entities | Sort-Object -Property id -Unique | ForEach-Object {
+                    [pscustomobject][ordered]@{ 'id' = $_.id; 'name' = $_.name }
+                }
+            }
+            return
+        }
+
 		
 		if ($IsRecursive) {
             $IsRecursiveState = "true"
@@ -61,7 +83,7 @@ function Get-GlpiToolsMyEntities {
 			body	= $GetActiveEntities
         }
   
-        $MyEntities = Invoke-RestMethod @params
+        $MyEntities = Invoke-GlpiToolsRequestApi -Params $params
 
         foreach ($GlpiEntities in $MyEntities.myentities) {
             $EntitiesHash = [ordered]@{ }

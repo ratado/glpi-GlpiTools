@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsDocumentTypes {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/DocumentType'
+                ItemType         = 'DocumentType'
+                SearchFor        = 'documenttype'
+                Id               = $DocumentTypeId
+                Name             = $DocumentTypeName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsDocumentTypes {
                     uri     = "$($PathToGlpi)/documenttype/?range=0-9999999999999"
                 }
                 
-                $DocumentTypesAll = Invoke-RestMethod @params -Verbose:$false
+                $DocumentTypesAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($DocumentType in $DocumentTypesAll) {
                     $DocumentTypeHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsDocumentTypes {
                     }
 
                     Try {
-                        $DocumentType = Invoke-RestMethod @params -ErrorAction Stop
+                        $DocumentType = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $DocumentTypeHash = [ordered]@{ }

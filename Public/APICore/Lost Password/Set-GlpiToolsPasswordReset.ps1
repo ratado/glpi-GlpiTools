@@ -41,6 +41,12 @@ function Set-GlpiToolsPasswordReset {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            Assert-GlpiToolsV3Supported -Name 'Set-GlpiToolsPasswordReset'
+            return
+        }
+
         $PutPasswordReset = @{
             email = $Email
             password = $Password
@@ -58,7 +64,7 @@ function Set-GlpiToolsPasswordReset {
             body    = ([System.Text.Encoding]::UTF8.GetBytes($PasswordReset))
         }
         
-        Invoke-RestMethod @params 
+        Invoke-GlpiToolsRequestApi -Params $params 
         
     }
     

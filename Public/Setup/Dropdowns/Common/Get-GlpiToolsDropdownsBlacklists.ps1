@@ -78,6 +78,21 @@ function Get-GlpiToolsDropdownsBlacklists {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Dropdowns/DenyList'
+                ItemType         = 'DenyList'
+                SearchFor        = 'Blacklist'
+                Id               = $BlacklistsId
+                Name             = $BlacklistsName
+                Raw              = $Raw
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{
@@ -90,7 +105,7 @@ function Get-GlpiToolsDropdownsBlacklists {
                     uri     = "$($PathToGlpi)/Blacklist/?range=0-9999999999999"
                 }
                 
-                $GlpiBlacklistsAll = Invoke-RestMethod @params -Verbose:$false
+                $GlpiBlacklistsAll = Invoke-GlpiToolsRequestApi -Params $params -Verbose:$false
 
                 foreach ($Blacklists in $GlpiBlacklistsAll) {
                     $BlacklistsHash = [ordered]@{ }
@@ -118,7 +133,7 @@ function Get-GlpiToolsDropdownsBlacklists {
                     }
 
                     Try {
-                        $Blacklists = Invoke-RestMethod @params -ErrorAction Stop
+                        $Blacklists = Invoke-GlpiToolsRequestApi -Params $params -ErrorAction Stop
 
                         if ($Raw) {
                             $BlacklistsHash = [ordered]@{ }
