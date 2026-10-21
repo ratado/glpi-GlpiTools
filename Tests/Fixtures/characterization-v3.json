@@ -66,7 +66,7 @@
   "Get-GlpiToolsCartridgeItems": {
     "all": {
       "calls": [
-        "Get /Assets/Cartridge ?filter=is_deleted==0 all=True"
+        "Get /Assets/Cartridge ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -316,7 +316,7 @@
     },
     "name": {
       "calls": [
-        "Get /Assets/Cartridge ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Assets/Cartridge ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -324,7 +324,7 @@
     },
     "name-trash": {
       "calls": [
-        "Get /Assets/Cartridge ?filter=name=ilike=*foo*;is_deleted==1 all=True"
+        "Get /Assets/Cartridge ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -910,7 +910,7 @@
   "Get-GlpiToolsConsumableItems": {
     "all": {
       "calls": [
-        "Get /Assets/Consumable ?filter=is_deleted==0 all=True"
+        "Get /Assets/Consumable ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1160,7 +1160,7 @@
     },
     "name": {
       "calls": [
-        "Get /Assets/Consumable ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Assets/Consumable ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1168,7 +1168,7 @@
     },
     "name-trash": {
       "calls": [
-        "Get /Assets/Consumable ?filter=name=ilike=*foo*;is_deleted==1 all=True"
+        "Get /Assets/Consumable ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1370,7 +1370,7 @@
   "Get-GlpiToolsDropdownsBlacklistedMailContent": {
     "all": {
       "calls": [
-        "Get /Dropdowns/DeniedMailContent ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/DeniedMailContent ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\"},{\"id\":2,\"name\":\"item 2\"}]",
       "verbose": [],
@@ -1424,7 +1424,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/DeniedMailContent ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/DeniedMailContent ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\"},{\"id\":2,\"name\":\"item 2\"}]",
       "verbose": [],
@@ -1434,7 +1434,7 @@
   "Get-GlpiToolsDropdownsBlacklists": {
     "all": {
       "calls": [
-        "Get /Dropdowns/DenyList ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/DenyList ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1488,7 +1488,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/DenyList ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/DenyList ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1498,7 +1498,7 @@
   "Get-GlpiToolsDropdownsBudgetTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/BudgetType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/BudgetType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1552,7 +1552,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/BudgetType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/BudgetType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1562,7 +1562,7 @@
   "Get-GlpiToolsDropdownsBussinessCriticities": {
     "all": {
       "calls": [
-        "Get /Dropdowns/BusinessCriticity ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/BusinessCriticity ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1616,7 +1616,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/BusinessCriticity ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/BusinessCriticity ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1626,7 +1626,7 @@
   "Get-GlpiToolsDropdownsCalendars": {
     "all": {
       "calls": [
-        "Get /Dropdowns/Calendar ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/Calendar ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1680,7 +1680,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/Calendar ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/Calendar ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1690,7 +1690,7 @@
   "Get-GlpiToolsDropdownsCartridgeTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/CartridgeItemType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/CartridgeItemType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1744,7 +1744,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/CartridgeItemType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/CartridgeItemType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1754,7 +1754,7 @@
   "Get-GlpiToolsDropdownsCertificateTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/CertificateType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/CertificateType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1808,7 +1808,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/CertificateType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/CertificateType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1818,7 +1818,7 @@
   "Get-GlpiToolsDropdownsCloseTimes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/CloseTime ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/CloseTime ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1872,7 +1872,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/CloseTime ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/CloseTime ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1882,7 +1882,7 @@
   "Get-GlpiToolsDropdownsComputerModels": {
     "all": {
       "calls": [
-        "Get /Dropdowns/ComputerModel ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/ComputerModel ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1936,7 +1936,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/ComputerModel ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/ComputerModel ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -1946,7 +1946,7 @@
   "Get-GlpiToolsDropdownsComputerTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/ComputerType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/ComputerType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2000,7 +2000,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/ComputerType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/ComputerType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2010,7 +2010,7 @@
   "Get-GlpiToolsDropdownsConsumableTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/ConsumableItemType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/ConsumableItemType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2064,7 +2064,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/ConsumableItemType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/ConsumableItemType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2074,7 +2074,7 @@
   "Get-GlpiToolsDropdownsContactTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/ContactType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/ContactType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2128,7 +2128,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/ContactType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/ContactType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2138,7 +2138,7 @@
   "Get-GlpiToolsDropdownsContractTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/ContractType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/ContractType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2192,7 +2192,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/ContractType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/ContractType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2202,7 +2202,7 @@
   "Get-GlpiToolsDropdownsDevicesTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/PeripheralType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/PeripheralType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2256,7 +2256,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/PeripheralType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/PeripheralType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2266,7 +2266,7 @@
   "Get-GlpiToolsDropdownsDocumentHeadings": {
     "all": {
       "calls": [
-        "Get /Dropdowns/DocumentCategory ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/DocumentCategory ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2320,7 +2320,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/DocumentCategory ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/DocumentCategory ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2330,7 +2330,7 @@
   "Get-GlpiToolsDropdownsDocumentTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/DocumentType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/DocumentType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2384,7 +2384,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/DocumentType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/DocumentType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2458,7 +2458,7 @@
   "Get-GlpiToolsDropdownsEnclosureModels": {
     "all": {
       "calls": [
-        "Get /Dropdowns/EnclosureModel ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/EnclosureModel ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2512,7 +2512,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/EnclosureModel ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/EnclosureModel ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2522,7 +2522,7 @@
   "Get-GlpiToolsDropdownsFileSystemsTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/Filesystem ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/Filesystem ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2576,7 +2576,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/Filesystem ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/Filesystem ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2586,7 +2586,7 @@
   "Get-GlpiToolsDropdownsLicenseTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/LicenseType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/LicenseType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2640,7 +2640,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/LicenseType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/LicenseType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2650,7 +2650,7 @@
   "Get-GlpiToolsDropdownsLineTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/LineType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/LineType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2704,7 +2704,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/LineType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/LineType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2714,7 +2714,7 @@
   "Get-GlpiToolsDropdownsLocations": {
     "all": {
       "calls": [
-        "Get /Dropdowns/Location ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/Location ? all=True"
       ],
       "output": "[{\"id\":1,\"entities_id\":0,\"is_recursive\":1,\"name\":\"IBGE\",\"code\":null,\"alias\":null,\"locations_id\":0,\"completename\":\"IBGE\",\"comment\":\"Fundação Instituto Brasileiro de Geografia e Estatística - Decreto 11.177/2022 (Estatuto) e RCD 12/2026\",\"level\":1,\"address\":\"Avenida Franklin Roosevelt, 166\",\"postcode\":\"20021-120\",\"town\":\"Rio de Janeiro\",\"state\":\"RJ\",\"country\":null,\"building\":\"Centro\",\"room\":\"\",\"latitude\":\"-22.909494444444\",\"longitude\":\"-43.170075\",\"altitude\":null,\"date_mod\":\"2026-10-05 15:30:28\",\"date_creation\":\"2026-10-05 15:30:28\"},{\"id\":2,\"entities_id\":0,\"is_recursive\":1,\"name\":\"IBGE\",\"code\":null,\"alias\":null,\"locations_id\":0,\"completename\":\"IBGE\",\"comment\":\"Fundação Instituto Brasileiro de Geografia e Estatística - Decreto 11.177/2022 (Estatuto) e RCD 12/2026\",\"level\":1,\"address\":\"Avenida Franklin Roosevelt, 166\",\"postcode\":\"20021-120\",\"town\":\"Rio de Janeiro\",\"state\":\"RJ\",\"country\":null,\"building\":\"Centro\",\"room\":\"\",\"latitude\":\"-22.909494444444\",\"longitude\":\"-43.170075\",\"altitude\":null,\"date_mod\":\"2026-10-05 15:30:28\",\"date_creation\":\"2026-10-05 15:30:28\"}]",
       "verbose": [],
@@ -2768,7 +2768,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/Location ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/Location ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"entities_id\":0,\"is_recursive\":1,\"name\":\"IBGE\",\"code\":null,\"alias\":null,\"locations_id\":0,\"completename\":\"IBGE\",\"comment\":\"Fundação Instituto Brasileiro de Geografia e Estatística - Decreto 11.177/2022 (Estatuto) e RCD 12/2026\",\"level\":1,\"address\":\"Avenida Franklin Roosevelt, 166\",\"postcode\":\"20021-120\",\"town\":\"Rio de Janeiro\",\"state\":\"RJ\",\"country\":null,\"building\":\"Centro\",\"room\":\"\",\"latitude\":\"-22.909494444444\",\"longitude\":\"-43.170075\",\"altitude\":null,\"date_mod\":\"2026-10-05 15:30:28\",\"date_creation\":\"2026-10-05 15:30:28\"},{\"id\":2,\"entities_id\":0,\"is_recursive\":1,\"name\":\"IBGE\",\"code\":null,\"alias\":null,\"locations_id\":0,\"completename\":\"IBGE\",\"comment\":\"Fundação Instituto Brasileiro de Geografia e Estatística - Decreto 11.177/2022 (Estatuto) e RCD 12/2026\",\"level\":1,\"address\":\"Avenida Franklin Roosevelt, 166\",\"postcode\":\"20021-120\",\"town\":\"Rio de Janeiro\",\"state\":\"RJ\",\"country\":null,\"building\":\"Centro\",\"room\":\"\",\"latitude\":\"-22.909494444444\",\"longitude\":\"-43.170075\",\"altitude\":null,\"date_mod\":\"2026-10-05 15:30:28\",\"date_creation\":\"2026-10-05 15:30:28\"}]",
       "verbose": [],
@@ -2778,7 +2778,7 @@
   "Get-GlpiToolsDropdownsManufacturers": {
     "all": {
       "calls": [
-        "Get /Dropdowns/Manufacturer ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/Manufacturer ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2832,7 +2832,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/Manufacturer ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/Manufacturer ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2842,7 +2842,7 @@
   "Get-GlpiToolsDropdownsMonitorModels": {
     "all": {
       "calls": [
-        "Get /Dropdowns/MonitorModel ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/MonitorModel ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2896,7 +2896,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/MonitorModel ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/MonitorModel ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2906,7 +2906,7 @@
   "Get-GlpiToolsDropdownsMonitorTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/MonitorType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/MonitorType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2960,7 +2960,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/MonitorType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/MonitorType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -2970,7 +2970,7 @@
   "Get-GlpiToolsDropdownsNetworkEquipmentModels": {
     "all": {
       "calls": [
-        "Get /Dropdowns/NetworkEquipmentModel ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/NetworkEquipmentModel ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3024,7 +3024,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/NetworkEquipmentModel ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/NetworkEquipmentModel ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3034,7 +3034,7 @@
   "Get-GlpiToolsDropdownsNetworkingEquipmentTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/NetworkEquipmentType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/NetworkEquipmentType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3088,7 +3088,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/NetworkEquipmentType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/NetworkEquipmentType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3098,7 +3098,7 @@
   "Get-GlpiToolsDropdownsNetworks": {
     "all": {
       "calls": [
-        "Get /Dropdowns/Network ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/Network ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3152,7 +3152,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/Network ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/Network ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3162,7 +3162,7 @@
   "Get-GlpiToolsDropdownsOSUpdateSources": {
     "all": {
       "calls": [
-        "Get /Dropdowns/AutoUpdateSystem ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/AutoUpdateSystem ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3213,7 +3213,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/AutoUpdateSystem ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/AutoUpdateSystem ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3223,7 +3223,7 @@
   "Get-GlpiToolsDropdownsPeripheralModels": {
     "all": {
       "calls": [
-        "Get /Dropdowns/PeripheralModel ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/PeripheralModel ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3277,7 +3277,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/PeripheralModel ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/PeripheralModel ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3287,7 +3287,7 @@
   "Get-GlpiToolsDropdownsPhoneModels": {
     "all": {
       "calls": [
-        "Get /Dropdowns/PhoneModel ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/PhoneModel ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3341,7 +3341,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/PhoneModel ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/PhoneModel ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3351,7 +3351,7 @@
   "Get-GlpiToolsDropdownsPhonesPowerSupplyTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/PhonePowerSupply ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/PhonePowerSupply ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3405,7 +3405,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/PhonePowerSupply ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/PhonePowerSupply ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3415,7 +3415,7 @@
   "Get-GlpiToolsDropdownsPhonesTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/PhoneType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/PhoneType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3469,7 +3469,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/PhoneType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/PhoneType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3479,7 +3479,7 @@
   "Get-GlpiToolsDropdownsPrinterModels": {
     "all": {
       "calls": [
-        "Get /Dropdowns/PrinterModel ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/PrinterModel ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3533,7 +3533,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/PrinterModel ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/PrinterModel ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3543,7 +3543,7 @@
   "Get-GlpiToolsDropdownsPrinterTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/PrinterType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/PrinterType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3597,7 +3597,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/PrinterType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/PrinterType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3607,7 +3607,7 @@
   "Get-GlpiToolsDropdownsProjectTasksTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/ProjectTaskType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/ProjectTaskType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3661,7 +3661,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/ProjectTaskType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/ProjectTaskType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3671,7 +3671,7 @@
   "Get-GlpiToolsDropdownsProjectTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/ProjectType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/ProjectType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3725,7 +3725,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/ProjectType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/ProjectType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3735,7 +3735,7 @@
   "Get-GlpiToolsDropdownsRequestSources": {
     "all": {
       "calls": [
-        "Get /Dropdowns/RequestType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/RequestType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3789,7 +3789,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/RequestType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/RequestType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3799,7 +3799,7 @@
   "Get-GlpiToolsDropdownsSolutionTemplates": {
     "all": {
       "calls": [
-        "Get /Dropdowns/SolutionTemplate ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/SolutionTemplate ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3853,7 +3853,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/SolutionTemplate ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/SolutionTemplate ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3863,7 +3863,7 @@
   "Get-GlpiToolsDropdownsSolutionTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/SolutionType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/SolutionType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3917,7 +3917,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/SolutionType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/SolutionType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3927,7 +3927,7 @@
   "Get-GlpiToolsDropdownsStatesOfTheVirtualMachine": {
     "all": {
       "calls": [
-        "Get /Dropdowns/VirtualMachineState ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/VirtualMachineState ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3981,7 +3981,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/VirtualMachineState ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/VirtualMachineState ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -3991,7 +3991,7 @@
   "Get-GlpiToolsDropdownsStatusesOfItems": {
     "all": {
       "calls": [
-        "Get /Dropdowns/State ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/State ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4045,7 +4045,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/State ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/State ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4055,7 +4055,7 @@
   "Get-GlpiToolsDropdownsTaskCategories": {
     "all": {
       "calls": [
-        "Get /Dropdowns/TaskCategory ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/TaskCategory ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\"},{\"id\":2,\"name\":\"item 2\"}]",
       "verbose": [],
@@ -4109,7 +4109,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/TaskCategory ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/TaskCategory ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\"},{\"id\":2,\"name\":\"item 2\"}]",
       "verbose": [],
@@ -4119,7 +4119,7 @@
   "Get-GlpiToolsDropdownsTaskTemplates": {
     "all": {
       "calls": [
-        "Get /Dropdowns/TaskTemplate ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/TaskTemplate ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4173,7 +4173,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/TaskTemplate ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/TaskTemplate ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4183,7 +4183,7 @@
   "Get-GlpiToolsDropdownsThirdPartyTypes": {
     "all": {
       "calls": [
-        "Get /Dropdowns/SupplierType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/SupplierType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4237,7 +4237,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/SupplierType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/SupplierType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4247,7 +4247,7 @@
   "Get-GlpiToolsDropdownsTicketCategories": {
     "all": {
       "calls": [
-        "Get /Dropdowns/ITILCategory ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/ITILCategory ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4301,7 +4301,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/ITILCategory ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/ITILCategory ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4311,7 +4311,7 @@
   "Get-GlpiToolsDropdownsUserCategories": {
     "all": {
       "calls": [
-        "Get /Administration/UserCategory ?filter=is_deleted==0 all=True"
+        "Get /Administration/UserCategory ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4365,7 +4365,7 @@
     },
     "name": {
       "calls": [
-        "Get /Administration/UserCategory ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Administration/UserCategory ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4375,7 +4375,7 @@
   "Get-GlpiToolsDropdownsUserTitles": {
     "all": {
       "calls": [
-        "Get /Administration/UserTitle ?filter=is_deleted==0 all=True"
+        "Get /Administration/UserTitle ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4429,7 +4429,7 @@
     },
     "name": {
       "calls": [
-        "Get /Administration/UserTitle ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Administration/UserTitle ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4439,7 +4439,7 @@
   "Get-GlpiToolsDropdownsVirtualizationSystems": {
     "all": {
       "calls": [
-        "Get /Dropdowns/VirtualMachineType ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/VirtualMachineType ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4493,7 +4493,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/VirtualMachineType ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/VirtualMachineType ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4503,7 +4503,7 @@
   "Get-GlpiToolsDropdownsWifiNetworks": {
     "all": {
       "calls": [
-        "Get /Dropdowns/WifiNetwork ?filter=is_deleted==0 all=True"
+        "Get /Dropdowns/WifiNetwork ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4557,7 +4557,7 @@
     },
     "name": {
       "calls": [
-        "Get /Dropdowns/WifiNetwork ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Dropdowns/WifiNetwork ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -4835,7 +4835,7 @@
   "Get-GlpiToolsEntities": {
     "all": {
       "calls": [
-        "Get /Administration/Entity ?filter=is_deleted==0 all=True"
+        "Get /Administration/Entity ? all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"IBGE\",\"entities_id\":0,\"completename\":\"Entidade raiz > IBGE\",\"comment\":null,\"level\":2,\"registration_number\":null,\"address\":null,\"postcode\":null,\"town\":null,\"state\":null,\"country\":null,\"website\":null,\"phonenumber\":null,\"fax\":null,\"email\":null,\"admin_email\":null,\"admin_email_name\":null,\"from_email\":null,\"from_email_name\":null,\"noreply_email\":null,\"noreply_email_name\":null,\"replyto_email\":null,\"replyto_email_name\":null,\"notification_subject_tag\":null,\"ldap_dn\":null,\"tag\":null,\"authldaps_id\":0,\"mail_domain\":null,\"entity_ldapfilter\":null,\"mailing_signature\":null,\"url_base\":null,\"date_mod\":\"2026-09-17 21:09:08\",\"date_creation\":null,\"latitude\":null,\"longitude\":null,\"altitude\":null},{\"id\":2,\"name\":\"IBGE\",\"entities_id\":0,\"completename\":\"Entidade raiz > IBGE\",\"comment\":null,\"level\":2,\"registration_number\":null,\"address\":null,\"postcode\":null,\"town\":null,\"state\":null,\"country\":null,\"website\":null,\"phonenumber\":null,\"fax\":null,\"email\":null,\"admin_email\":null,\"admin_email_name\":null,\"from_email\":null,\"from_email_name\":null,\"noreply_email\":null,\"noreply_email_name\":null,\"replyto_email\":null,\"replyto_email_name\":null,\"notification_subject_tag\":null,\"ldap_dn\":null,\"tag\":null,\"authldaps_id\":0,\"mail_domain\":null,\"entity_ldapfilter\":null,\"mailing_signature\":null,\"url_base\":null,\"date_mod\":\"2026-09-17 21:09:08\",\"date_creation\":null,\"latitude\":null,\"longitude\":null,\"altitude\":null}]",
       "verbose": [],
@@ -4889,7 +4889,7 @@
     },
     "name": {
       "calls": [
-        "Get /Administration/Entity ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Administration/Entity ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"IBGE\",\"entities_id\":0,\"completename\":\"Entidade raiz > IBGE\",\"comment\":null,\"level\":2,\"registration_number\":null,\"address\":null,\"postcode\":null,\"town\":null,\"state\":null,\"country\":null,\"website\":null,\"phonenumber\":null,\"fax\":null,\"email\":null,\"admin_email\":null,\"admin_email_name\":null,\"from_email\":null,\"from_email_name\":null,\"noreply_email\":null,\"noreply_email_name\":null,\"replyto_email\":null,\"replyto_email_name\":null,\"notification_subject_tag\":null,\"ldap_dn\":null,\"tag\":null,\"authldaps_id\":0,\"mail_domain\":null,\"entity_ldapfilter\":null,\"mailing_signature\":null,\"url_base\":null,\"date_mod\":\"2026-09-17 21:09:08\",\"date_creation\":null,\"latitude\":null,\"longitude\":null,\"altitude\":null},{\"id\":2,\"name\":\"IBGE\",\"entities_id\":0,\"completename\":\"Entidade raiz > IBGE\",\"comment\":null,\"level\":2,\"registration_number\":null,\"address\":null,\"postcode\":null,\"town\":null,\"state\":null,\"country\":null,\"website\":null,\"phonenumber\":null,\"fax\":null,\"email\":null,\"admin_email\":null,\"admin_email_name\":null,\"from_email\":null,\"from_email_name\":null,\"noreply_email\":null,\"noreply_email_name\":null,\"replyto_email\":null,\"replyto_email_name\":null,\"notification_subject_tag\":null,\"ldap_dn\":null,\"tag\":null,\"authldaps_id\":0,\"mail_domain\":null,\"entity_ldapfilter\":null,\"mailing_signature\":null,\"url_base\":null,\"date_mod\":\"2026-09-17 21:09:08\",\"date_creation\":null,\"latitude\":null,\"longitude\":null,\"altitude\":null}]",
       "verbose": [],
@@ -4941,7 +4941,7 @@
   "Get-GlpiToolsGroups": {
     "all": {
       "calls": [
-        "Get /Administration/Group ?filter=is_deleted==0 all=True"
+        "Get /Administration/Group ? all=True"
       ],
       "output": "[{\"id\":1,\"entities_id\":0,\"name\":\"Redes\",\"code\":\"\",\"comment\":\"\",\"ldap_field\":null,\"ldap_value\":null,\"ldap_group_dn\":null,\"date_mod\":\"2026-08-31 17:40:01\",\"groups_id\":0,\"completename\":\"Redes\",\"level\":1,\"is_requester\":1,\"is_watcher\":1,\"is_assign\":1,\"is_task\":1,\"is_notify\":1,\"is_itemgroup\":1,\"is_usergroup\":1,\"is_manager\":1,\"date_creation\":\"2026-08-31 17:40:01\",\"recursive_membership\":0,\"2fa_enforced\":0},{\"id\":2,\"entities_id\":0,\"name\":\"Redes\",\"code\":\"\",\"comment\":\"\",\"ldap_field\":null,\"ldap_value\":null,\"ldap_group_dn\":null,\"date_mod\":\"2026-08-31 17:40:01\",\"groups_id\":0,\"completename\":\"Redes\",\"level\":1,\"is_requester\":1,\"is_watcher\":1,\"is_assign\":1,\"is_task\":1,\"is_notify\":1,\"is_itemgroup\":1,\"is_usergroup\":1,\"is_manager\":1,\"date_creation\":\"2026-08-31 17:40:01\",\"recursive_membership\":0,\"2fa_enforced\":0}]",
       "verbose": [],
@@ -4995,7 +4995,7 @@
     },
     "name": {
       "calls": [
-        "Get /Administration/Group ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Administration/Group ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"entities_id\":0,\"name\":\"Redes\",\"code\":\"\",\"comment\":\"\",\"ldap_field\":null,\"ldap_value\":null,\"ldap_group_dn\":null,\"date_mod\":\"2026-08-31 17:40:01\",\"groups_id\":0,\"completename\":\"Redes\",\"level\":1,\"is_requester\":1,\"is_watcher\":1,\"is_assign\":1,\"is_task\":1,\"is_notify\":1,\"is_itemgroup\":1,\"is_usergroup\":1,\"is_manager\":1,\"date_creation\":\"2026-08-31 17:40:01\",\"recursive_membership\":0,\"2fa_enforced\":0},{\"id\":2,\"entities_id\":0,\"name\":\"Redes\",\"code\":\"\",\"comment\":\"\",\"ldap_field\":null,\"ldap_value\":null,\"ldap_group_dn\":null,\"date_mod\":\"2026-08-31 17:40:01\",\"groups_id\":0,\"completename\":\"Redes\",\"level\":1,\"is_requester\":1,\"is_watcher\":1,\"is_assign\":1,\"is_task\":1,\"is_notify\":1,\"is_itemgroup\":1,\"is_usergroup\":1,\"is_manager\":1,\"date_creation\":\"2026-08-31 17:40:01\",\"recursive_membership\":0,\"2fa_enforced\":0}]",
       "verbose": [],
@@ -7403,7 +7403,7 @@
     },
     "name": {
       "calls": [
-        "Get /Assistance/RecurringTicket ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Assistance/RecurringTicket ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -7411,7 +7411,7 @@
     },
     "name-trash": {
       "calls": [
-        "Get /Assistance/RecurringTicket ?filter=name=ilike=*foo*;is_deleted==1 all=True"
+        "Get /Assistance/RecurringTicket ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
       "verbose": [],
@@ -7475,7 +7475,7 @@
     },
     "name": {
       "calls": [
-        "Get /Tools/Reminder ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Tools/Reminder ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\"},{\"id\":2,\"name\":\"item 2\"}]",
       "verbose": [],
@@ -7539,7 +7539,7 @@
     },
     "name": {
       "calls": [
-        "Get /Tools/RSSFeed ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+        "Get /Tools/RSSFeed ?filter=name=ilike=*foo* all=True"
       ],
       "output": "[{\"id\":1,\"comment\":\"c\"},{\"id\":2,\"comment\":\"c\"}]",
       "verbose": [],

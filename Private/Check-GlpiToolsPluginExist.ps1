@@ -25,7 +25,8 @@ function Check-GlpiToolsPluginExist {
     
     begin {
 
-        $GlpiAvailablePlugins = Get-GlpiToolsPlugins | Where-Object { $_.State -eq "Enabled" }
+        # the state is text ("Enabled") in the legacy format and the number 1 in the native format of the API v3
+        $GlpiAvailablePlugins = Get-GlpiToolsPlugins | Where-Object { $_.State -eq "Enabled" -or [string]$_.State -eq "1" }
 
     }
     

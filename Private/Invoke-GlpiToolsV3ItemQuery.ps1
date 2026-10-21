@@ -28,7 +28,7 @@
     Never converts the IDs of the related items to names, whatever Raw is.
 .PARAMETER RequiredCriteria
     Criteria every listed item must meet. The default leaves the items in the trash out, as the legacy listing does;
-    pass an empty array for a type that has no trash (RecurringTicket, Reminder...).
+    a criterion on a property that the field map of the type lacks (the trash of a type that has none) is left out.
 .PARAMETER Parameter
     Extra requested with the cmdlet parameter of the same name. Only WithDocuments is acted on here.
 .PARAMETER SupportedParameter
@@ -95,8 +95,10 @@ function Invoke-GlpiToolsV3ItemQuery {
     switch -Wildcard ($ParameterSetName) {
         'All' {
             $V3List = @{ Method = 'Get'; Resource = $Resource; All = $true }
-            if ($RequiredCriteria) {
-                $V3List.Query = @{ filter = (ConvertTo-GlpiToolsRsql -Required $RequiredCriteria) }
+            # a criterion on a property that the type does not have (the trash of a dropdown) is left out
+            $V3Required = @($RequiredCriteria | Where-Object { (Test-GlpiToolsV3MappedProperty -ItemType $ItemType -Name $_.Field) -ne $false })
+            if ($V3Required) {
+                $V3List.Query = @{ filter = (ConvertTo-GlpiToolsRsql -Required $V3Required) }
             }
             Invoke-GlpiToolsRequest @V3List | ConvertFrom-GlpiToolsV3Item -ItemType $ItemType -Raw
         }

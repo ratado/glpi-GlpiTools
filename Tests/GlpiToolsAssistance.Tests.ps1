@@ -9,6 +9,7 @@ BeforeAll {
     $env:LOCALAPPDATA = $script:TempHome
     # the script module is imported directly so that private functions are reachable and mockable
     Import-Module (Join-Path $PSScriptRoot '..' 'GlpiTools.psm1') -Force
+    . (Join-Path $PSScriptRoot 'Support' 'TrashFilter.ps1')
     # the API v3 document is not downloaded by the tests; the filter fields are then not validated
     Mock Get-GlpiToolsV3Document { $null } -ModuleName GlpiTools
 }
@@ -61,7 +62,8 @@ Describe 'Change, problem and recurring ticket cmdlets on API v3' {
         }
         It 'searches by name' {
             Invoke-WithParams $Cmd @{ $NameParam = 'foo' } | Out-Null
-            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq $Route -and $Query.filter -like 'name=ilike=*foo*;*' }
+            $NamePattern = if (Get-ExpectedTrashFilter -Route $Route) { 'name=ilike=*foo*;*' } else { 'name=ilike=*foo*' }
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq $Route -and $Query.filter -like $NamePattern }
         }
         It 'refuses -Parameter values without a v3 equivalent' {
             { Invoke-WithParams $Cmd @{ $IdParam = 2; Parameter = 'WithLogs' } } | Should -Throw '*-Parameter WithLogs is not supported*'

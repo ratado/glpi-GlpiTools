@@ -81,15 +81,8 @@ function Set-GlpiToolsConfig {
     
     begin {
 
-        if ($IsLinux) {
-            $ConfigFile = "Configuration.json"
-            $ConfigPath = "$env:HOME/.config/GlpiToolsConfig\"
-            $Config = Join-Path -Path $ConfigPath -ChildPath $ConfigFile
-        } else {
-            $ConfigFile = "Configuration.json"
-            $ConfigPath = "$env:LOCALAPPDATA\GlpiToolsConfig\"
-            $Config = Join-Path -Path $ConfigPath -ChildPath $ConfigFile
-        }
+        $ConfigPath = Get-GlpiToolsConfigPath -Directory
+        $Config = Get-GlpiToolsConfigPath
 
         # the API v3 and the certificate option are available only on PowerShell 7
         if ($PSCmdlet.ParameterSetName -eq 'V3Password' -or $ApiVersion -eq 'v3') {

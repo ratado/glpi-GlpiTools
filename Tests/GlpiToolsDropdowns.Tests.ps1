@@ -9,6 +9,7 @@ BeforeAll {
     $env:LOCALAPPDATA = $script:TempHome
     # the script module is imported directly so that private functions are reachable and mockable
     Import-Module (Join-Path $PSScriptRoot '..' 'GlpiTools.psm1') -Force
+    . (Join-Path $PSScriptRoot 'Support' 'TrashFilter.ps1')
     # the API v3 document is not downloaded by the tests; the filter fields are then not validated
     Mock Get-GlpiToolsV3Document { $null } -ModuleName GlpiTools
     # runs a cmdlet with the parameters given as a hashtable
@@ -83,7 +84,8 @@ Describe 'Dropdown cmdlets on API v3' {
     ) {
         It 'lists, gets by id and searches by name' {
             & $Cmd -All | Out-Null
-            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Method -eq 'Get' -and $Resource -eq $Route -and $All -and $Query.filter -eq 'is_deleted==0' }
+            $ExpectedFilter = Get-ExpectedTrashFilter -Route $Route
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Method -eq 'Get' -and $Resource -eq $Route -and $All -and $Query.filter -eq $ExpectedFilter }
             Invoke-WithParams $Cmd @{ $IdParam = 2 } | Out-Null
             Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq "$Route/2" }
             Invoke-WithParams $Cmd @{ $NameParam = 'foo' } | Out-Null

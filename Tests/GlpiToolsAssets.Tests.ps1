@@ -9,6 +9,7 @@ BeforeAll {
     $env:LOCALAPPDATA = $script:TempHome
     # the script module is imported directly so that private functions are reachable and mockable
     Import-Module (Join-Path $PSScriptRoot '..' 'GlpiTools.psm1') -Force
+    . (Join-Path $PSScriptRoot 'Support' 'TrashFilter.ps1')
     # the API v3 document is not downloaded by the tests; the filter fields are then not validated
     Mock Get-GlpiToolsV3Document { $null } -ModuleName GlpiTools
     # runs a cmdlet with the parameters given as a hashtable
@@ -45,7 +46,8 @@ Describe 'Asset cmdlets on API v3' {
     ) {
         It 'lists the items outside the trash' {
             & $Cmd -All | Out-Null
-            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Method -eq 'Get' -and $Resource -eq $Route -and $All -and $Query.filter -eq 'is_deleted==0' }
+            $ExpectedFilter = Get-ExpectedTrashFilter -Route $Route
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Method -eq 'Get' -and $Resource -eq $Route -and $All -and $Query.filter -eq $ExpectedFilter }
         }
         It 'gets each item by id, also from the pipeline' {
             Invoke-WithParams $Cmd @{ "${Base}Id" = 2, 3 } | Out-Null
@@ -68,7 +70,8 @@ Describe 'Asset cmdlets on API v3' {
         }
         It 'searches by name' {
             Invoke-WithParams $Cmd @{ "${Base}Name" = 'foo' } | Out-Null
-            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq $Route -and $Query.filter -like 'name=ilike=*foo*;*' }
+            $NamePattern = if (Get-ExpectedTrashFilter -Route $Route) { 'name=ilike=*foo*;*' } else { 'name=ilike=*foo*' }
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq $Route -and $Query.filter -like $NamePattern }
         }
         It 'refuses -Parameter values without a v3 equivalent' {
             { Invoke-WithParams $Cmd @{ "${Base}Id" = 2; Parameter = 'WithLogs' } } | Should -Throw '*-Parameter WithLogs is not supported*'

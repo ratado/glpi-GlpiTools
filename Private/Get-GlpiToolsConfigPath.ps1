@@ -3,7 +3,9 @@
     Returns the path of the configuration file of the module.
 .DESCRIPTION
     The file is Configuration.json inside GlpiToolsConfig, under $env:HOME/.config on Linux and under
-    $env:LOCALAPPDATA on Windows.
+    $env:LOCALAPPDATA on Windows. It is the only place that knows the location of the configuration.
+.PARAMETER Directory
+    Returns the folder that holds the file instead of the file.
 .EXAMPLE
     PS C:\> Get-GlpiToolsConfigPath
     Returns the full path of Configuration.json.
@@ -17,11 +19,18 @@
 
 function Get-GlpiToolsConfigPath {
     [CmdletBinding()]
-    param ()
+    param (
+        [parameter(Mandatory = $false)]
+        [switch]$Directory
+    )
 
     if ($IsLinux) {
-        Join-Path -Path "$env:HOME/.config/GlpiToolsConfig\" -ChildPath 'Configuration.json'
+        $ConfigPath = "$env:HOME/.config/GlpiToolsConfig\"
     } else {
-        Join-Path -Path "$env:LOCALAPPDATA\GlpiToolsConfig\" -ChildPath 'Configuration.json'
+        $ConfigPath = "$env:LOCALAPPDATA\GlpiToolsConfig\"
     }
+    if ($Directory) {
+        return $ConfigPath
+    }
+    Join-Path -Path $ConfigPath -ChildPath 'Configuration.json'
 }

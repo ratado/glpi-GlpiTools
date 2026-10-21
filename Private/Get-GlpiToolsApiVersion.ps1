@@ -20,11 +20,7 @@ function Get-GlpiToolsApiVersion {
     param ()
 
     # only the plain ApiVersion field is read, so no secret is decrypted on every call
-    if ($IsLinux) {
-        $Config = Join-Path -Path "$env:HOME/.config/GlpiToolsConfig\" -ChildPath 'Configuration.json'
-    } else {
-        $Config = Join-Path -Path "$env:LOCALAPPDATA\GlpiToolsConfig\" -ChildPath 'Configuration.json'
-    }
+    $Config = Get-GlpiToolsConfigPath
 
     if (Test-Path -Path $Config) {
         try {

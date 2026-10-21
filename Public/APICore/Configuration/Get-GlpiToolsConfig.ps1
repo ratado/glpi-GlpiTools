@@ -24,17 +24,8 @@ function Get-GlpiToolsConfig {
     
     begin {
 
-        if ($IsLinux) {
-            $GlpiConfig = @()
-            $ConfigFile = "Configuration.json"
-            $ConfigPath = "$env:HOME/.config/GlpiToolsConfig\"
-            $Config = Join-Path -Path $ConfigPath -ChildPath $ConfigFile
-        } else {
-            $GlpiConfig = @()
-            $ConfigFile = "Configuration.json"
-            $ConfigPath = "$env:LOCALAPPDATA\GlpiToolsConfig\"
-            $Config = Join-Path -Path $ConfigPath -ChildPath $ConfigFile 
-        }
+        $GlpiConfig = @()
+        $Config = Get-GlpiToolsConfigPath
 
     }
     

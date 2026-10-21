@@ -71,3 +71,20 @@ Describe 'Plugin list on the legacy API (regression)' {
         Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Uri -eq 'http://glpi/apirest.php/Plugin/' }
     }
 }
+
+Describe 'Check-GlpiToolsPluginExist with both output formats' {
+    It 'finds an enabled plugin whose state is text (Legacy) or a number (Native)' -ForEach @(
+        @{ State = 'Enabled' }
+        @{ State = 1 }
+    ) {
+        Mock Get-GlpiToolsPlugins { [pscustomobject]@{ name = 'Apps Structures'; state = $State } } -ModuleName GlpiTools
+        InModuleScope GlpiTools -Parameters @{ S = $State } { Check-GlpiToolsPluginExist -InvocationCommand 'Get-GlpiToolsAppsStructuresComponent' } | Should -BeTrue
+    }
+    It 'does not count a plugin that is not enabled' -ForEach @(
+        @{ State = 'Not installed' }
+        @{ State = 2 }
+    ) {
+        Mock Get-GlpiToolsPlugins { [pscustomobject]@{ name = 'Apps Structures'; state = $State } } -ModuleName GlpiTools
+        InModuleScope GlpiTools { Check-GlpiToolsPluginExist -InvocationCommand 'Get-GlpiToolsAppsStructuresComponent' } | Should -BeFalse
+    }
+}
