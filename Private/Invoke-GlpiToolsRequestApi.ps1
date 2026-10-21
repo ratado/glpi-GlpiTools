@@ -58,7 +58,8 @@ function Invoke-GlpiToolsRequestApi {
 			if ($ErrBody) {
 				try { $ErrDetail = @($ErrBody | ConvertFrom-Json) } catch { $ErrDetail = @("UNKNOWN ERROR", $ErrBody) }
 			}
-			Write-Output "Error: $ErrDetail "
+			# the detail goes to the verbose stream so that the success output stays clean; the exception below carries the failure
+			Write-Verbose "Error: $ErrDetail "
 			
 			$global:GLPIToolsErrorOutput = @{
 				"Code" = $ErrDetail[0]

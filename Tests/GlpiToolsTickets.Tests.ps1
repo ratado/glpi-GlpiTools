@@ -96,6 +96,15 @@ Describe 'Ticket cmdlets on API v3' {
             { New-GlpiToolsTicket -name 'S' -content 'B' -DisableNotification } | Should -Throw '*-DisableNotification is not supported*'
             Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 0
         }
+        It 'stops with a terminating error, without leaving the session, on invalid parameters' {
+            $Id = $null
+            try { New-GlpiToolsTicket -name 'S' -content 'B' -item_id 1 } catch { $Id = $_.FullyQualifiedErrorId }
+            $Id | Should -BeLike 'GlpiTools.InvalidParameters*'
+            $Id = $null
+            try { New-GlpiToolsTicket -name 'S' -content 'B' -Type Incident -ApprovalRequired } catch { $Id = $_.FullyQualifiedErrorId }
+            $Id | Should -BeLike 'GlpiTools.InvalidParameters*'
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 0
+        }
     }
 
     Context 'Update-GlpiToolsTicket' {
@@ -192,5 +201,16 @@ Describe 'Ticket cmdlets on the legacy API (regression)' {
     It 'links an item through Item_ticket' {
         Add-GlpiToolsTicketItem -ticket_id 7 -item_id 1 -item_type Computer | Out-Null
         Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Uri -eq 'http://glpi/apirest.php/Ticket/7/Item_ticket/' }
+    }
+    It 'stops New-GlpiToolsTicket with a terminating error, without leaving the session, on invalid parameters' {
+        $Messages = @()
+        try { New-GlpiToolsTicket -name 'S' -content 'B' -item_id 1 } catch { $Messages += $_ }
+        try { New-GlpiToolsTicket -name 'S' -content 'B' -ApprovalRequired } catch { $Messages += $_ }
+        $Messages.Count | Should -Be 2
+        $Messages[0].FullyQualifiedErrorId | Should -BeLike 'GlpiTools.InvalidParameters*'
+        $Messages[0].Exception.Message | Should -BeLike '*item_type needs to be specified*'
+        $Messages[1].FullyQualifiedErrorId | Should -BeLike 'GlpiTools.InvalidParameters*'
+        $Messages[1].Exception.Message | Should -BeLike '*type is not a request*'
+        Should -Invoke Invoke-RestMethod -ModuleName GlpiTools -Exactly 0
     }
 }

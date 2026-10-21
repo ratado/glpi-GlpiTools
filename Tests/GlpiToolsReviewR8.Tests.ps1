@@ -132,4 +132,20 @@ Describe 'Legacy request wrapper error handling' {
         { Invoke-GlpiToolsRequestApi -Params @{ uri = 'http://glpi/apirest.php/Ticket/9'; method = 'get' } | Out-Null } | Should -Throw '*connection refused*'
         $global:GLPIToolsErrorOutput.Code | Should -Be 'UNKNOWN ERROR'
     }
+    It 'keeps the success output clean and the failure details out of the output stream' {
+        Mock Invoke-RestMethod {
+            $e = [System.Management.Automation.ErrorRecord]::new([System.Exception]::new('Not Found'), 'x', 'NotSpecified', $null)
+            $e.ErrorDetails = [System.Management.Automation.ErrorDetails]::new('["ERROR_ITEM_NOT_FOUND","Item not found"]')
+            throw $e
+        } -ModuleName GlpiTools
+        $Output = & { try { Invoke-GlpiToolsRequestApi -Params @{ uri = 'http://glpi/apirest.php/Ticket/9'; method = 'get' } } catch { $null = $_ } }
+        $Output | Should -BeNullOrEmpty
+        $Verbose = & { try { Invoke-GlpiToolsRequestApi -Params @{ uri = 'http://glpi/apirest.php/Ticket/9'; method = 'get' } -Verbose } catch { $null = $_ } } 4>&1
+        $Verbose | Should -BeOfType [System.Management.Automation.VerboseRecord]
+        $global:GLPIToolsErrorOutput.Code | Should -Be 'ERROR_ITEM_NOT_FOUND'
+        Mock Invoke-RestMethod { [pscustomobject]@{ id = 9 } } -ModuleName GlpiTools
+        $Ok = Invoke-GlpiToolsRequestApi -Params @{ uri = 'http://glpi/apirest.php/Ticket/9'; method = 'get' }
+        @($Ok).Count | Should -Be 1
+        $Ok.id | Should -Be 9
+    }
 }

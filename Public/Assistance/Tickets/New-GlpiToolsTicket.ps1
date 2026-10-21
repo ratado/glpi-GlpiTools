@@ -203,12 +203,13 @@ function New-GlpiToolsTicket {
     begin {
 
         If ($null -ne $PSBoundParameters['Item_id'] -and $null -eq $PSBoundParameters['Item_type']) {
-            Write-Warning "[INVALID PARAMETERS] If item_id is specified, item_type needs to be specified accordingly"
-            Exit
+            # a terminating error stops only this command, unlike Exit that closes the whole PowerShell session
+            $Text = "[INVALID PARAMETERS] If item_id is specified, item_type needs to be specified accordingly"
+            $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new([System.ArgumentException]::new($Text), 'GlpiTools.InvalidParameters', [System.Management.Automation.ErrorCategory]::InvalidArgument, $PSBoundParameters['Item_id']))
         }
         If ($PSBoundParameters['Type'] -ne 'Request' -and $PSBoundParameters['ApprovalRequired']) {
-            Write-Warning "[INVALID PARAMETERS] Approval required specified but type is not a request."
-            Exit
+            $Text = "[INVALID PARAMETERS] Approval required specified but type is not a request."
+            $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new([System.ArgumentException]::new($Text), 'GlpiTools.InvalidParameters', [System.Management.Automation.ErrorCategory]::InvalidArgument, $PSBoundParameters['Type']))
         }
 
 

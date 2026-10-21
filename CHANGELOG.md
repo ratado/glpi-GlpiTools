@@ -23,6 +23,8 @@ All notable changes to this project are documented in this file.
 - PowerShell 7 or later is now required. Windows PowerShell 5.1 is no longer supported.
 - Reading the configuration is faster, because it is kept in memory until the file changes.
 - Changing the configuration now closes the session that was open on the GLPI server.
+- Creating a ticket with conflicting parameters (an item without its type, or an approval on something that is not a request) now stops only that command with a clear error, instead of closing the whole PowerShell session.
+- With the legacy API, a failed request no longer writes the error text among the results of the command; the error is still raised, and the details are available with `-Verbose`.
 - On Linux, the configuration file can now be read only by its owner.
 - Existing configurations keep working as the legacy API, with no changes needed.
 
