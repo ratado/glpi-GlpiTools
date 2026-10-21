@@ -97,10 +97,10 @@ function Update-GlpiToolsItems {
                         throw "Each element to update needs an integer id."
                     }
                     $V3Input.Remove('id')
-                    Invoke-GlpiToolsRequest -Method Patch -Resource "$V3Route/$V3Id" -Body $V3Input
+                    Invoke-GlpiToolsRequest -Method Patch -Resource "$V3Route/$V3Id" -Body (ConvertTo-GlpiToolsV3Input -ItemType $UpdateTo -InputObject $V3Input)
                 }
             } else {
-                Invoke-GlpiToolsRequest -Method Patch -Resource "$V3Route/$ItemId" -Body $ItemsHashtableWithoutId
+                Invoke-GlpiToolsRequest -Method Patch -Resource "$V3Route/$ItemId" -Body (ConvertTo-GlpiToolsV3Input -ItemType $UpdateTo -InputObject $ItemsHashtableWithoutId)
             }
             return
         }

@@ -9,6 +9,8 @@ BeforeAll {
     $env:LOCALAPPDATA = $script:TempHome
     # the script module is imported directly so that private functions are reachable and mockable
     Import-Module (Join-Path $PSScriptRoot '..' 'GlpiTools.psm1') -Force
+    # the API v3 document is not downloaded by the tests; the filter fields are then not validated
+    Mock Get-GlpiToolsV3Document { $null } -ModuleName GlpiTools
 }
 
 AfterAll {

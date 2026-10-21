@@ -40,11 +40,7 @@ function ConvertFrom-GlpiToolsV3Item {
 
     begin {
         # the field map is read once per session
-        if (-not $script:GlpiToolsV3FieldMap) {
-            $MapFile = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'Private/V3FieldMap.json'
-            $script:GlpiToolsV3FieldMap = Get-Content -Path $MapFile -Raw | ConvertFrom-Json
-        }
-        $FieldMap = $script:GlpiToolsV3FieldMap.$ItemType
+        $FieldMap = Get-GlpiToolsV3FieldMap -ItemType $ItemType
         if (-not $FieldMap) {
             throw "There is no field map for the item type '$ItemType'."
         }

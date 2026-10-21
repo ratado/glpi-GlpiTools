@@ -21,6 +21,8 @@
 .PARAMETER NoContext
     Does not send the entity and profile chosen with Set-GlpiToolsChangeActiveEntities and
     Set-GlpiToolsChangeActiveProfile, for questions about what the user can reach at all.
+.PARAMETER AsBytes
+    Returns the body of the answer as a byte array, whatever its content type (file downloads).
 .PARAMETER PageSize
     Number of items per page when -All is used. Default is 500.
 .EXAMPLE
@@ -61,6 +63,9 @@ function Invoke-GlpiToolsRequest {
 
         [parameter(Mandatory = $false)]
         [switch]$NoContext,
+
+        [parameter(Mandatory = $false)]
+        [switch]$AsBytes,
 
         [parameter(Mandatory = $false)]
         [ValidateRange(1, 100000)]
@@ -111,6 +116,9 @@ function Invoke-GlpiToolsRequest {
         }
         if ($GlpiConfig.SkipCertificateCheck) {
             $params['SkipCertificateCheck'] = $true
+        }
+        if ($AsBytes) {
+            $params['AsBytes'] = $true
         }
 
         $Data = Invoke-GlpiToolsRestMethod @params

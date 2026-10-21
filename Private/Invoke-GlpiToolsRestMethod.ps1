@@ -17,6 +17,8 @@
     Content type of the body.
 .PARAMETER SkipCertificateCheck
     Does not validate the TLS certificate.
+.PARAMETER AsBytes
+    Returns the body as a byte array, whatever the content type, so that a file is not decoded as text.
 .PARAMETER ResponseHeadersVariable
     Name of the variable, in the scope of the caller, that receives the response headers.
 .EXAMPLE
@@ -52,7 +54,10 @@ function Invoke-GlpiToolsRestMethod {
         [switch]$SkipCertificateCheck,
 
         [parameter(Mandatory = $false)]
-        [string]$ResponseHeadersVariable
+        [string]$ResponseHeadersVariable,
+
+        [parameter(Mandatory = $false)]
+        [switch]$AsBytes
     )
 
     $params = @{
@@ -68,6 +73,11 @@ function Invoke-GlpiToolsRestMethod {
     $Response = Invoke-WebRequest @params
     if ($ResponseHeadersVariable) {
         Set-Variable -Name $ResponseHeadersVariable -Value $Response.Headers -Scope 1
+    }
+
+    # a file is returned byte by byte, whatever its content type; PowerShell would decode a text type as a string
+    if ($AsBytes) {
+        return , $Response.RawContentStream.ToArray()
     }
 
     $ResponseType = [string]($Response.Headers['Content-Type'] | Select-Object -First 1)

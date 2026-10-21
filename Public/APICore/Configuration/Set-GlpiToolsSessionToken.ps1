@@ -47,6 +47,8 @@ function Set-GlpiToolsSessionToken {
 			$global:GlpiToolsSessionToken = $null
 			# the entity and profile chosen for API v3 requests belong to the session
 			$global:GlpiToolsContext = $null
+			# the API document read for the filter validation belongs to the session as well
+			$script:GlpiToolsV3DocCache = $null
 		}
         else {		
 			$SessionHash = [ordered]@{

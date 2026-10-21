@@ -71,7 +71,8 @@ function Get-GlpiToolsProfiles {
     process {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
-            switch ($ChoosenParam) {
+            # the parameter set is read here because ids from the pipeline are not bound yet in the begin block
+            switch ($PSCmdlet.ParameterSetName) {
                 All { Invoke-GlpiToolsRequest -Method Get -Resource '/Administration/Profile' -All }
                 ProfileId {
                     foreach ($PId in $ProfileId) {

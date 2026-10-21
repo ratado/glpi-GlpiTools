@@ -30,10 +30,17 @@ function Invoke-GlpiToolsRequestApi {
     
     process {
 
+        # this function reaches the legacy API only; a command without a v3 branch must not send the v3 token there
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $Text = "The command that was run has no GLPI API v3 branch, so it cannot use the configured API v3. Run Set-GlpiToolsConfig with the legacy tokens to use it."
+            throw [System.Management.Automation.ErrorRecord]::new([System.NotSupportedException]::new($Text), 'GlpiTools.LegacyCallWithV3', [System.Management.Automation.ErrorCategory]::NotImplemented, $Params.uri)
+        }
+
         # honour the certificate option stored by Set-GlpiToolsConfig, without touching the caller's hashtable
         $Params = $Params.Clone()
         $GlpiConfig = Get-GlpiToolsConfig -WarningAction SilentlyContinue
         if ($GlpiConfig -and $GlpiConfig.SkipCertificateCheck -and -not $Params.ContainsKey('SkipCertificateCheck')) {
+            Assert-GlpiToolsPowerShell7 -Feature 'The option -SkipCertificateCheck'
             $Params['SkipCertificateCheck'] = $true
         }
 

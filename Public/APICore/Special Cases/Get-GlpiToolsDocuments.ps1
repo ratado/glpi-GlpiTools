@@ -85,7 +85,7 @@ function Get-GlpiToolsDocuments {
                     try {
                         if ($RawDocument) {
                             # the file content, not the document record
-                            Invoke-GlpiToolsRequest -Method Get -Resource "/Management/Document/$DId/Download" -Accept 'application/octet-stream'
+                            Invoke-GlpiToolsRequest -Method Get -Resource "/Management/Document/$DId/Download" -Accept 'application/octet-stream' -AsBytes
                         } else {
                             Invoke-GlpiToolsRequest -Method Get -Resource "/Management/Document/$DId"
                         }

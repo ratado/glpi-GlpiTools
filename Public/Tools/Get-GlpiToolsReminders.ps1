@@ -78,6 +78,21 @@ function Get-GlpiToolsReminders {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Tools/Reminder'
+                ItemType         = 'Reminder'
+                Id               = $ReminderId
+                Name             = $ReminderName
+                Raw              = $Raw
+                RequiredCriteria = @()  # this type has no trash
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{

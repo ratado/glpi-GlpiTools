@@ -141,7 +141,7 @@ function Get-GlpiToolsRecurrentTickets {
                 Name             = $RecurrentTicketName
                 Raw              = $Raw
                 SearchInTrash    = $SearchInTrash
-                IncludeTrash     = $true
+                RequiredCriteria = @()  # this type has no trash
                 Parameter        = $Parameter
                 SupportedParameter = 'ExpandDropdowns'
             }

@@ -84,6 +84,14 @@ function Set-GlpiToolsConfig {
             $Config = Join-Path -Path $ConfigPath -ChildPath $ConfigFile
         }
 
+        # the API v3 and the certificate option are available only on PowerShell 7
+        if ($PSCmdlet.ParameterSetName -eq 'V3Password' -or $ApiVersion -eq 'v3') {
+            Assert-GlpiToolsPowerShell7 -Feature 'The GLPI API v3'
+        }
+        if ($SkipCertificateCheck) {
+            Assert-GlpiToolsPowerShell7 -Feature 'The option -SkipCertificateCheck'
+        }
+
         # the legacy set accepts only the v1 flavour
         if ($PSCmdlet.ParameterSetName -eq 'Legacy' -and $ApiVersion -eq 'v3') {
             throw "-ApiVersion v3 requires -ClientId, -ClientSecret, -Username and -Password."
@@ -163,6 +171,9 @@ function Set-GlpiToolsConfig {
             }
         }
         $ConfigHash | ConvertTo-Json | Out-File -FilePath $Config
+
+        # the stored configuration changed, so the cached copy is discarded
+        $script:GlpiToolsConfigCache = $null
 
         # drop the local token of the previous configuration
         Set-GlpiToolsSessionToken -ResetToken

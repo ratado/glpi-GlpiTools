@@ -9,6 +9,8 @@ BeforeAll {
     $env:LOCALAPPDATA = $script:TempHome
     # the script module is imported directly so that private functions are reachable and mockable
     Import-Module (Join-Path $PSScriptRoot '..' 'GlpiTools.psm1') -Force
+    # the API v3 document is not downloaded by the tests; the filter fields are then not validated
+    Mock Get-GlpiToolsV3Document { $null } -ModuleName GlpiTools
 }
 
 AfterAll {
@@ -35,8 +37,12 @@ Describe 'Invoke-GlpiToolsV3ItemQuery' {
             $r.Type | Should -Be 'Computer'
             $r.Raw | Should -BeTrue
         }
-        It 'does not filter the trash with IncludeTrash' {
-            Invoke-GlpiToolsV3ItemQuery -ParameterSetName All -Resource '/Assistance/RecurringTicket' -ItemType RecurringTicket -IncludeTrash | Out-Null
+        It 'applies the required criteria given by the caller' {
+            Invoke-GlpiToolsV3ItemQuery -ParameterSetName All -Resource '/Assets/Computer' -ItemType Computer -RequiredCriteria @{ Field = 'is_deleted'; Value = 1 } | Out-Null
+            Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Query.filter -eq 'is_deleted==1' }
+        }
+        It 'does not filter the trash when the required criteria are empty' {
+            Invoke-GlpiToolsV3ItemQuery -ParameterSetName All -Resource '/Assistance/RecurringTicket' -ItemType RecurringTicket -RequiredCriteria @() | Out-Null
             Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq '/Assistance/RecurringTicket' -and $All -and -not $Query }
         }
     }

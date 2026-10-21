@@ -78,6 +78,21 @@ function Get-GlpiToolsRssFeeds {
     }
     
     process {
+        # API v3: handled through the shared request layer, the legacy code below is not reached
+        if ((Get-GlpiToolsApiVersion) -eq 'v3') {
+            $V3Query = @{
+                ParameterSetName = $PSCmdlet.ParameterSetName
+                Resource         = '/Tools/RSSFeed'
+                ItemType         = 'RSSFeed'
+                Id               = $RssfeedId
+                Name             = $RssfeedName
+                Raw              = $Raw
+                RequiredCriteria = @()  # this type has no trash
+            }
+            Invoke-GlpiToolsV3ItemQuery @V3Query
+            return
+        }
+
         switch ($ChoosenParam) {
             All { 
                 $params = @{

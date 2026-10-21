@@ -41,6 +41,14 @@ function Get-GlpiToolsConfig {
     process {
 
         if (Test-Path -Path $Config) {
+            # the decrypted object is reused while the file is unchanged; a copy is returned so callers cannot alter the cache
+            $LastWrite = (Get-Item -Path $Config).LastWriteTimeUtc.Ticks
+            $Cached = $script:GlpiToolsConfigCache
+            if ($Cached -and $Cached.Path -eq $Config -and $Cached.LastWrite -eq $LastWrite) {
+                $GlpiConfig += $Cached.Object.PSObject.Copy()
+                return
+            }
+
             $ConfigData = Get-Content $Config | ConvertFrom-Json
         
             $AppTokenDecrypt = ConvertFrom-GlpiConfigSecret -Value $ConfigData.AppToken
@@ -62,7 +70,8 @@ function Get-GlpiToolsConfig {
             }
 
             $object = New-Object -TypeName PSCustomObject -Property $ConfigHash
-            $GlpiConfig += $object 
+            $script:GlpiToolsConfigCache = @{ Path = $Config; LastWrite = $LastWrite; Object = $object }
+            $GlpiConfig += $object.PSObject.Copy()
             
         }
         else {

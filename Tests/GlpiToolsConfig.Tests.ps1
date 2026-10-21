@@ -166,3 +166,75 @@ Describe 'Set-GlpiToolsConfig / Get-GlpiToolsConfig' {
         }
     }
 }
+
+Describe 'Get-GlpiToolsConfig cache' {
+
+    BeforeAll {
+        Set-GlpiToolsConfig -AppToken 'cache1' -UserToken 'u' -PathToGlpi 'http://glpi/apirest.php'
+    }
+
+    It 'decrypts the file only once while it is unchanged' {
+        # rewriting the config empties the cache, so the first read below is the only one that decrypts
+        Set-GlpiToolsConfig -AppToken 'cache1' -UserToken 'u' -PathToGlpi 'http://glpi/apirest.php'
+        Mock ConvertFrom-GlpiConfigSecret { 'x' } -ModuleName GlpiTools
+        Get-GlpiToolsConfig | Out-Null
+        Get-GlpiToolsConfig | Out-Null
+        Get-GlpiToolsConfig | Out-Null
+        # one decryption per secret field (7) for the whole sequence
+        Should -Invoke ConvertFrom-GlpiConfigSecret -ModuleName GlpiTools -Exactly 7
+        # the mocked values must not leak into the next tests
+        Set-GlpiToolsConfig -AppToken 'cache1' -UserToken 'u' -PathToGlpi 'http://glpi/apirest.php'
+    }
+
+    It 'returns a copy that does not alter the cache' {
+        $First = Get-GlpiToolsConfig
+        $First.AppToken = 'changed'
+        (Get-GlpiToolsConfig).AppToken | Should -Be 'cache1'
+    }
+
+    It 'is refreshed by Set-GlpiToolsConfig' {
+        Set-GlpiToolsConfig -AppToken 'cache2' -UserToken 'u' -PathToGlpi 'http://glpi/apirest.php'
+        (Get-GlpiToolsConfig).AppToken | Should -Be 'cache2'
+    }
+
+    It 'notices a change made to the file by another process' {
+        InModuleScope GlpiTools {
+            Get-GlpiToolsConfig | Out-Null
+        }
+        $Data = Get-Content $script:ConfigFile | ConvertFrom-Json
+        $Data.ApiVersion = 'v3'
+        $Data | ConvertTo-Json | Out-File -FilePath $script:ConfigFile
+        (Get-Item $script:ConfigFile).LastWriteTimeUtc = [datetime]::UtcNow.AddSeconds(5)
+        (Get-GlpiToolsConfig).ApiVersion | Should -Be 'v3'
+    }
+}
+
+Describe 'PowerShell 7 requirement' {
+
+    BeforeAll {
+        Mock Get-GlpiToolsPowerShellVersion { [version]'5.1.19041' } -ModuleName GlpiTools
+    }
+
+    It 'refuses the v3 configuration on Windows PowerShell 5.1' {
+        $Err = $null
+        try { Set-GlpiToolsConfig -PathToGlpi 'https://x' -ClientId 'c' -ClientSecret 's' -Username 'u' -Password 'p' } catch { $Err = $_ }
+        $Err.FullyQualifiedErrorId | Should -Be 'GlpiTools.PowerShell7Required'
+    }
+    It 'refuses the certificate option on Windows PowerShell 5.1' {
+        $Err = $null
+        try { Set-GlpiToolsConfig -AppToken 'a' -UserToken 'b' -PathToGlpi 'https://x/apirest.php' -SkipCertificateCheck } catch { $Err = $_ }
+        $Err.FullyQualifiedErrorId | Should -Be 'GlpiTools.PowerShell7Required'
+    }
+    It 'keeps the legacy configuration working on Windows PowerShell 5.1' {
+        { Set-GlpiToolsConfig -AppToken 'a' -UserToken 'b' -PathToGlpi 'https://x/apirest.php' } | Should -Not -Throw
+    }
+    It 'refuses to request an OAuth token on Windows PowerShell 5.1' {
+        $Err = $null
+        try { InModuleScope GlpiTools { Update-GlpiToolsAccessToken -NewSession } } catch { $Err = $_ }
+        $Err.FullyQualifiedErrorId | Should -Be 'GlpiTools.PowerShell7Required'
+    }
+    It 'accepts PowerShell 7' {
+        Mock Get-GlpiToolsPowerShellVersion { [version]'7.4.1' } -ModuleName GlpiTools
+        { InModuleScope GlpiTools { Assert-GlpiToolsPowerShell7 -Feature 'x' } } | Should -Not -Throw
+    }
+}

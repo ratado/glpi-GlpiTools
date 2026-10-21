@@ -12,6 +12,10 @@
 .PARAMETER Required
     Criteria that must always hold (joined by AND to the whole result, for example the trash filter).
     When the other criteria use OR they are wrapped in parentheses first, since AND binds tighter than OR.
+.PARAMETER ItemType
+    Item type of the listing. When informed, the properties of Criteria and Filter are checked against the
+    API v3 schema (an unknown one stops the command), and a Required criterion on a property the type lacks,
+    such as is_deleted, is left out.
 .PARAMETER Filter
     Shortcut for equality criteria, joined by AND. Example: @{ name = 'foo'; is_deleted = 0 }.
 .EXAMPLE
@@ -38,8 +42,18 @@ function ConvertTo-GlpiToolsRsql {
         [hashtable]$Filter,
 
         [parameter(Mandatory = $false)]
-        [object[]]$Required
+        [object[]]$Required,
+
+        [parameter(Mandatory = $false)]
+        [string]$ItemType
     )
+
+    # the properties given by the user must exist in the schema, otherwise the API would ignore them silently
+    if ($ItemType) {
+        Assert-GlpiToolsV3FilterField -ItemType $ItemType -Field (@($Criteria | ForEach-Object { $_.Field }) + @($Filter.Keys) | Where-Object { $_ })
+        # the trash filter is meaningless for a type without that property
+        $Required = @($Required | Where-Object { (Test-GlpiToolsV3Property -ItemType $ItemType -Name $_.Field) -ne $false })
+    }
 
     # escapes a single value; values starting with a quote are wrapped in the other kind of quote
     $FormatValue = {

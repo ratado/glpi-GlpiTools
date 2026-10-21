@@ -17,6 +17,12 @@ All notable changes to this project are documented in this file.
 - With the REST API v3 configured, 50 of the `Get-GlpiToolsDropdowns*` commands work (locations, statuses, manufacturers, models, types, categories, templates, calendars, domains and others). The ones for items that the API v3 does not offer (for example operating systems, device components, VLANs and network names) stop with a clear message.
 - With the REST API v3 configured, `Get-GlpiToolsPlugins` works. The commands for the Apps Structures and FusionInventory plugins are not available in the API v3 and stop with a clear message.
 - With the REST API v3, user fields show the login name instead of the full name, and listing hierarchical dropdowns such as locations returns only the main fields; reading one item by ID returns all of them.
+- With the REST API v3 configured, `Get-GlpiToolsProjects`, `Get-GlpiToolsReminders`, `Get-GlpiToolsKnowledgeBase` and `Get-GlpiToolsRssFeeds` work and return the same properties as the legacy API.
+- With the REST API v3 configured, `Add-GlpiToolsItems`, `Update-GlpiToolsItems` and `Get-GlpiToolsItems` accept and return the field names of the legacy API (for example `entities_id`).
+- With the REST API v3 configured, searching by a field that does not exist now stops with a message listing the valid fields, instead of returning every record.
+- With the REST API v3, `Get-GlpiToolsDocuments -RawDocument` returns the file content as bytes, so PDFs and images are not damaged.
+- The REST API v3 and the `-SkipCertificateCheck` option require PowerShell 7; the legacy API keeps working on Windows PowerShell 5.1.
+- Reading the configuration is now faster, because it is kept in memory until the file changes.
 - Changing the configuration now closes the session that was open on the GLPI server.
 - The configuration file is now readable only by its owner on Linux.
 - Existing configurations keep working as the legacy API, with no changes needed.

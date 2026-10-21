@@ -26,8 +26,9 @@
     Returns the IDs of the related items instead of their names, when reading by ID.
 .PARAMETER AlwaysRaw
     Never converts the IDs of the related items to names, whatever Raw is.
-.PARAMETER IncludeTrash
-    Does not leave the items in the trash out of the listing.
+.PARAMETER RequiredCriteria
+    Criteria every listed item must meet. The default leaves the items in the trash out, as the legacy listing does;
+    pass an empty array for a type that has no trash (RecurringTicket, Reminder...).
 .PARAMETER Parameter
     Extra requested with the cmdlet parameter of the same name. Only WithDocuments is acted on here.
 .PARAMETER SupportedParameter
@@ -77,7 +78,7 @@ function Invoke-GlpiToolsV3ItemQuery {
         [switch]$AlwaysRaw,
 
         [parameter(Mandatory = $false)]
-        [switch]$IncludeTrash,
+        [object[]]$RequiredCriteria = @(@{ Field = 'is_deleted'; Value = 0 }),
 
         [parameter(Mandatory = $false)]
         [string]$Parameter,
@@ -90,9 +91,8 @@ function Invoke-GlpiToolsV3ItemQuery {
     switch -Wildcard ($ParameterSetName) {
         'All' {
             $V3List = @{ Method = 'Get'; Resource = $Resource; All = $true }
-            # the legacy listing leaves the trash out
-            if (-not $IncludeTrash) {
-                $V3List.Query = @{ filter = (ConvertTo-GlpiToolsRsql -Required @{ Field = 'is_deleted'; Value = 0 }) }
+            if ($RequiredCriteria) {
+                $V3List.Query = @{ filter = (ConvertTo-GlpiToolsRsql -Required $RequiredCriteria) }
             }
             Invoke-GlpiToolsRequest @V3List | ConvertFrom-GlpiToolsV3Item -ItemType $ItemType -Raw
         }

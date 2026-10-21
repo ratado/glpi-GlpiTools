@@ -1,6 +1,8 @@
 BeforeAll {
     # the script module is imported directly so that private functions are reachable
     Import-Module (Join-Path $PSScriptRoot '..' 'GlpiTools.psm1') -Force
+    # the API v3 document is not downloaded by the tests; the filter fields are then not validated
+    Mock Get-GlpiToolsV3Document { $null } -ModuleName GlpiTools
     $script:Fixtures = Join-Path $PSScriptRoot 'Fixtures'
     $script:V3Ticket = Get-Content -Path (Join-Path $script:Fixtures 'Ticket2-v3.json') -Raw | ConvertFrom-Json -DateKind String
     $script:V1Raw = Get-Content -Path (Join-Path $script:Fixtures 'Ticket2-v1-Raw.json') -Raw | ConvertFrom-Json

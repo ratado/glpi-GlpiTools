@@ -15,6 +15,8 @@ BeforeAll {
     $env:LOCALAPPDATA = $script:TempHome
     # the script module is imported directly so that private functions are reachable and mockable
     Import-Module (Join-Path $PSScriptRoot '..' 'GlpiTools.psm1') -Force
+    # the API v3 document is not downloaded by the tests; the filter fields are then not validated
+    Mock Get-GlpiToolsV3Document { $null } -ModuleName GlpiTools
     $script:FixtureDir = Join-Path $PSScriptRoot 'Fixtures'
     $script:SnapshotPath = Join-Path $script:FixtureDir 'characterization-v3.json'
     $script:UpdateSnapshot = $env:GLPITOOLS_UPDATE_SNAPSHOT -eq '1'
@@ -184,7 +186,7 @@ Describe 'Characterization of the v3 branch of the read cmdlets' {
     }
 
     It 'covers the expected number of commands' -ForEach @(@{ Count = $CharacterizedCmdlets.Count }) {
-        $Count | Should -Be 82
+        $Count | Should -Be 86
     }
 
     It '<_> keeps the calls and the output of every scenario' -ForEach $CharacterizedCmdlets {

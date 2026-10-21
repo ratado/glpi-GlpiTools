@@ -10,6 +10,8 @@ BeforeAll {
     $env:LOCALAPPDATA = $script:TempHome
     # the script module is imported directly so that private functions are reachable and mockable
     Import-Module (Join-Path $PSScriptRoot '..' 'GlpiTools.psm1') -Force
+    # the API v3 document is not downloaded by the tests; the filter fields are then not validated
+    Mock Get-GlpiToolsV3Document { $null } -ModuleName GlpiTools
 }
 
 AfterAll {
@@ -229,5 +231,22 @@ Describe 'Legacy API (regression)' {
     }
     It 'Get-GlpiToolsListSearchOptions is not blocked' {
         { Get-GlpiToolsListSearchOptions -ListOptionsFor Computer } | Should -Not -Throw '*API v3*'
+    }
+}
+
+Describe 'Get-GlpiToolsProfiles on API v3' {
+    BeforeEach {
+        Set-GlpiToolsConfig -ApiVersion v3 -PathToGlpi 'https://glpi.example.com' -ClientId c -ClientSecret s -Username u -Password p
+        Set-GlpiToolsSessionToken -SessionToken 'AT' -ExpiresAt ([datetime]::UtcNow.AddHours(1))
+        Mock Invoke-GlpiToolsRequest { [pscustomobject]@{ id = 4; name = 'p' } } -ModuleName GlpiTools
+    }
+    It 'gets the profiles whose ids come from the pipeline' {
+        2, 3 | Get-GlpiToolsProfiles | Out-Null
+        Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq '/Administration/Profile/2' }
+        Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq '/Administration/Profile/3' }
+    }
+    It 'gets the profiles given by -ProfileId' {
+        Get-GlpiToolsProfiles -ProfileId 5 | Out-Null
+        Should -Invoke Invoke-GlpiToolsRequest -ModuleName GlpiTools -Exactly 1 -ParameterFilter { $Resource -eq '/Administration/Profile/5' }
     }
 }

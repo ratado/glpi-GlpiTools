@@ -93,17 +93,8 @@ function Get-GlpiToolsFinancialAndAdministrativeInformations {
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
             Assert-GlpiToolsV3ParameterRequired -Name 'ItemType', 'ItemId' -BoundParameters $PSBoundParameters
             # the record is read once per call, because this block runs again for each ID received from the pipeline
-            if (-not (Get-Variable -Name GlpiToolsV3ListCache -Scope Local -ErrorAction SilentlyContinue)) {
-                $V3Fetched = @()
-                try {
-                    $V3Fetched = @(Invoke-GlpiToolsRequest -Method Get -Resource "$(Get-GlpiToolsV3Route -ItemType $ItemType)/$ItemId/Infocom" | Where-Object { $_ })
-                } catch {
-                    # an asset without financial information is answered with 404, which is an empty result
-                    if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
-                }
-                $GlpiToolsV3ListCache = $V3Fetched
-            }
-            $V3Items = $GlpiToolsV3ListCache
+            # an asset without financial information is answered with 404, which is an empty result
+            $V3Items = Get-GlpiToolsV3CachedList -Resource "$(Get-GlpiToolsV3Route -ItemType $ItemType)/$ItemId/Infocom" -NotFoundIsEmpty
             if ($PSCmdlet.ParameterSetName -eq 'FinancialAndAdminstrativeId') {
                 # the legacy ID parameter selects records of the list
                 $V3Items = @($V3Items | Where-Object { [string]$_.id -in @($FinancialAndAdminstrativeId) })

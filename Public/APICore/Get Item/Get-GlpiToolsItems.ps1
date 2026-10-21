@@ -112,15 +112,23 @@ function Get-GlpiToolsItems{
                 if ($V3Text -match '^\^(.*)\$$') { $V3Operator = 'equals'; $V3Text = $Matches[1] }
                 elseif ($V3Text -match '^\^(.*)$') { $V3Operator = 'startswith'; $V3Text = $Matches[1] }
                 elseif ($V3Text -match '^(.*)\$$') { $V3Operator = 'endswith'; $V3Text = $Matches[1] }
-                $Criteria += @{ Field = $key; Operator = $V3Operator; Value = $V3Text }
+                $Criteria += @{ Field = (ConvertTo-GlpiToolsV3FieldName -ItemType $ItemType -Name $key); Operator = $V3Operator; Value = $V3Text }
             }
             # the legacy API lists items outside the trash unless -SearchInTrash is used
             $V3Required = @{ Field = 'is_deleted'; Operator = 'equals'; Value = $(if ($SearchInTrash) { 1 } else { 0 }) }
-            $V3Items = Invoke-GlpiToolsRequest -Method Get -Resource (Get-GlpiToolsV3Route -ItemType $ItemType) -Query @{ filter = (ConvertTo-GlpiToolsRsql -Criteria $Criteria -Required $V3Required) } -All
+            $V3Items = Invoke-GlpiToolsRequest -Method Get -Resource (Get-GlpiToolsV3Route -ItemType $ItemType) -Query @{ filter = (ConvertTo-GlpiToolsRsql -Criteria $Criteria -Required $V3Required -ItemType $ItemType) } -All
             if ($OnlyId) {
-                $V3Items = $V3Items | Select-Object -Property id
+                $V3Items | Select-Object -Property id
+                return
             }
-            $V3Items
+            # like the legacy command, several results are returned raw; a type without a map keeps the v3 format
+            if (Get-GlpiToolsV3FieldMap -ItemType $ItemType) {
+                if (-not $Raw -and (@($V3Items).Count -gt 1)) { Write-Warning "RAW forced because more than 1 result" }
+                $V3Items | ConvertFrom-GlpiToolsV3Item -ItemType $ItemType -Raw:($Raw -or (@($V3Items).Count -gt 1))
+            } else {
+                Write-Verbose -Message "There is no field map for '$ItemType'; the v3 format is returned."
+                $V3Items
+            }
             return
         }
 

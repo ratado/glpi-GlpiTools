@@ -89,7 +89,8 @@ function Add-GlpiToolsItems {
                 $HashtableToAdd
             }
             foreach ($V3Input in @($V3Inputs)) {
-                Invoke-GlpiToolsRequest -Method Post -Resource $V3Route -Body $V3Input
+                # legacy field names (entities_id = 1) are converted to the v3 form (entity = @{ id = 1 })
+                Invoke-GlpiToolsRequest -Method Post -Resource $V3Route -Body (ConvertTo-GlpiToolsV3Input -ItemType $AddTo -InputObject $V3Input)
             }
             return
         }

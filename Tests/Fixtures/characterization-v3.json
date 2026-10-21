@@ -5002,6 +5002,62 @@
       "error": null
     }
   },
+  "Get-GlpiToolsKnowledgeBase": {
+    "all": {
+      "calls": [
+        "Get /Knowledgebase/Article ? all=True"
+      ],
+      "output": "[{\"id\":1,\"name\":\"item 1\"},{\"id\":2,\"name\":\"item 2\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "id": {
+      "calls": [
+        "Get /Knowledgebase/Article/2 ? all=False",
+        "Get /Knowledgebase/Article/3 ? all=False"
+      ],
+      "output": "[{\"id\":2,\"name\":\"item 2\"},{\"id\":3,\"name\":\"item 3\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "id-raw": {
+      "calls": [
+        "Get /Knowledgebase/Article/2 ? all=False",
+        "Get /Knowledgebase/Article/3 ? all=False"
+      ],
+      "output": "[{\"id\":2,\"name\":\"item 2\"},{\"id\":3,\"name\":\"item 3\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "id-missing": {
+      "calls": [
+        "Get /Knowledgebase/Article/2 ? all=False",
+        "Get /Knowledgebase/Article/999 ? all=False"
+      ],
+      "output": "{\"id\":2,\"name\":\"item 2\"}",
+      "verbose": [
+        "KnowbaseItem ID = 999 is not found"
+      ],
+      "error": null
+    },
+    "id-error": {
+      "calls": [
+        "Get /Knowledgebase/Article/998 ? all=False"
+      ],
+      "output": null,
+      "verbose": [],
+      "error": "GlpiApi.500|failure 998"
+    },
+    "id-pipeline": {
+      "calls": [
+        "Get /Knowledgebase/Article/4 ? all=False",
+        "Get /Knowledgebase/Article/5 ? all=False"
+      ],
+      "output": "[{\"id\":4,\"name\":\"item 4\"},{\"id\":5,\"name\":\"item 5\"}]",
+      "verbose": [],
+      "error": null
+    }
+  },
   "Get-GlpiToolsLines": {
     "all": {
       "calls": [
@@ -6834,6 +6890,70 @@
       "error": null
     }
   },
+  "Get-GlpiToolsProjects": {
+    "all": {
+      "calls": [
+        "Get /Project ?filter=is_deleted==0 all=True"
+      ],
+      "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "id": {
+      "calls": [
+        "Get /Project/2 ? all=False",
+        "Get /Project/3 ? all=False"
+      ],
+      "output": "[{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"},{\"id\":3,\"name\":\"item 3\",\"comment\":\"c\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "id-raw": {
+      "calls": [
+        "Get /Project/2 ? all=False",
+        "Get /Project/3 ? all=False"
+      ],
+      "output": "[{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"},{\"id\":3,\"name\":\"item 3\",\"comment\":\"c\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "id-missing": {
+      "calls": [
+        "Get /Project/2 ? all=False",
+        "Get /Project/999 ? all=False"
+      ],
+      "output": "{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}",
+      "verbose": [
+        "Project ID = 999 is not found"
+      ],
+      "error": null
+    },
+    "id-error": {
+      "calls": [
+        "Get /Project/998 ? all=False"
+      ],
+      "output": null,
+      "verbose": [],
+      "error": "GlpiApi.500|failure 998"
+    },
+    "id-pipeline": {
+      "calls": [
+        "Get /Project/4 ? all=False",
+        "Get /Project/5 ? all=False"
+      ],
+      "output": "[{\"id\":4,\"name\":\"item 4\",\"comment\":\"c\"},{\"id\":5,\"name\":\"item 5\",\"comment\":\"c\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "name": {
+      "calls": [
+        "Get /Project ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+      ],
+      "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
+      "verbose": [],
+      "error": null
+    }
+  },
   "Get-GlpiToolsRacks": {
     "all": {
       "calls": [
@@ -7294,6 +7414,134 @@
         "Get /Assistance/RecurringTicket ?filter=name=ilike=*foo*;is_deleted==1 all=True"
       ],
       "output": "[{\"id\":1,\"name\":\"item 1\",\"comment\":\"c\"},{\"id\":2,\"name\":\"item 2\",\"comment\":\"c\"}]",
+      "verbose": [],
+      "error": null
+    }
+  },
+  "Get-GlpiToolsReminders": {
+    "all": {
+      "calls": [
+        "Get /Tools/Reminder ? all=True"
+      ],
+      "output": "[{\"id\":1,\"name\":\"item 1\"},{\"id\":2,\"name\":\"item 2\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "id": {
+      "calls": [
+        "Get /Tools/Reminder/2 ? all=False",
+        "Get /Tools/Reminder/3 ? all=False"
+      ],
+      "output": "[{\"id\":2,\"name\":\"item 2\"},{\"id\":3,\"name\":\"item 3\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "id-raw": {
+      "calls": [
+        "Get /Tools/Reminder/2 ? all=False",
+        "Get /Tools/Reminder/3 ? all=False"
+      ],
+      "output": "[{\"id\":2,\"name\":\"item 2\"},{\"id\":3,\"name\":\"item 3\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "id-missing": {
+      "calls": [
+        "Get /Tools/Reminder/2 ? all=False",
+        "Get /Tools/Reminder/999 ? all=False"
+      ],
+      "output": "{\"id\":2,\"name\":\"item 2\"}",
+      "verbose": [
+        "Reminder ID = 999 is not found"
+      ],
+      "error": null
+    },
+    "id-error": {
+      "calls": [
+        "Get /Tools/Reminder/998 ? all=False"
+      ],
+      "output": null,
+      "verbose": [],
+      "error": "GlpiApi.500|failure 998"
+    },
+    "id-pipeline": {
+      "calls": [
+        "Get /Tools/Reminder/4 ? all=False",
+        "Get /Tools/Reminder/5 ? all=False"
+      ],
+      "output": "[{\"id\":4,\"name\":\"item 4\"},{\"id\":5,\"name\":\"item 5\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "name": {
+      "calls": [
+        "Get /Tools/Reminder ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+      ],
+      "output": "[{\"id\":1,\"name\":\"item 1\"},{\"id\":2,\"name\":\"item 2\"}]",
+      "verbose": [],
+      "error": null
+    }
+  },
+  "Get-GlpiToolsRssFeeds": {
+    "all": {
+      "calls": [
+        "Get /Tools/RSSFeed ? all=True"
+      ],
+      "output": "[{\"id\":1,\"comment\":\"c\"},{\"id\":2,\"comment\":\"c\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "id": {
+      "calls": [
+        "Get /Tools/RSSFeed/2 ? all=False",
+        "Get /Tools/RSSFeed/3 ? all=False"
+      ],
+      "output": "[{\"id\":2,\"comment\":\"c\"},{\"id\":3,\"comment\":\"c\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "id-raw": {
+      "calls": [
+        "Get /Tools/RSSFeed/2 ? all=False",
+        "Get /Tools/RSSFeed/3 ? all=False"
+      ],
+      "output": "[{\"id\":2,\"comment\":\"c\"},{\"id\":3,\"comment\":\"c\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "id-missing": {
+      "calls": [
+        "Get /Tools/RSSFeed/2 ? all=False",
+        "Get /Tools/RSSFeed/999 ? all=False"
+      ],
+      "output": "{\"id\":2,\"comment\":\"c\"}",
+      "verbose": [
+        "RSSFeed ID = 999 is not found"
+      ],
+      "error": null
+    },
+    "id-error": {
+      "calls": [
+        "Get /Tools/RSSFeed/998 ? all=False"
+      ],
+      "output": null,
+      "verbose": [],
+      "error": "GlpiApi.500|failure 998"
+    },
+    "id-pipeline": {
+      "calls": [
+        "Get /Tools/RSSFeed/4 ? all=False",
+        "Get /Tools/RSSFeed/5 ? all=False"
+      ],
+      "output": "[{\"id\":4,\"comment\":\"c\"},{\"id\":5,\"comment\":\"c\"}]",
+      "verbose": [],
+      "error": null
+    },
+    "name": {
+      "calls": [
+        "Get /Tools/RSSFeed ?filter=name=ilike=*foo*;is_deleted==0 all=True"
+      ],
+      "output": "[{\"id\":1,\"comment\":\"c\"},{\"id\":2,\"comment\":\"c\"}]",
       "verbose": [],
       "error": null
     }

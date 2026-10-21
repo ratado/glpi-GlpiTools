@@ -218,4 +218,35 @@ Describe 'Invoke-GlpiToolsRestMethod' {
         Mock Invoke-WebRequest { [pscustomobject]@{ Content = 'plain'; Headers = @{ 'Content-Type' = 'text/plain' } } } -ModuleName GlpiTools
         & (Get-Module GlpiTools) { Invoke-GlpiToolsRestMethod -Uri 'https://x/api.php/v3.0/a' -Method Get -Headers @{} } | Should -Be 'plain'
     }
+    It 'returns the raw bytes with -AsBytes even for a text content type' {
+        $Stream = [System.IO.MemoryStream]::new([byte[]](72, 105))
+        Mock Invoke-WebRequest { [pscustomobject]@{ Content = 'Hi'; RawContentStream = $Stream; Headers = @{ 'Content-Type' = 'text/plain' } } } -ModuleName GlpiTools
+        $Result = & (Get-Module GlpiTools) { Invoke-GlpiToolsRestMethod -Uri 'https://x/api.php/v3.0/a' -Method Get -Headers @{} -AsBytes }
+        $Result -is [byte[]] | Should -BeTrue
+        $Result | Should -Be ([byte[]](72, 105))
+    }
+    It 'keeps every byte of a binary file served by a real HTTP server' {
+        # bytes that are not valid text: a decoder would change them
+        $Original = [byte[]](0..255) + [byte[]](137, 80, 78, 71, 13, 10, 26, 10, 0, 255, 254, 192, 193)
+        $Port = Get-Random -Minimum 20000 -Maximum 40000
+        $Listener = [System.Net.HttpListener]::new()
+        $Listener.Prefixes.Add("http://127.0.0.1:$Port/")
+        $Listener.Start()
+        try {
+            $Job = Start-ThreadJob -ArgumentList $Listener, $Original -ScriptBlock {
+                param($L, $Bytes)
+                $Context = $L.GetContext()
+                $Context.Response.ContentType = 'text/plain'
+                $Context.Response.OutputStream.Write($Bytes, 0, $Bytes.Length)
+                $Context.Response.Close()
+            }
+            Mock Invoke-WebRequest { Microsoft.PowerShell.Utility\Invoke-WebRequest @PesterBoundParameters } -ModuleName GlpiTools
+            $Result = & (Get-Module GlpiTools) { param($Url) Invoke-GlpiToolsRestMethod -Uri $Url -Method Get -Headers @{} -AsBytes } "http://127.0.0.1:$Port/file"
+            Wait-Job $Job -Timeout 10 | Out-Null
+        } finally {
+            $Listener.Stop()
+        }
+        $Result.Length | Should -Be $Original.Length
+        [System.BitConverter]::ToString($Result) | Should -Be ([System.BitConverter]::ToString($Original))
+    }
 }
