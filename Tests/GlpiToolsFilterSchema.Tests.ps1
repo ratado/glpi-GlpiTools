@@ -55,6 +55,21 @@ Describe 'Filter validation against the API v3 schema' {
             }
             Should -Invoke Get-GlpiToolsV3Document -ModuleName GlpiTools -Exactly 1
         }
+        It 'tries again after a failed read once the minute has passed, and not before' {
+            Mock Get-GlpiToolsV3Document { $null } -ModuleName GlpiTools
+            Set-GlpiToolsSessionToken -ResetToken
+            InModuleScope GlpiTools { Test-GlpiToolsV3Property -ItemType Ticket -Name name | Out-Null }
+            InModuleScope GlpiTools { Test-GlpiToolsV3Property -ItemType Ticket -Name name | Out-Null }
+            Should -Invoke Get-GlpiToolsV3Document -ModuleName GlpiTools -Exactly 1
+            InModuleScope GlpiTools { $script:GlpiToolsV3DocCache.RetryAfter = [datetime]::UtcNow.AddSeconds(-1) }
+            InModuleScope GlpiTools { Test-GlpiToolsV3Property -ItemType Ticket -Name name | Out-Null }
+            Should -Invoke Get-GlpiToolsV3Document -ModuleName GlpiTools -Exactly 2
+        }
+        It 'looks the schema up once to check several fields' {
+            Mock Get-GlpiToolsV3Route { '/Assistance/Ticket' } -ModuleName GlpiTools
+            InModuleScope GlpiTools { Assert-GlpiToolsV3FilterField -ItemType Ticket -Field name, id, entity.name }
+            Should -Invoke Get-GlpiToolsV3Route -ModuleName GlpiTools -Exactly 1
+        }
         It 'reads the document again after the session is reset' {
             InModuleScope GlpiTools { Test-GlpiToolsV3Property -ItemType Ticket -Name name | Out-Null }
             Set-GlpiToolsSessionToken -ResetToken

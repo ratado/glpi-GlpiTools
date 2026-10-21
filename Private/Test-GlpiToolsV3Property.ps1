@@ -8,6 +8,8 @@
     Item type as used by the module, for example Ticket.
 .PARAMETER Name
     Property name or dotted path.
+.PARAMETER Schema
+    Schema already read with Get-GlpiToolsV3Schema, to check several properties with one lookup.
 .EXAMPLE
     PS C:\> Test-GlpiToolsV3Property -ItemType Ticket -Name entity.name
     Returns True when Ticket has the property entity with the property name.
@@ -26,10 +28,15 @@ function Test-GlpiToolsV3Property {
         [string]$ItemType,
 
         [parameter(Mandatory = $true)]
-        [string]$Name
+        [string]$Name,
+
+        [parameter(Mandatory = $false)]
+        [psobject]$Schema
     )
 
-    $Schema = Get-GlpiToolsV3Schema -ItemType $ItemType
+    if (-not $PSBoundParameters.ContainsKey('Schema')) {
+        $Schema = Get-GlpiToolsV3Schema -ItemType $ItemType
+    }
     if (-not $Schema -or -not $Schema.Properties) {
         return
     }

@@ -35,10 +35,10 @@ function Get-GlpiToolsV3CachedList {
         [switch]$NotFoundIsEmpty
     )
 
-    # scope 1 is the command that called this function
+    # scope 1 is the command that called this function; the list is reused only for the same route
     $Cached = Get-Variable -Name GlpiToolsV3ListCache -Scope 1 -ErrorAction SilentlyContinue
-    if ($Cached) {
-        return , @($Cached.Value)
+    if ($Cached -and $Cached.Value.Resource -eq $Resource) {
+        return , @($Cached.Value.List)
     }
 
     $List = @()
@@ -48,6 +48,6 @@ function Get-GlpiToolsV3CachedList {
         # a missing record is an empty result only when the caller expects it
         if (-not $NotFoundIsEmpty -or $_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }
     }
-    Set-Variable -Name GlpiToolsV3ListCache -Value $List -Scope 1
+    Set-Variable -Name GlpiToolsV3ListCache -Value @{ Resource = $Resource; List = $List } -Scope 1
     , $List
 }

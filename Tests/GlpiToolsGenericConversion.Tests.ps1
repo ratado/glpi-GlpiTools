@@ -98,3 +98,17 @@ Describe 'Generic commands with legacy field names on API v3' {
         }
     }
 }
+
+Describe 'Field maps' {
+    It 'have no legacy name equal to the v3 name of another field' {
+        # the input converters treat a key that is a v3 name as already converted, so such a collision would hide a legacy column
+        $Maps = Get-Content -Path (Join-Path $PSScriptRoot '..' 'Private' 'V3FieldMap.json') -Raw | ConvertFrom-Json
+        $Collisions = foreach ($Type in $Maps.PSObject.Properties) {
+            foreach ($Field in $Type.Value) {
+                $Other = $Type.Value | Where-Object { $_.v3 -eq $Field.v1 -and $_ -ne $Field }
+                if ($Other) { "$($Type.Name): $($Field.v1)" }
+            }
+        }
+        $Collisions | Should -BeNullOrEmpty
+    }
+}

@@ -328,3 +328,21 @@ Describe 'Set-GlpiToolsOutputFormat' {
         { Set-GlpiToolsOutputFormat -Format Native } | Should -Throw '*Config File*'
     }
 }
+
+Describe 'OutputFormat when the configuration is rewritten' {
+    It 'keeps Native when -OutputFormat is not informed' {
+        Set-GlpiToolsConfig -PathToGlpi 'https://x' -ClientId 'c' -ClientSecret 's' -Username 'u' -Password 'p' -OutputFormat Native
+        Set-GlpiToolsConfig -PathToGlpi 'https://x' -ClientId 'c' -ClientSecret 'new' -Username 'u' -Password 'p'
+        (Get-GlpiToolsConfig).OutputFormat | Should -Be 'Native'
+        (Get-GlpiToolsConfig).ClientSecret | Should -Be 'new'
+    }
+    It 'changes it when informed' {
+        Set-GlpiToolsConfig -PathToGlpi 'https://x' -ClientId 'c' -ClientSecret 's' -Username 'u' -Password 'p' -OutputFormat Legacy
+        (Get-GlpiToolsConfig).OutputFormat | Should -Be 'Legacy'
+    }
+    It 'does not carry Native over to the legacy API' {
+        Set-GlpiToolsConfig -PathToGlpi 'https://x' -ClientId 'c' -ClientSecret 's' -Username 'u' -Password 'p' -OutputFormat Native
+        Set-GlpiToolsConfig -AppToken 'a' -UserToken 'b' -PathToGlpi 'http://x/apirest.php'
+        (Get-GlpiToolsConfig).OutputFormat | Should -Be 'Legacy'
+    }
+}

@@ -3,8 +3,8 @@
     Returns the properties the API v3 knows for an item type.
 .DESCRIPTION
     Finds the schema of the listing route of the item type in the OpenAPI document and returns its properties.
-    The document is read once per session (it is dropped when the session or the configuration is reset), and a
-    failed read is remembered too, so the server is not asked again for every search.
+    The document is read once per session (it is dropped when the session or the configuration is reset). A failed
+    read is remembered for one minute, so the server is not asked again for every search, and is then tried again.
 .PARAMETER ItemType
     Item type as used by the module, for example Ticket or Computer.
 .EXAMPLE
@@ -27,8 +27,8 @@ function Get-GlpiToolsV3Schema {
 
     $Site = Get-GlpiToolsBaseUrl -Type Site
     $Cache = $script:GlpiToolsV3DocCache
-    if (-not $Cache -or $Cache.Site -ne $Site) {
-        $Cache = @{ Site = $Site; Schemas = $null; Routes = @{ } }
+    if (-not $Cache -or $Cache.Site -ne $Site -or (-not $Cache.Schemas -and [datetime]::UtcNow -ge $Cache.RetryAfter)) {
+        $Cache = @{ Site = $Site; Schemas = $null; Routes = @{ }; RetryAfter = [datetime]::UtcNow.AddSeconds(60) }
         $Document = Get-GlpiToolsV3Document
         if ($Document -and $Document.components.schemas) {
             $Cache.Schemas = $Document.components.schemas

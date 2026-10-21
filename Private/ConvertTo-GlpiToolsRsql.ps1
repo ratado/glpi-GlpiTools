@@ -52,7 +52,8 @@ function ConvertTo-GlpiToolsRsql {
     if ($ItemType) {
         Assert-GlpiToolsV3FilterField -ItemType $ItemType -Field (@($Criteria | ForEach-Object { $_.Field }) + @($Filter.Keys) | Where-Object { $_ })
         # the trash filter is meaningless for a type without that property
-        $Required = @($Required | Where-Object { (Test-GlpiToolsV3Property -ItemType $ItemType -Name $_.Field) -ne $false })
+        $RequiredSchema = Get-GlpiToolsV3Schema -ItemType $ItemType
+        $Required = @($Required | Where-Object { (Test-GlpiToolsV3Property -ItemType $ItemType -Name $_.Field -Schema $RequiredSchema) -ne $false })
     }
 
     # escapes a single value; values starting with a quote are wrapped in the other kind of quote

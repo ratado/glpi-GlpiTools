@@ -30,9 +30,11 @@ function Assert-GlpiToolsV3FilterField {
         [string[]]$Field
     )
 
+    # one lookup of the schema serves every field
+    $Schema = Get-GlpiToolsV3Schema -ItemType $ItemType
     foreach ($Name in $Field) {
-        if ((Test-GlpiToolsV3Property -ItemType $ItemType -Name $Name) -eq $false) {
-            $Valid = (Get-GlpiToolsV3Schema -ItemType $ItemType).Properties.PSObject.Properties.Name -join ', '
+        if ((Test-GlpiToolsV3Property -ItemType $ItemType -Name $Name -Schema $Schema) -eq $false) {
+            $Valid = $Schema.Properties.PSObject.Properties.Name -join ', '
             $Hint = Get-GlpiToolsV3FieldHint -ItemType $ItemType -Name $Name -Context Filter
             $Text = "'$Name' is not a property of $ItemType in the GLPI API v3.$Hint Valid properties: $Valid."
             # throwing the record keeps the error ID, which a caller can test

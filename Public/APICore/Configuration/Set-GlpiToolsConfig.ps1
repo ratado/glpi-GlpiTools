@@ -27,7 +27,7 @@
 .PARAMETER OutputFormat
     Format of the objects returned by the commands: Legacy (default) keeps the properties and values of the
     legacy API; Native returns the objects as the API v3 sends them. API v3 only; Set-GlpiToolsOutputFormat
-    changes it later without informing the credentials again.
+    changes it later without informing the credentials again. When omitted, the format already stored is kept.
 .PARAMETER SkipCertificateCheck
     Stores the option to ignore TLS certificate validation (self-signed certificates). Off by default.
     Applied to every request made through the module.
@@ -74,7 +74,7 @@ function Set-GlpiToolsConfig {
         [string]$Scope = 'api',
         [parameter(Mandatory = $false, ParameterSetName = 'V3Password')]
         [ValidateSet('Legacy', 'Native')]
-        [string]$OutputFormat = 'Legacy',
+        [string]$OutputFormat,
         [parameter(Mandatory = $false)]
         [switch]$SkipCertificateCheck
     )
@@ -142,6 +142,15 @@ function Set-GlpiToolsConfig {
     }
     
     end {
+        # rewriting the file keeps the output format chosen before, unless -OutputFormat is informed
+        $ChosenFormat = 'Legacy'
+        if ($PSBoundParameters.ContainsKey('OutputFormat')) {
+            $ChosenFormat = $OutputFormat
+        } elseif (Test-Path -Path $Config) {
+            $PreviousConfig = Get-GlpiToolsConfig -WarningAction SilentlyContinue
+            if ($PreviousConfig.ApiVersion -eq 'v3' -and $PreviousConfig.OutputFormat -eq 'Native') { $ChosenFormat = 'Native' }
+        }
+
         if ($PSCmdlet.ParameterSetName -eq 'V3Password') {
             $ConfigHash = [ordered]@{
                 'ApiVersion'           = 'v3'
@@ -152,7 +161,7 @@ function Set-GlpiToolsConfig {
                 'Username'             = $UsernameEncrypt
                 'Password'             = $PasswordEncrypt
                 'Scope'                = $Scope
-                'OutputFormat'         = $OutputFormat
+                'OutputFormat'         = $ChosenFormat
                 'SkipCertificateCheck' = [bool]$SkipCertificateCheck
             }
         } else {
