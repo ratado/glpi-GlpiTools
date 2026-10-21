@@ -19,7 +19,7 @@
 #>
 
 function Set-GlpiToolsOutputFormat {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [parameter(Mandatory = $true)]
         [ValidateSet('Legacy', 'Native')]
@@ -42,9 +42,11 @@ function Set-GlpiToolsOutputFormat {
         # only this field is replaced, the encrypted values are kept as they are
         $ConfigData = Get-Content -Path $Config -Raw | ConvertFrom-Json
         $ConfigData | Add-Member -NotePropertyName 'OutputFormat' -NotePropertyValue $Format -Force
-        $ConfigData | ConvertTo-Json | Out-File -FilePath $Config
+        if ($PSCmdlet.ShouldProcess($Config, "Set the output format to $Format")) {
+            $ConfigData | ConvertTo-Json | Out-File -FilePath $Config
 
-        # the stored configuration changed, so the cached copy is discarded
-        $script:GlpiToolsConfigCache = $null
+            # the stored configuration changed, so the cached copy is discarded
+            $script:GlpiToolsConfigCache = $null
+        }
     }
 }

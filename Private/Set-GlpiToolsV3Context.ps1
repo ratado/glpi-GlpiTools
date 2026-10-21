@@ -24,6 +24,8 @@
 #>
 
 function Set-GlpiToolsV3Context {
+    # only in-memory module state changes, there is nothing to confirm
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding()]
     param (
         [parameter(Mandatory = $false)]

@@ -299,6 +299,12 @@ Describe 'Set-GlpiToolsOutputFormat' {
         $Config.ClientSecret | Should -Be 'secret1'
         $Config.Password | Should -Be 'pass1'
     }
+    It 'does not change the file with -WhatIf' {
+        # the format is kept when the configuration is rewritten, so the starting point is set explicitly
+        Set-GlpiToolsOutputFormat -Format Legacy
+        Set-GlpiToolsOutputFormat -Format Native -WhatIf
+        (Get-Content $script:ConfigFile | ConvertFrom-Json).OutputFormat | Should -Be 'Legacy'
+    }
     It 'is seen at once by the commands, because the cached configuration is dropped' {
         Get-GlpiToolsConfig | Out-Null
         Set-GlpiToolsOutputFormat -Format Native

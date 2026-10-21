@@ -48,7 +48,7 @@ function Invoke-GlpiToolsRequestApi {
 			$result = Invoke-RestMethod @Params -ErrorVariable ErrResp
 		}
 		catch {
-			if($_.Exception.Response -ne $null) {
+			if($null -ne $_.Exception.Response) {
 				$streamReader = [System.IO.StreamReader]::new($_.Exception.Response.GetResponseStream())
 				$ErrDetail = $streamReader.ReadToEnd() | ConvertFrom-Json
 				$streamReader.Close()
