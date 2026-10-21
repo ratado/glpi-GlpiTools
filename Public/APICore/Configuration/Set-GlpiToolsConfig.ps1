@@ -84,14 +84,6 @@ function Set-GlpiToolsConfig {
         $ConfigPath = Get-GlpiToolsConfigPath -Directory
         $Config = Get-GlpiToolsConfigPath
 
-        # the API v3 and the certificate option are available only on PowerShell 7
-        if ($PSCmdlet.ParameterSetName -eq 'V3Password' -or $ApiVersion -eq 'v3') {
-            Assert-GlpiToolsPowerShell7 -Feature 'The GLPI API v3'
-        }
-        if ($SkipCertificateCheck) {
-            Assert-GlpiToolsPowerShell7 -Feature 'The option -SkipCertificateCheck'
-        }
-
         # the legacy set accepts only the v1 flavour
         if ($PSCmdlet.ParameterSetName -eq 'Legacy' -and $ApiVersion -eq 'v3') {
             throw "-ApiVersion v3 requires -ClientId, -ClientSecret, -Username and -Password."

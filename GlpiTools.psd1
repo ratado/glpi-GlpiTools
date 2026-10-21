@@ -15,19 +15,19 @@
 ModuleVersion = '2.0.0'
 
 # Supported PSEditions
-# CompatiblePSEditions = @()
+CompatiblePSEditions = @('Core')
 
 # ID used to uniquely identify this module
 GUID = 'e1889130-cc90-4122-bd1c-c41a68c5a2ab'
 
 # Author of this module
-Author = 'Wojciech Pietrzak and Andre Proto'
+Author = 'Wojciech Pietrzak and André Proto'
 
 # Company or vendor of this module
 CompanyName = 'Unknown'
 
 # Copyright statement for this module
-Copyright = '(c) 2018 Wojciech Pietrzak. All rights reserved.'
+Copyright = '(c) 2018 Wojciech Pietrzak; (c) 2024-2026 André Proto. Licensed under the GNU General Public License v3.0.'
 
 # Description of the functionality provided by this module
 Description = 'PowerShell module wrapping the GLPI REST APIs (legacy and v3 of GLPI 12) in handy functions'
@@ -275,16 +275,16 @@ PrivateData = @{
         Tags = @('Glpi','PowerShell','Api')
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://github.com/ratado/glpi-GlpiTools/blob/master/LICENSE'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/wpietrzakpl/GlpiTools'
+        ProjectUri = 'https://github.com/ratado/glpi-GlpiTools'
 
         # A URL to an icon representing this module.
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Version 2.0.0: support for the GLPI 12 REST API v3 (OAuth), alongside the legacy API; output formats Legacy and Native; PowerShell 7 or later is now required. See CHANGELOG.md.'
+        ReleaseNotes = 'Version 2.0.0: support for the GLPI 12 REST API v3 (OAuth), alongside the legacy API; output formats Legacy and Native; PowerShell 7 or later is now required. Some item types (for example monitors, printers, management items and projects) had their field mapping checked only against the API schema, because the test server has no data for them. See CHANGELOG.md.'
 
     } # End of PSData hashtable
 

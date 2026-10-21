@@ -135,3 +135,7 @@ Get-Module GlpiTools | Select-Object -ExpandProperty ExportedCommands
 ## What changed
 
 See the [CHANGELOG](CHANGELOG.md).
+
+## License
+
+GlpiTools is free software, distributed under the GNU General Public License version 3 (see the `LICENSE` file). The module was created by Wojciech Pietrzak, and this version is maintained by André Proto.

@@ -209,36 +209,6 @@ Describe 'Get-GlpiToolsConfig cache' {
     }
 }
 
-Describe 'PowerShell 7 requirement' {
-
-    BeforeAll {
-        Mock Get-GlpiToolsPowerShellVersion { [version]'5.1.19041' } -ModuleName GlpiTools
-    }
-
-    It 'refuses the v3 configuration on Windows PowerShell 5.1' {
-        $Err = $null
-        try { Set-GlpiToolsConfig -PathToGlpi 'https://x' -ClientId 'c' -ClientSecret 's' -Username 'u' -Password 'p' } catch { $Err = $_ }
-        $Err.FullyQualifiedErrorId | Should -Be 'GlpiTools.PowerShell7Required'
-    }
-    It 'refuses the certificate option on Windows PowerShell 5.1' {
-        $Err = $null
-        try { Set-GlpiToolsConfig -AppToken 'a' -UserToken 'b' -PathToGlpi 'https://x/apirest.php' -SkipCertificateCheck } catch { $Err = $_ }
-        $Err.FullyQualifiedErrorId | Should -Be 'GlpiTools.PowerShell7Required'
-    }
-    It 'keeps the legacy configuration working on Windows PowerShell 5.1' {
-        { Set-GlpiToolsConfig -AppToken 'a' -UserToken 'b' -PathToGlpi 'https://x/apirest.php' } | Should -Not -Throw
-    }
-    It 'refuses to request an OAuth token on Windows PowerShell 5.1' {
-        $Err = $null
-        try { InModuleScope GlpiTools { Update-GlpiToolsAccessToken -NewSession } } catch { $Err = $_ }
-        $Err.FullyQualifiedErrorId | Should -Be 'GlpiTools.PowerShell7Required'
-    }
-    It 'accepts PowerShell 7' {
-        Mock Get-GlpiToolsPowerShellVersion { [version]'7.4.1' } -ModuleName GlpiTools
-        { InModuleScope GlpiTools { Assert-GlpiToolsPowerShell7 -Feature 'x' } } | Should -Not -Throw
-    }
-}
-
 Describe 'OutputFormat in the configuration' {
 
     It 'is Legacy by default in the v3 configuration' {

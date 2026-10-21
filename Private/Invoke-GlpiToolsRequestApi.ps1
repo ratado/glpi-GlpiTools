@@ -40,7 +40,6 @@ function Invoke-GlpiToolsRequestApi {
         $Params = $Params.Clone()
         $GlpiConfig = Get-GlpiToolsConfig -WarningAction SilentlyContinue
         if ($GlpiConfig -and $GlpiConfig.SkipCertificateCheck -and -not $Params.ContainsKey('SkipCertificateCheck')) {
-            Assert-GlpiToolsPowerShell7 -Feature 'The option -SkipCertificateCheck'
             $Params['SkipCertificateCheck'] = $true
         }
 

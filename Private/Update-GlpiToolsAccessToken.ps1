@@ -27,9 +27,6 @@ function Update-GlpiToolsAccessToken {
         [switch]$NewSession
     )
 
-    # the OAuth requests of the API v3 need PowerShell 7
-    Assert-GlpiToolsPowerShell7 -Feature 'The GLPI API v3'
-
     $GlpiConfig = Get-GlpiToolsConfig -WarningAction SilentlyContinue
     $Response = $null
 
