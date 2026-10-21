@@ -238,3 +238,93 @@ Describe 'PowerShell 7 requirement' {
         { InModuleScope GlpiTools { Assert-GlpiToolsPowerShell7 -Feature 'x' } } | Should -Not -Throw
     }
 }
+
+Describe 'OutputFormat in the configuration' {
+
+    It 'is Legacy by default in the v3 configuration' {
+        Set-GlpiToolsConfig -PathToGlpi 'https://x' -ClientId 'c' -ClientSecret 's' -Username 'u' -Password 'p'
+        (Get-GlpiToolsConfig).OutputFormat | Should -Be 'Legacy'
+        InModuleScope GlpiTools { Get-GlpiToolsOutputFormat } | Should -Be 'Legacy'
+    }
+    It 'is stored when informed' {
+        Set-GlpiToolsConfig -PathToGlpi 'https://x' -ClientId 'c' -ClientSecret 's' -Username 'u' -Password 'p' -OutputFormat Native
+        (Get-GlpiToolsConfig).OutputFormat | Should -Be 'Native'
+        InModuleScope GlpiTools { Get-GlpiToolsOutputFormat } | Should -Be 'Native'
+    }
+    It 'is Legacy for a file written before the field existed' {
+        Set-GlpiToolsConfig -PathToGlpi 'https://x' -ClientId 'c' -ClientSecret 's' -Username 'u' -Password 'p' -OutputFormat Native
+        $Data = Get-Content $script:ConfigFile | ConvertFrom-Json
+        $Data.PSObject.Properties.Remove('OutputFormat')
+        $Data | ConvertTo-Json | Out-File -FilePath $script:ConfigFile
+        (Get-Item $script:ConfigFile).LastWriteTimeUtc = [datetime]::UtcNow.AddSeconds(5)
+        (Get-GlpiToolsConfig).OutputFormat | Should -Be 'Legacy'
+    }
+    It 'is Legacy for a value that is not valid' {
+        Set-GlpiToolsConfig -PathToGlpi 'https://x' -ClientId 'c' -ClientSecret 's' -Username 'u' -Password 'p'
+        $Data = Get-Content $script:ConfigFile | ConvertFrom-Json
+        $Data.OutputFormat = 'Other'
+        $Data | ConvertTo-Json | Out-File -FilePath $script:ConfigFile
+        (Get-Item $script:ConfigFile).LastWriteTimeUtc = [datetime]::UtcNow.AddSeconds(6)
+        (Get-GlpiToolsConfig).OutputFormat | Should -Be 'Legacy'
+    }
+    It 'is not accepted with the legacy tokens' {
+        { Set-GlpiToolsConfig -AppToken 'a' -UserToken 'b' -PathToGlpi 'http://x/apirest.php' -OutputFormat Native } | Should -Throw
+    }
+    It 'is ignored by the legacy API even if the file says Native' {
+        Set-GlpiToolsConfig -AppToken 'a' -UserToken 'b' -PathToGlpi 'http://x/apirest.php'
+        $Data = Get-Content $script:ConfigFile | ConvertFrom-Json
+        $Data | Add-Member -NotePropertyName OutputFormat -NotePropertyValue Native -Force
+        $Data | ConvertTo-Json | Out-File -FilePath $script:ConfigFile
+        (Get-Item $script:ConfigFile).LastWriteTimeUtc = [datetime]::UtcNow.AddSeconds(7)
+        InModuleScope GlpiTools { Get-GlpiToolsOutputFormat } | Should -Be 'Legacy'
+    }
+}
+
+Describe 'Set-GlpiToolsOutputFormat' {
+
+    BeforeEach {
+        Set-GlpiToolsConfig -PathToGlpi 'https://x' -ClientId 'client1' -ClientSecret 'secret1' -Username 'user1' -Password 'pass1'
+    }
+
+    It 'changes only the format and keeps the credentials' {
+        $Before = Get-Content $script:ConfigFile | ConvertFrom-Json
+        Set-GlpiToolsOutputFormat -Format Native
+        $After = Get-Content $script:ConfigFile | ConvertFrom-Json
+        $After.OutputFormat | Should -Be 'Native'
+        # the encrypted values are the same text, so nothing was decrypted and encrypted again
+        foreach ($Field in 'PathToGlpi', 'ClientId', 'ClientSecret', 'Username', 'Password', 'ApiVersion', 'Scope') {
+            $After.$Field | Should -Be $Before.$Field
+        }
+        $Config = Get-GlpiToolsConfig
+        $Config.ClientSecret | Should -Be 'secret1'
+        $Config.Password | Should -Be 'pass1'
+    }
+    It 'is seen at once by the commands, because the cached configuration is dropped' {
+        Get-GlpiToolsConfig | Out-Null
+        Set-GlpiToolsOutputFormat -Format Native
+        InModuleScope GlpiTools { Get-GlpiToolsOutputFormat } | Should -Be 'Native'
+        Set-GlpiToolsOutputFormat -Format Legacy
+        InModuleScope GlpiTools { Get-GlpiToolsOutputFormat } | Should -Be 'Legacy'
+    }
+    It 'keeps the open session' {
+        Set-GlpiToolsSessionToken -SessionToken 'keepme'
+        Set-GlpiToolsOutputFormat -Format Native
+        $global:GlpiToolsSessionToken.SessionToken | Should -Be 'keepme'
+    }
+    It 'keeps the file private on Linux' -Skip:(-not $IsLinux) {
+        Set-GlpiToolsOutputFormat -Format Native
+        # the flags are compared as a value, because the text of an enum lists them in no fixed order
+        [System.IO.File]::GetUnixFileMode((Get-Item -LiteralPath $script:ConfigFile).FullName) -eq [System.IO.UnixFileMode]'UserRead, UserWrite' | Should -BeTrue
+    }
+    It 'refuses a format that does not exist' {
+        { Set-GlpiToolsOutputFormat -Format Other } | Should -Throw
+    }
+    It 'refuses to run with the legacy configuration' {
+        Set-GlpiToolsConfig -AppToken 'a' -UserToken 'b' -PathToGlpi 'http://x/apirest.php'
+        { Set-GlpiToolsOutputFormat -Format Native } | Should -Throw '*API v3*'
+    }
+    It 'refuses to run without a configuration' {
+        Remove-Item $script:ConfigFile -Force
+        { Set-GlpiToolsOutputFormat -Format Native } | Should -Throw '*Config File*'
+    }
+}

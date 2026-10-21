@@ -2,6 +2,7 @@
 .SYNOPSIS
     Converts an item returned by the API v3 into the object format returned by the legacy API.
 .DESCRIPTION
+    With OutputFormat Native (Set-GlpiToolsOutputFormat) the item is returned untouched.
     Uses V3FieldMap.json to rename the properties, flatten the related items (object with id and name)
     and format dates and booleans exactly as the legacy API does. With -Raw the related items become
     their ID; without it, they become the name that the legacy conversion shows. Properties without
@@ -39,14 +40,22 @@ function ConvertFrom-GlpiToolsV3Item {
     )
 
     begin {
-        # the field map is read once per session
-        $FieldMap = Get-GlpiToolsV3FieldMap -ItemType $ItemType
-        if (-not $FieldMap) {
-            throw "There is no field map for the item type '$ItemType'."
+        # the native format returns the item as the API v3 sent it, so no field map is needed
+        $Native = (Get-GlpiToolsOutputFormat) -eq 'Native'
+        if (-not $Native) {
+            # the field map is read once per session
+            $FieldMap = Get-GlpiToolsV3FieldMap -ItemType $ItemType
+            if (-not $FieldMap) {
+                throw "There is no field map for the item type '$ItemType'."
+            }
         }
     }
 
     process {
+        if ($Native) {
+            $InputObject
+            return
+        }
         $Item = [ordered]@{ }
         foreach ($Field in $FieldMap) {
             # a property missing in the answer has no equivalent value, so it is not invented

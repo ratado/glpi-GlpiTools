@@ -2,6 +2,8 @@
 .SYNOPSIS
     Converts legacy field names and values into the ones accepted by the API v3.
 .DESCRIPTION
+    With OutputFormat Native nothing is converted: the fields must already use the v3 names, and an unknown one
+    stops the command with GlpiTools.V3InvalidField.
     The legacy API names a related item by its column (entities_id = 1); the API v3 takes an object
     (entity = @{ id = 1 }). Keys that are already v3 names, and keys with no map entry, are sent as they are,
     so v3 payloads keep working. Item types without a map are returned unchanged.
@@ -29,6 +31,18 @@ function ConvertTo-GlpiToolsV3Input {
         [parameter(Mandatory = $true)]
         [System.Collections.IDictionary]$InputObject
     )
+
+    # the native format sends the fields as given, but refuses the ones the API v3 does not know, since it would ignore them silently
+    if ((Get-GlpiToolsOutputFormat) -eq 'Native') {
+        foreach ($Key in $InputObject.Keys) {
+            if ((Test-GlpiToolsV3Property -ItemType $ItemType -Name ([string]$Key)) -eq $false) {
+                $Text = "'$Key' is not a property of $ItemType in the GLPI API v3.$(Get-GlpiToolsV3FieldHint -ItemType $ItemType -Name ([string]$Key) -Context Body)"
+                # throwing the record keeps the error ID, which a caller can test
+                throw [System.Management.Automation.ErrorRecord]::new([System.ArgumentException]::new($Text), 'GlpiTools.V3InvalidField', [System.Management.Automation.ErrorCategory]::InvalidArgument, $Key)
+            }
+        }
+        return $InputObject
+    }
 
     $FieldMap = Get-GlpiToolsV3FieldMap -ItemType $ItemType
     if (-not $FieldMap) {

@@ -87,6 +87,10 @@ function Invoke-GlpiToolsV3ItemQuery {
         [string[]]$SupportedParameter = @('ExpandDropdowns')
     )
 
+    if ($Raw -and (Get-GlpiToolsOutputFormat) -eq 'Native') {
+        Write-Verbose -Message "-Raw has no effect with the native output format."
+    }
+
     # the active parameter set tells the operation, because pipeline input is not bound yet in the begin block
     switch -Wildcard ($ParameterSetName) {
         'All' {

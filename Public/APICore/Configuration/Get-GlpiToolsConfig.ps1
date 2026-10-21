@@ -67,6 +67,7 @@ function Get-GlpiToolsConfig {
                 'Password' = ConvertFrom-GlpiConfigSecret -Value $ConfigData.Password
                 'Scope' = $ConfigData.Scope
                 'SkipCertificateCheck' = [bool]$ConfigData.SkipCertificateCheck
+                'OutputFormat' = $(if ($ConfigData.OutputFormat -eq 'Native') { 'Native' } else { 'Legacy' })
             }
 
             $object = New-Object -TypeName PSCustomObject -Property $ConfigHash

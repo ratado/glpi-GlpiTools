@@ -29,6 +29,11 @@ function ConvertTo-GlpiToolsV3FieldName {
         [string]$Name
     )
 
+    # the native format uses the v3 names as they are
+    if ((Get-GlpiToolsOutputFormat) -eq 'Native') {
+        return $Name
+    }
+
     $FieldMap = Get-GlpiToolsV3FieldMap -ItemType $ItemType
     # a name that is already a v3 property stays as it is
     if (-not $FieldMap -or ($FieldMap | Where-Object { $_.v3 -eq $Name })) {

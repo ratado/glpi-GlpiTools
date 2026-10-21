@@ -23,6 +23,7 @@ All notable changes to this project are documented in this file.
 - With the REST API v3, `Get-GlpiToolsDocuments -RawDocument` returns the file content as bytes, so PDFs and images are not damaged.
 - The REST API v3 and the `-SkipCertificateCheck` option require PowerShell 7; the legacy API keeps working on Windows PowerShell 5.1.
 - Reading the configuration is now faster, because it is kept in memory until the file changes.
+- With the REST API v3 configured, the new `-OutputFormat` option of `Set-GlpiToolsConfig` chooses how the commands return data: `Legacy` (default) keeps the properties and values of the legacy API, and `Native` returns the objects exactly as the API v3 sends them. `Set-GlpiToolsOutputFormat` changes it later without informing the credentials again.
 - Changing the configuration now closes the session that was open on the GLPI server.
 - The configuration file is now readable only by its owner on Linux.
 - Existing configurations keep working as the legacy API, with no changes needed.

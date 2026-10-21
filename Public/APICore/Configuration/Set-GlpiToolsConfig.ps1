@@ -24,6 +24,10 @@
     GLPI user password, as string or SecureString. API v3 only.
 .PARAMETER Scope
     OAuth scopes requested at the token endpoint, separated by space. Default is api. API v3 only.
+.PARAMETER OutputFormat
+    Format of the objects returned by the commands: Legacy (default) keeps the properties and values of the
+    legacy API; Native returns the objects as the API v3 sends them. API v3 only; Set-GlpiToolsOutputFormat
+    changes it later without informing the credentials again.
 .PARAMETER SkipCertificateCheck
     Stores the option to ignore TLS certificate validation (self-signed certificates). Off by default.
     Applied to every request made through the module.
@@ -68,6 +72,9 @@ function Set-GlpiToolsConfig {
         [object]$Password,
         [parameter(Mandatory = $false, ParameterSetName = 'V3Password')]
         [string]$Scope = 'api',
+        [parameter(Mandatory = $false, ParameterSetName = 'V3Password')]
+        [ValidateSet('Legacy', 'Native')]
+        [string]$OutputFormat = 'Legacy',
         [parameter(Mandatory = $false)]
         [switch]$SkipCertificateCheck
     )
@@ -145,6 +152,7 @@ function Set-GlpiToolsConfig {
                 'Username'             = $UsernameEncrypt
                 'Password'             = $PasswordEncrypt
                 'Scope'                = $Scope
+                'OutputFormat'         = $OutputFormat
                 'SkipCertificateCheck' = [bool]$SkipCertificateCheck
             }
         } else {

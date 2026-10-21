@@ -44,8 +44,10 @@ function Get-GlpiToolsPlugins {
         # API v3: handled through the shared request layer, the legacy code below is not reached
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
             $V3Plugins = Invoke-GlpiToolsRequest -Method Get -Resource '/Setup/Plugin' -All | ConvertFrom-GlpiToolsV3Item -ItemType Plugin -Raw
+            # the native format keeps the numeric state sent by the API
+            $V3StateAsText = -not $Raw -and (Get-GlpiToolsOutputFormat) -eq 'Legacy'
             foreach ($V3Plugin in $V3Plugins) {
-                if (-not $Raw) {
+                if ($V3StateAsText) {
                     # the state is shown as text, as the legacy command does
                     switch ([string]$V3Plugin.state) {
                         '1' { $V3Plugin.state = 'Enabled' }

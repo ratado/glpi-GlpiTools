@@ -123,7 +123,7 @@ function Get-GlpiToolsItems{
             }
             # like the legacy command, several results are returned raw; a type without a map keeps the v3 format
             if (Get-GlpiToolsV3FieldMap -ItemType $ItemType) {
-                if (-not $Raw -and (@($V3Items).Count -gt 1)) { Write-Warning "RAW forced because more than 1 result" }
+                if (-not $Raw -and (@($V3Items).Count -gt 1) -and (Get-GlpiToolsOutputFormat) -eq 'Legacy') { Write-Warning "RAW forced because more than 1 result" }
                 $V3Items | ConvertFrom-GlpiToolsV3Item -ItemType $ItemType -Raw:($Raw -or (@($V3Items).Count -gt 1))
             } else {
                 Write-Verbose -Message "There is no field map for '$ItemType'; the v3 format is returned."

@@ -33,7 +33,8 @@ function Assert-GlpiToolsV3FilterField {
     foreach ($Name in $Field) {
         if ((Test-GlpiToolsV3Property -ItemType $ItemType -Name $Name) -eq $false) {
             $Valid = (Get-GlpiToolsV3Schema -ItemType $ItemType).Properties.PSObject.Properties.Name -join ', '
-            $Text = "'$Name' is not a property of $ItemType in the GLPI API v3. Valid properties: $Valid."
+            $Hint = Get-GlpiToolsV3FieldHint -ItemType $ItemType -Name $Name -Context Filter
+            $Text = "'$Name' is not a property of $ItemType in the GLPI API v3.$Hint Valid properties: $Valid."
             # throwing the record keeps the error ID, which a caller can test
             throw [System.Management.Automation.ErrorRecord]::new([System.ArgumentException]::new($Text), 'GlpiTools.V3InvalidFilterField', [System.Management.Automation.ErrorCategory]::InvalidArgument, $Name)
         }
