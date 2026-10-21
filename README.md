@@ -126,6 +126,10 @@ A few options of some commands are also unavailable, such as `-DisableNotificati
  * Changing the entity or the profile applies only to this module, and changing the profile goes back to the default entities of the new profile.
  * `-ExtraParameter` of `Get-GlpiToolsItems` and `Get-GlpiToolsItemLogs` is not available.
 
+## Examples
+
+The [examples](examples/README.md) folder has step-by-step guides with ready-to-use commands: installing and configuring the module, and the most common tasks (tickets, follow-ups, solutions, approvals and searches) for the REST API v3 and for the legacy API. They were tested against GLPI 12.
+
 ## Available commands
 
 ```powershell

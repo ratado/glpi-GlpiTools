@@ -17,6 +17,7 @@ All notable changes to this project are documented in this file.
 - With the REST API v3, `Get-GlpiToolsDocuments -RawDocument` returns the file content as bytes, so PDFs and images are not damaged.
 - With the REST API v3, a profile change goes back to the default entities of the new profile, as in the legacy API.
 - Creating a ticket with the REST API v3 reports the error, and still returns the ticket, when the requester or technician cannot be added.
+- New `examples` folder with step-by-step guides for installing, configuring and using the module, with separate examples for the REST API v3 and for the legacy API.
 
 ### Changes
 
