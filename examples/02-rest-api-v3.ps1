@@ -169,14 +169,22 @@ Update-GlpiToolsItems -UpdateTo Computer -ItemId 9 -ItemsHashtableWithoutId @{ c
 # ---------------------------------------------------------------------------
 # Not available on the REST API v3
 # ---------------------------------------------------------------------------
-# These tasks have no equivalent on the REST API v3. The commands stop with a clear message
-# ("... is not supported by the GLPI API v3"). To do them, configure the legacy API
+# These tasks do not work with the module on the REST API v3. The commands stop with a clear
+# message ("... is not supported by the GLPI API v3"). To do them, configure the legacy API
 # (Set-GlpiToolsConfig with tokens) and use the matching examples in 03-legacy-api.ps1.
+#
+# The GLPI REST API v3 itself does not offer:
 #   - Link tickets together (Ticket_Ticket)
-#   - Add a user or a group as an actor with Add-GlpiToolsItems (Ticket_User, Group_Ticket);
-#     for users use -requester_id and -technician_id in Update-GlpiToolsTicket
-#   - Request and answer a validation (TicketValidation)
-#   - Approve or refuse a solution (ITILFollowup with add_close / add_reopen)
-#   - Answer the satisfaction survey (TicketSatisfaction)
+#   - The satisfaction survey (TicketSatisfaction)
 #   - Item history (Get-GlpiToolsItemLogs) and search options (Get-GlpiToolsListSearchOptions)
-#   - Options such as -DisableNotification in New-GlpiToolsTicket
+#
+# The GLPI REST API v3 offers these, but the module has no command for them yet:
+#   - Request and answer a validation (Ticket/{id}/Timeline/Validation)
+#   - Add a group as an actor (Ticket/{id}/TeamMember with type Group).
+#     For users, use -requester_id and -technician_id in Update-GlpiToolsTicket.
+#
+# Approving or refusing a solution works differently: on the REST API v3 the answer only changes
+# the status of the solution. The ticket is not closed (approval) or reopened (refusal) as it is
+# on the legacy API, so use the legacy example "Approve or refuse a solution".
+#
+# Also unavailable: options such as -DisableNotification in New-GlpiToolsTicket.
