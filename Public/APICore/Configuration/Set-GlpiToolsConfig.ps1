@@ -101,6 +101,11 @@ function Set-GlpiToolsConfig {
             throw "-ApiVersion v1 cannot be combined with the OAuth parameters (-ClientId, -ClientSecret, -Username, -Password)."
         }
 
+        # the password grant sends the account password and the client secret in the body of the token request
+        if (($PSCmdlet.ParameterSetName -eq 'V3Password' -or $ApiVersion -eq 'v3') -and $PathToGlpi -like 'http://*') {
+            Write-Warning -Message "The GLPI address uses http://, so the credentials are sent without encryption. Use https:// whenever possible."
+        }
+
         # close the legacy session opened with the previous configuration, while its settings are still on disk
         if ($global:GlpiToolsSessionToken -and (Test-Path -Path $Config) -and (Get-GlpiToolsApiVersion) -eq 'v1') {
             try {

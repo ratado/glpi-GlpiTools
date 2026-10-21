@@ -46,7 +46,7 @@ function Set-GlpiToolsChangeActiveProfile {
             if ($V3Session.profiles.PSObject.Properties.Name -notcontains [string]$ProfilesId) {
                 throw "Profile $ProfilesId is not available for the current user."
             }
-            Set-GlpiToolsV3Context -ProfileId $ProfilesId
+            Set-GlpiToolsV3Context -ProfileId $ProfilesId -ResetEntity
             $true
             return
         }

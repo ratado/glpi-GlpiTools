@@ -49,8 +49,8 @@ function Update-GlpiToolsAccessToken {
                 client_secret = $GlpiConfig.ClientSecret
             }
         } catch {
-            # only a rejected grant falls back to the password; network and server failures are reported as they are
-            if ($_.FullyQualifiedErrorId -notlike 'GlpiOAuth.invalid_grant*') {
+            # a refresh token the server rejects (invalid_grant, or invalid_request for a revoked one) falls back to the password; network and server failures are reported as they are
+            if ($_.FullyQualifiedErrorId -notmatch '^GlpiOAuth\.(invalid_grant|invalid_request)') {
                 throw
             }
             Write-Verbose "Refresh token was not accepted, using the password grant"

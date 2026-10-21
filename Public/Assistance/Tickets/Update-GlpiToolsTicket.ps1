@@ -201,12 +201,13 @@ function Update-GlpiToolsTicket {
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
             $V3Body = @{}
             # the numeric values of -Type are not converted by the legacy setup, so they are read here
-            if ($PSBoundParameters['Type']) { $V3Body['type'] = $(if ($Type -in '1', '2') { [int]$Type } else { $type_id }) }
-            if ($PSBoundParameters['Urgency']) { $V3Body['urgency'] = $urgency_id }
-            if ($PSBoundParameters['Impact']) { $V3Body['impact'] = $impact_id }
-            if ($PSBoundParameters['Priority']) { $V3Body['priority'] = $priority_id }
-            if ($PSBoundParameters['Status']) { $V3Body['status'] = @{ id = $status_id } }
-            if ($Validation -and $PSBoundParameters['Validation']) { $V3Body['global_validation'] = $validation_id }
+            # the values are translated here, not in the begin block, so that pipeline input by property name is honoured
+            if ($PSBoundParameters['Type']) { $V3Body['type'] = ConvertTo-GlpiToolsV3EnumId -Kind Type -Value $Type }
+            if ($PSBoundParameters['Urgency']) { $V3Body['urgency'] = ConvertTo-GlpiToolsV3EnumId -Kind Level -Value $urgency }
+            if ($PSBoundParameters['Impact']) { $V3Body['impact'] = ConvertTo-GlpiToolsV3EnumId -Kind Level -Value $impact }
+            if ($PSBoundParameters['Priority']) { $V3Body['priority'] = ConvertTo-GlpiToolsV3EnumId -Kind Level -Value $priority }
+            if ($PSBoundParameters['Status']) { $V3Body['status'] = @{ id = $status } }
+            if ($Validation -and $PSBoundParameters['Validation']) { $V3Body['global_validation'] = ConvertTo-GlpiToolsV3EnumId -Kind Validation -Value $Validation }
             if ($PSBoundParameters['itilcategories_id']) { $V3Body['category'] = @{ id = $itilcategories_id } }
             if ($PSBoundParameters['name']) { $V3Body['name'] = $name }
             if ($PSBoundParameters['content']) { $V3Body['content'] = $content }

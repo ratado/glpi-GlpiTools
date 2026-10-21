@@ -110,7 +110,7 @@ function Invoke-GlpiToolsV3ItemQuery {
             foreach ($V3ItemId in $Id) {
                 $V3Item = $null
                 try {
-                    $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "$Resource/$V3ItemId"
+                    $V3Item = Invoke-GlpiToolsRequest -Method Get -Resource "$Resource/$([uri]::EscapeDataString([string]$V3ItemId))"
                 } catch {
                     # only a missing item is skipped; other failures are reported
                     if ($_.FullyQualifiedErrorId -notlike 'GlpiApi.404*') { throw }

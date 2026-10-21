@@ -267,20 +267,26 @@ function New-GlpiToolsTicket {
             if ($DisableNotification) {
                 Assert-GlpiToolsV3Supported -Name '-DisableNotification'
             }
-            $V3Body = @{ name = $name; content = $content; type = $type_id }
-            if ($PSBoundParameters['Urgency']) { $V3Body['urgency'] = $urgency_id }
-            if ($PSBoundParameters['Impact']) { $V3Body['impact'] = $impact_id }
-            if ($PSBoundParameters['Priority']) { $V3Body['priority'] = $priority_id }
+            # the values are translated here, not in the begin block, so that pipeline input by property name is honoured
+            $V3Body = @{ name = $name; content = $content; type = (ConvertTo-GlpiToolsV3EnumId -Kind Type -Value $Type) }
+            if ($PSBoundParameters['Urgency']) { $V3Body['urgency'] = ConvertTo-GlpiToolsV3EnumId -Kind Level -Value $urgency }
+            if ($PSBoundParameters['Impact']) { $V3Body['impact'] = ConvertTo-GlpiToolsV3EnumId -Kind Level -Value $impact }
+            if ($PSBoundParameters['Priority']) { $V3Body['priority'] = ConvertTo-GlpiToolsV3EnumId -Kind Level -Value $priority }
             if ($PSBoundParameters['Type'] -eq 'Request' -and $PSBoundParameters['ApprovalRequired']) { $V3Body['global_validation'] = 2 }
             if ($PSBoundParameters['itilcategories_id']) { $V3Body['category'] = @{ id = $itilcategories_id } }
             if ($PSBoundParameters['requesttypes_id']) { $V3Body['request_type'] = @{ id = $requesttypes_id } }
             $V3Ticket = Invoke-GlpiToolsRequest -Method Post -Resource '/Assistance/Ticket' -Body $V3Body
             # a requester or technician becomes a member of the ticket team
-            if ($PSBoundParameters['requester_id']) {
-                Add-GlpiToolsV3TeamMember -Resource "/Assistance/Ticket/$($V3Ticket.id)" -Role requester -UserId $requester_id
-            }
-            if ($PSBoundParameters['technician_id']) {
-                Add-GlpiToolsV3TeamMember -Resource "/Assistance/Ticket/$($V3Ticket.id)" -Role assigned -UserId $technician_id
+            # the ticket already exists at this point, so a failure here is reported with its id and the ticket is still returned
+            try {
+                if ($PSBoundParameters['requester_id']) {
+                    Add-GlpiToolsV3TeamMember -Resource "/Assistance/Ticket/$($V3Ticket.id)" -Role requester -UserId $requester_id
+                }
+                if ($PSBoundParameters['technician_id']) {
+                    Add-GlpiToolsV3TeamMember -Resource "/Assistance/Ticket/$($V3Ticket.id)" -Role assigned -UserId $technician_id
+                }
+            } catch {
+                Write-Error -Message "Ticket $($V3Ticket.id) was created, but its team could not be completed: $($_.Exception.Message)"
             }
             $V3Ticket
             return

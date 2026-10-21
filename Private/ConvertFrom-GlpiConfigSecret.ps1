@@ -32,9 +32,12 @@ function ConvertFrom-GlpiConfigSecret {
 
     $SecureValue = ConvertTo-SecureString $Value
 
+    # the unmanaged copy is zeroed and freed as soon as the text is read
     if ($IsLinux) {
-        [System.Runtime.InteropServices.marshal]::PtrToStringUni([System.Runtime.InteropServices.marshal]::SecureStringToGlobalAllocUnicode($SecureValue))
+        $Pointer = [System.Runtime.InteropServices.marshal]::SecureStringToGlobalAllocUnicode($SecureValue)
+        try { [System.Runtime.InteropServices.marshal]::PtrToStringUni($Pointer) } finally { [System.Runtime.InteropServices.marshal]::ZeroFreeGlobalAllocUnicode($Pointer) }
     } else {
-        [System.Runtime.InteropServices.marshal]::PtrToStringAuto([System.Runtime.InteropServices.marshal]::SecureStringToBSTR($SecureValue))
+        $Pointer = [System.Runtime.InteropServices.marshal]::SecureStringToBSTR($SecureValue)
+        try { [System.Runtime.InteropServices.marshal]::PtrToStringAuto($Pointer) } finally { [System.Runtime.InteropServices.marshal]::ZeroFreeBSTR($Pointer) }
     }
 }

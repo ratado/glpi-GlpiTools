@@ -136,7 +136,7 @@ function ConvertTo-GlpiToolsRsql {
         $Extra = & $Build $Required
         # AND binds tighter than OR, so criteria joined by OR need parentheses before the required ones
         if ($Main -ne '') {
-            if ($Main -match '(?<!\\),') { $Main = "($Main)" }
+            if ($Main -match '(?<!\\)(\\\\)*,') { $Main = "($Main)" }
             $Main = "$Main;$Extra"
         } else {
             $Main = $Extra

@@ -142,6 +142,8 @@ function Invoke-GlpiToolsRequest {
             }
         } catch {
             $Caught = $_
+            # token errors already carry a typed id that callers rely on to tell a rejected credential from a network failure
+            if ($Caught.FullyQualifiedErrorId -like 'GlpiOAuth.*') { throw }
             $Status = if ($Caught.Exception.Response) { [int]$Caught.Exception.Response.StatusCode } else { 0 }
             $ApiError = $null
             if ($Caught.ErrorDetails.Message) {

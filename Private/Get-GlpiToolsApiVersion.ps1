@@ -23,14 +23,21 @@ function Get-GlpiToolsApiVersion {
     $Config = Get-GlpiToolsConfigPath
 
     if (Test-Path -Path $Config) {
+        # the answer is reused while the file is unchanged, because every command asks for it several times
+        $LastWrite = (Get-Item -Path $Config).LastWriteTimeUtc.Ticks
+        $Cached = $script:GlpiToolsApiVersionCache
+        if ($Cached -and $Cached.Path -eq $Config -and $Cached.LastWrite -eq $LastWrite) {
+            return $Cached.Version
+        }
+        $Version = 'v1'
         try {
             $ConfigData = Get-Content -Path $Config -Raw | ConvertFrom-Json
+            if ($ConfigData.ApiVersion -eq 'v3') { $Version = 'v3' }
         } catch {
             return 'v1'
         }
-        if ($ConfigData.ApiVersion -eq 'v3') {
-            return 'v3'
-        }
+        $script:GlpiToolsApiVersionCache = @{ Path = $Config; LastWrite = $LastWrite; Version = $Version }
+        return $Version
     }
     'v1'
 }

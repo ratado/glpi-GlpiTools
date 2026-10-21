@@ -48,12 +48,17 @@ function Invoke-GlpiToolsRequestApi {
 			$result = Invoke-RestMethod @Params -ErrorVariable ErrResp
 		}
 		catch {
-			if($null -ne $_.Exception.Response) {
+			# PowerShell 7 puts the body of the answer in ErrorDetails; Windows PowerShell 5.1 only in the response stream
+			$ErrBody = $_.ErrorDetails.Message
+			if (-not $ErrBody -and $null -ne $_.Exception.Response -and $_.Exception.Response.PSObject.Methods['GetResponseStream']) {
 				$streamReader = [System.IO.StreamReader]::new($_.Exception.Response.GetResponseStream())
-				$ErrDetail = $streamReader.ReadToEnd() | ConvertFrom-Json
+				$ErrBody = $streamReader.ReadToEnd()
 				$streamReader.Close()
 			}
-			else { $ErrDetail = {"UNKNOWN ERROR",  "No information" }}
+			$ErrDetail = @("UNKNOWN ERROR", "No information")
+			if ($ErrBody) {
+				try { $ErrDetail = @($ErrBody | ConvertFrom-Json) } catch { $ErrDetail = @("UNKNOWN ERROR", $ErrBody) }
+			}
 			Write-Output "Error: $ErrDetail "
 			
 			$global:GLPIToolsErrorOutput = @{

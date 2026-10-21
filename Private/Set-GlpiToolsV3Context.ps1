@@ -35,7 +35,10 @@ function Set-GlpiToolsV3Context {
         [bool]$EntityRecursive,
 
         [parameter(Mandatory = $false)]
-        [int]$ProfileId
+        [int]$ProfileId,
+
+        [parameter(Mandatory = $false)]
+        [switch]$ResetEntity
     )
 
     $Context = [ordered]@{}
@@ -44,5 +47,7 @@ function Set-GlpiToolsV3Context {
     }
     if ($PSBoundParameters.ContainsKey('EntityId')) { $Context['EntityId'] = $EntityId; $Context['EntityRecursive'] = [bool]$EntityRecursive }
     if ($PSBoundParameters.ContainsKey('ProfileId')) { $Context['ProfileId'] = $ProfileId }
+    # a profile change goes back to the default entities of the new profile, as the legacy API does
+    if ($ResetEntity) { $Context.Remove('EntityId'); $Context.Remove('EntityRecursive') }
     $global:GlpiToolsContext = [pscustomobject]$Context
 }

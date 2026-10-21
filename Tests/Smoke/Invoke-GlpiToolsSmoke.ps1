@@ -49,8 +49,15 @@ if ($Mode -eq 'All') {
         if ($Write) { $childArgs += '-Write' }
         if ($SkipCertificateCheck) { $childArgs += '-SkipCertificateCheck' }
         & pwsh @childArgs | Out-Host
-        $All += @(Get-Content $tmp -Raw | ConvertFrom-Json)
+        $ChildExit = $LASTEXITCODE
+        $Raw = Get-Content $tmp -Raw
         Remove-Item $tmp -Force
+        # a child that died before writing its results is a failure, not an empty success
+        if (-not $Raw) {
+            $All += [pscustomobject]@{ Mode = $m; Step = 'Execução'; Cmdlet = 'pwsh'; Result = 'falha'; Note = "processo encerrado sem resultados (código $ChildExit)" }
+            continue
+        }
+        $All += @($Raw | ConvertFrom-Json)
     }
     $Lines = @(
         "# Resultado do smoke contra o glpi12 ($(Get-Date -Format 'yyyy-MM-dd'))",
@@ -82,7 +89,16 @@ Import-Module (Join-Path $Root 'GlpiTools.psd1') -Force -WarningAction SilentlyC
 $Results = [System.Collections.Generic.List[object]]::new()
 $Site = $env:GLPITOOLS_SMOKE_URL.TrimEnd('/')
 
-# Runs a step, never aborts the run, and records the outcome
+<#
+.SYNOPSIS
+    Runs one smoke step, never aborts the run, and records the outcome.
+.PARAMETER Step
+    Readable name of the step.
+.PARAMETER Cmdlet
+    Command exercised by the step.
+.PARAMETER Script
+    Code of the step; its output becomes the note of the report.
+#>
 function Invoke-Step {
     param ([string]$Step, [string]$Cmdlet, [scriptblock]$Script)
     try {
@@ -96,7 +112,14 @@ function Invoke-Step {
     Write-Host ("[{0}] {1} {2}: {3}" -f $Mode, $res, $Step, $note)
 }
 
-# Fails when the value is empty and returns a short description otherwise
+<#
+.SYNOPSIS
+    Fails when a read returned no data and describes the amount otherwise.
+.PARAMETER Value
+    Objects returned by the command.
+.PARAMETER What
+    Name of what was read, used in the message.
+#>
 function Assert-Data {
     param ($Value, [string]$What)
     $n = @($Value | Where-Object { $null -ne $_ }).Count

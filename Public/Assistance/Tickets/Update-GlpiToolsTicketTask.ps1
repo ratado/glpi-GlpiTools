@@ -97,7 +97,7 @@ function Update-GlpiToolsTicketTask {
         if ((Get-GlpiToolsApiVersion) -eq 'v3') {
             $V3Body = @{}
             if ($PSBoundParameters.ContainsKey('content')) { $V3Body['content'] = $content }
-            if ($PSBoundParameters['Status']) { $V3Body['state'] = $state_id }
+            if ($PSBoundParameters['Status']) { $V3Body['state'] = ConvertTo-GlpiToolsV3EnumId -Kind TaskState -Value $Status }
             if ($PSBoundParameters.ContainsKey('duration')) { $V3Body['duration'] = $duration }
             if ($V3Body.Count -eq 0) {
                 Write-Warning 'Nothing to update: give -content, -Status or -duration.'
